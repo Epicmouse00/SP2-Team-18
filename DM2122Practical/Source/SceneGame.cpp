@@ -90,10 +90,10 @@ void SceneGame::Init()
 	light[0].kQ = 0.001f;
 	light[0].cosCutoff = cos(Math::DegreeToRadian(45));
 	light[0].cosInner = cos(Math::DegreeToRadian(30));
-	light[0].exponent - 3.0f;
+	light[0].exponent = 3.0f;
 	light[0].spotDirection.Set(0.0f, 5.0f, 0.0f);
 
-	glUniform1f(m_parameters[U_LIGHT0_TYPE], light[0].type);
+	glUniform1f(m_parameters[U_LIGHT0_TYPE], (GLfloat)light[0].type);
 	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &light[0].color.r);
 	glUniform1f(m_parameters[U_LIGHT0_POWER], light[0].power);
 	glUniform1f(m_parameters[U_LIGHT0_KC], light[0].kC);

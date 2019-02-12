@@ -110,14 +110,22 @@ class SceneGame : public Scene
 		U_TEXT_ENABLED,
 		U_TEXT_COLOR,
 
-		U_TOTAL,
+		U_TOTAL
 	};
 
 	enum gameStates
 	{
-		E_MENU,
+		E_MAINMENU,
+		E_GAMECHOOSE,
 		E_GAME,
-		E_DEFAULT
+		E_SHOP,
+		E_WINLOSE
+	};
+
+	enum gameModes
+	{
+		MODE_TIME,
+		MODE_VS
 	};
 
 public:
@@ -194,7 +202,7 @@ private:
 
 	Light light[4];
 
-	int gameState = E_MENU;
+	int gameState = E_MAINMENU;
 	
 	void RenderMesh(Mesh *mesh, bool enableLight);
 };
