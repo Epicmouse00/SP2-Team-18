@@ -4,12 +4,11 @@
 class Menu
 {
 private:
-	int buttonIndex;
+	int		buttonIndex	= 0;
 public:
-	Menu();
-	~Menu();
-	void changeIndex(int direction);
-	int outputCursorPosition();
+			Menu();
+			~Menu();
+	void	changeIndex(int direction);
+	int		outputCursorPosition();
 };
-
 #endif

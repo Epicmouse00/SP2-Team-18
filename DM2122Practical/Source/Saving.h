@@ -7,11 +7,10 @@ using namespace std;
 class Saving
 {
 private:
-	int balance;
+	int		balance;
 public:
-	Saving();
-	~Saving();
-
-	void setBalance(int amount);
-	int getBalance();
+			Saving();
+			~Saving();
+	void	setBalance(int amount);
+	int		getBalance();
 };

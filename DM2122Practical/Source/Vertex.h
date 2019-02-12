@@ -33,9 +33,9 @@ struct Color
 
 struct Vertex
 {
-	Position pos;
-	Color color;
-	Vector3 normal;
-	TexCoord texCoord;
+	Position	pos;
+	Color		color;
+	Vector3		normal;
+	TexCoord	texCoord;
 };
 #endif

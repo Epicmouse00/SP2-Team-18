@@ -124,44 +124,44 @@ class SceneGame : public Scene
 
 	enum gameModes
 	{
-		MODE_TIME,
-		MODE_VS
+		MODE_VS,
+		MODE_TIME
 	};
 
 public:
-	SceneGame();
-	~SceneGame();
-
-	virtual void Init();
-	virtual void Update(double dt);
-	virtual void Render();
-	virtual void Exit();
+					SceneGame();
+					~SceneGame();
+	virtual void	Init();
+	virtual void	Update(double dt);
+	virtual void	Render();
+	virtual void	Exit();
 
 private:
 
-	unsigned m_vertexArrayID;
-	Mesh* meshList[NUM_GEOMETRY];
+	unsigned	m_vertexArrayID;
+	Mesh*		meshList[NUM_GEOMETRY];
 
-	unsigned m_programID;
-	unsigned m_parameters[U_TOTAL];
+	unsigned	m_programID;
+	unsigned	m_parameters[U_TOTAL];
 
-	//Skybox Stuffs
-	void RenderSkybox();
+	//Skybox
+	void		RenderSkybox();
 
-	//For Text Stuffs
-	void RenderText(Mesh* mesh, std::string text, Color color);
+	//Text
+	void		RenderText(Mesh* mesh, std::string text, Color color);
 
-	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
-
-	//Camera camera;
-	Camera3 camera;
-
-	MS modelStack, viewStack, projectionStack;
-
-	Light light[4];
-
-	int gameState = E_MAINMENU;
+	void		RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	
-	void RenderMesh(Mesh *mesh, bool enableLight);
+	//Camera
+	Camera3		camera;
+
+	MS			modelStack, viewStack, projectionStack;
+
+	Light		light[4];
+
+	int			gameState = E_MAINMENU;
+	int			gameMode = MODE_VS;
+	
+	void		RenderMesh(Mesh *mesh, bool enableLight);
 };
 #endif

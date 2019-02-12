@@ -6,18 +6,18 @@
 struct Light
 {
 	//Part 1
-	Position position;
-	Color color;
-	float power;
-	float kC, kL, kQ;
+	Position	position;
+	Color		color;
+	float		power;
+	float		kC, kL, kQ;
 
 	Light() // this is constructor for Light
 	{
 		color.Set(1, 1, 1);
-		power = 1.f;
-		kC = 1.f;
-		kL = 0.f;
-		kQ = 0.f;
+		power	= 1.f;
+		kC		= 1.f;
+		kL		= 0.f;
+		kQ		= 0.f;
 	}
 
 	//Part 2
@@ -28,13 +28,11 @@ struct Light
 		LIGHT_SPOT,
 	};
 
-	LIGHT_TYPE type;
-	Vector3 spotDirection;
-	float cosCutoff;
-	float cosInner;
-	float exponent;
+	LIGHT_TYPE	type;
+	Vector3		spotDirection;
+	float		cosCutoff;
+	float		cosInner;
+	float		exponent;
 
 };
-
-
 #endif

@@ -142,14 +142,19 @@ void SceneGame::Init()
 
 	////////// ADD GAME MODELS HERE //////////
 
+	// Menu backdrop
 
+	// Menu Button
 
+	// Player
 
+	// Opponent
 
+	// Obstacles
 
+	// Track
 
-
-
+	// Others?
 
 	////////// ADD GAME MODELS HERE //////////
 
