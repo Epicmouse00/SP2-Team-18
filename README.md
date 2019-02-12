@@ -8,4 +8,4 @@ SP2 team repository
 ##### x64
 ##### x86
 ### folders
-## DO NOT DELETE MAIN DEBUG FOLDER
+## DO NOT DELETE MAIN DEBUG/.dll FOLDER
