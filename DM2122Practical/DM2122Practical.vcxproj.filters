@@ -63,6 +63,12 @@
     <ClInclude Include="Source\SceneGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Currency.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Saving.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -96,6 +102,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Currency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Saving.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
