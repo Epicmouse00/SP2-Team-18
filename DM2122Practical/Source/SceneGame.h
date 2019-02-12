@@ -119,7 +119,8 @@ class SceneGame : public Scene
 		E_GAMECHOOSE,
 		E_GAME,
 		E_SHOP,
-		E_WINLOSE
+		E_LEADERBOARD,
+		E_WINLOSE	
 	};
 
 	enum gameModes
