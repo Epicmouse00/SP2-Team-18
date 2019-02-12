@@ -1,0 +1,10 @@
+﻿  Application.cpp
+  Scene1.cpp
+d:\users\539\desktop\studio project\dm2122_choipoh_assignment02\dm2122practical\source\scene1.cpp(93): warning C4552: '-': result of expression not used
+d:\users\539\desktop\studio project\dm2122_choipoh_assignment02\dm2122practical\source\scene1.cpp(96): warning C4244: 'argument': conversion from 'Light::LIGHT_TYPE' to 'GLfloat', possible loss of data
+  Generating code
+  3 of 564 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    30 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  DM2122Practical.vcxproj -> D:\Users\539\Desktop\Studio Project\DM2122_ChoiPoh_Assignment02\Release\DM2122Practical.exe
