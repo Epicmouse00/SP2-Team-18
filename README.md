@@ -4,8 +4,11 @@ SP2 team repository
 ## [!] IMPORTANT [!]
 ### Delete
 ##### .vs
-##### debug
-##### x64
-##### x86
+##### Common/debug
+##### Common/x64
+##### Common/x86
+##### DM2122Practical/debug
+##### DM2122Practical/x64
+##### DM2122Practical/x86
 ### folders
 ## DO NOT DELETE MAIN DEBUG/.dll FOLDER
