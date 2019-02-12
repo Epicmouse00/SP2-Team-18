@@ -146,9 +146,15 @@ void SceneGame::Init()
 
 	// Menu Button
 
+	// Gameplay UI
+
 	// Player
 
 	// Opponent
+
+	// Coins
+
+	// Items
 
 	// Obstacles
 
