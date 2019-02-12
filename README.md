@@ -1,12 +1,12 @@
 # SP2-Team-18
 SP2 team repository
 
-##[!] IMPORTANT [!]
-###Delete
+## [!] IMPORTANT [!]
+### Delete
   .vs
   debug
   x64
   x86
-###folders
+### folders
 
-##DO NOT DELETE MAIN DEBUG FOLDER
+## DO NOT DELETE MAIN DEBUG FOLDER
