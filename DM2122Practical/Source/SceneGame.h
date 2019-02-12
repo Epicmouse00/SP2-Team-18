@@ -145,48 +145,6 @@ private:
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
 
-	/*
-	float rotateAngle;
-
-	float rotateLeftArm;
-	float rotateRightArm;
-
-	float rotateLeftLeg;
-	float rotateRightLeg;
-
-	float ArmAim;
-	float ArmAim2;
-
-	float LaserShootX;
-	float LaserShootY;
-
-	float crystalRotate;
-
-	float leverPull;
-	float delayTime;
-	float rotateWheel;
-	float SkyboxRotate;
-	float chairNum;
-	
-	//Left
-	float WingSimulation1;
-	float WingSimulation2;
-	//Right
-	float WingSimulation3;
-	float WingSimulation4;
-
-	float ButtonPress;
-	float missleShoot;
-
-	bool idle;
-	bool AnimateAim;
-	bool AnimateShoot;
-	bool leverflip;
-	bool chairFlip;
-	bool buttonPressed;
-	bool missileLaunch;
-	*/
-
 	//Skybox Stuffs
 	void RenderSkybox();
 

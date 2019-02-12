@@ -140,6 +140,19 @@ void SceneGame::Init()
 	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//right.tga");
 	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//bottom.tga");
 
+	////////// ADD GAME MODELS HERE //////////
+
+
+
+
+
+
+
+
+
+
+	////////// ADD GAME MODELS HERE //////////
+
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
