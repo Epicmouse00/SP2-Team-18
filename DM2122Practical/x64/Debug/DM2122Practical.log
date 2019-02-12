@@ -1,0 +1,23 @@
+﻿  Application.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\application.h(5): fatal error C1083: Cannot open include file: 'timer.h': No such file or directory
+  Camera.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\camera.h(4): fatal error C1083: Cannot open include file: 'Vector3.h': No such file or directory
+  Camera3.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\camera.h(4): fatal error C1083: Cannot open include file: 'Vector3.h': No such file or directory
+  LoadOBJ.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\vertex.h(4): fatal error C1083: Cannot open include file: 'Vector3.h': No such file or directory
+  LoadTGA.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\loadtga.cpp(4): fatal error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  main.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\application.h(5): fatal error C1083: Cannot open include file: 'timer.h': No such file or directory
+  Mesh.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\vertex.h(4): fatal error C1083: Cannot open include file: 'Vector3.h': No such file or directory
+  MeshBuilder.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\vertex.h(4): fatal error C1083: Cannot open include file: 'Vector3.h': No such file or directory
+  Scene1.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\camera.h(4): fatal error C1083: Cannot open include file: 'Vector3.h': No such file or directory
+  shader.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\shader.cpp(12): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  Utility.cpp
+c:\users\jeremy yeo\desktop\studio project 2\dm2122practical\source\utility.h(4): fatal error C1083: Cannot open include file: 'Mtx44.h': No such file or directory
+  Generating Code...
