@@ -66,14 +66,25 @@ void SceneGame::Update(double dt)
 	UpdatePlayerStrafe(dt);
 	UpdatePlayerJump(dt);
 
-	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+	if (gameState == E_MAINMENU)
 	{
-		cursor.updatePositionIndex(-1);
-	}
+		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		{
+			cursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
 
-	if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
-	{
-		cursor.updatePositionIndex(1);
+		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		{
+			cursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		{
+			gameState = E_GAME;
+			delayTime = 0;
+		}
 	}
   
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
