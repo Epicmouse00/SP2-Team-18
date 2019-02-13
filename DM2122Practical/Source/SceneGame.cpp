@@ -79,6 +79,13 @@ void SceneGame::Init()
 	// Get a handle for our "MVP" uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
 
+	//Variables
+	Movement = 0;
+	Jump = 0;
+	delayTime = 0;
+
+	JumpPressed = false;
+
 	//Initialize Light Parameters
 	//First Light
 	light[0].type = Light::LIGHT_SPOT;
@@ -106,7 +113,7 @@ void SceneGame::Init()
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
 	//Initialize camera settings
-	camera.Init(Vector3(0, 20, -100), Vector3(0, 45, 180), Vector3(0, 1, 0));
+	camera.Init(Vector3(0, 40, -80), Vector3(0, 20, 180), Vector3(0, 1, 0));
 
 	//Initialize all meshes to NULL
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
@@ -149,6 +156,8 @@ void SceneGame::Init()
 	// Gameplay UI
 
 	// Player
+	meshList[GEO_PLAYER] = MeshBuilder::GenerateOBJ("Player Car", "OBJ//gray.obj");
+	meshList[GEO_PLAYER]->textureID = LoadTGA("image//gray.tga");
 
 	// Opponent
 
@@ -192,6 +201,63 @@ void SceneGame::Update(double dt)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
+
+	//Controls / Interactions / etcs.
+
+	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+
+	//Player Move Right 1 units
+	if (Application::IsKeyPressed('J') && delayTime >= 1.f)
+	{
+		if (Movement <= 6)
+		{
+			Movement += 6.0f;
+			delayTime = 0.f;
+		}
+	}
+
+	//Player MoveRight 1 units 
+	if (Application::IsKeyPressed('L') && delayTime >= 1.f)
+	{
+		if (Movement > -6)
+		{
+			Movement -= 6.0f;
+			delayTime = 0.f;
+		}
+	}
+	
+	//Player Jump
+	if (Application::IsKeyPressed('I'))
+	{
+		JumpPressed = true;
+	}
+	else
+	{
+		JumpPressed = false;
+	}
+
+	if (JumpPressed == true)
+	{
+		if (Jump < 5.0f)
+		{
+			Jump += (float)(50 * dt);
+
+		}
+	}
+	else
+	{
+		if (Jump > 0)
+		{
+			Jump -= (float)(50 * dt);
+		}
+	}
+
+	//Delay Time
+	if (delayTime <= 5.f)
+	{
+		delayTime += (float)(5.f * dt);
+	}
+	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 
 	camera.Update(dt);
 }
@@ -397,19 +463,44 @@ void SceneGame::Render()
 	//RenderMesh(meshList[GEO_LIGHTBALL], false);
 	//modelStack.PopMatrix();
 
+	////////// RENDER GAME MODELS HERE //////////
+
+	// Menu backdrop
+
+	// Menu Button
+
+	// Gameplay UI
+
+	// Player
+	Player();
+
+	// Opponent
+
+	// Coins
+
+	// Items
+
+	// Obstacles
+
+	// Track
+
+	// Others?
+
+	////////// RENDER GAME MODELS HERE //////////
+
 	//Skybox
-	//RenderSkybox();
+	RenderSkybox();
 
 	//Text in environment
 	/*modelStack.PushMatrix();
 	modelStack.Translate(63, 35.f, 50.0f);
 	modelStack.Rotate(-120, 0, 1, 0);
 	modelStack.Scale(2.0f, 2.0f, 2.0f);
-	RenderText(meshList[GEO_TEXT], "Do not launch our", Color(0, 1, 0));
+	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
 	modelStack.PopMatrix();*/
 
 	//Text on Screen
-	//RenderTextOnScreen(meshList[GEO_TEXT], "Press M to reset", Color(0, 1, 0), 2, 1, 1);
+	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
 }
 
 //Exit Function
@@ -426,5 +517,16 @@ void SceneGame::Exit()
 	}
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
+}
 
+void SceneGame::Player()
+{
+	modelStack.PushMatrix();
+	modelStack.Translate(-9, 0, 50.f);
+	modelStack.Rotate(0, 0, 1, 0);
+	modelStack.Scale(3, 3, 3);
+	modelStack.Translate(Movement, 0, 0);
+	modelStack.Translate(0, Jump, 0);
+	RenderMesh(meshList[GEO_PLAYER], true);
+	modelStack.PopMatrix();
 }

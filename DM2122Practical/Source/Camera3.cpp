@@ -40,7 +40,6 @@ void Camera3::Update(double dt)
 					{
 						if (target.z < 300)
 						{
-
 							if (target.z > -240)
 							{
 								position = position - right;
