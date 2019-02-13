@@ -12,6 +12,8 @@
 #include "MatrixStack.h"
 #include "Light.h"
 
+#include "Obstacle.h"
+
 class SceneGame : public Scene
 {
 	enum GEOMETRY_TYPE

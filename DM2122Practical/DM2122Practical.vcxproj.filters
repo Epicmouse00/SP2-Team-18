@@ -72,6 +72,9 @@
     <ClInclude Include="Source\Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Obstacle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -116,6 +119,9 @@
     <ClCompile Include="Source\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Obstacle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\SimpleVertexShader.vertexshader">
@@ -150,10 +156,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Image\color2.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\Floor.tga">
+    <Image Include="Image\back.tga">
       <Filter>Image</Filter>
     </Image>
     <Image Include="Image\bottom.tga">
@@ -162,76 +165,13 @@
     <Image Include="Image\front.tga">
       <Filter>Image</Filter>
     </Image>
-    <Image Include="Image\back.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\top.tga">
-      <Filter>Image</Filter>
-    </Image>
     <Image Include="Image\left.tga">
       <Filter>Image</Filter>
     </Image>
     <Image Include="Image\right.tga">
       <Filter>Image</Filter>
     </Image>
-    <Image Include="Image\console.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\calibri.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\platform2.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\crystalstand.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\crystal.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\ConsolePlatform.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\stair.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\Pillar.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\PlatformConsoleColor.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\PanelConsole.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\PlatformChair.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\LeverBase.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\Lever.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\SteeringStand.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\SteeringWheel.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\BoatModel.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\WingModel.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\Button.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\Missile.tga">
-      <Filter>Image</Filter>
-    </Image>
-    <Image Include="Image\Monitor.tga">
+    <Image Include="Image\top.tga">
       <Filter>Image</Filter>
     </Image>
   </ItemGroup>

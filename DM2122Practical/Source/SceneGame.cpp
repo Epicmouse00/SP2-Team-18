@@ -160,7 +160,7 @@ void SceneGame::Init()
 	meshList[GEO_OBSTACLE_DEFAULT]	= MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	4	x	1)
-	meshList[GEO_OBSTACLE_TALL]	= MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_TALL]		= MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	0.1	x	10)
 	meshList[GEO_OBSTACLE_LONG]		= MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 0.1f, 10.f);
