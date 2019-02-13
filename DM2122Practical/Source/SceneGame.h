@@ -163,14 +163,15 @@ private:
 	void		InitProjection();
 	void		InitObstacles(unsigned int noOfObstacles);
 
+	void		UpdateDelayTime(double dt);
 	void		UpdateCamMovement();
 	void		UpdateAppPolygon();
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
-	void		UpdateCursor();
+	void		UpdateMainMenuCursor();
 
 	void		RenderPlayer();
-	void		RenderButtons();
+	void		RenderMainMenuButtons();
 	void		RenderObstacles();
 	void		RenderSkybox();
 

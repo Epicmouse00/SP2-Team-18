@@ -43,6 +43,7 @@ void SceneGame::Init()
 
 void SceneGame::Update(double dt)
 {
+	UpdateDelayTime(dt);
 	UpdateAppPolygon();
 	//Controls / Interactions / etcs.
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
@@ -50,7 +51,7 @@ void SceneGame::Update(double dt)
 	UpdatePlayerJump(dt);
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 
-	UpdateCursor();
+	UpdateMainMenuCursor();
 
 	UpdateCamMovement();
 	camera.Update(dt);
@@ -84,8 +85,8 @@ void SceneGame::Render()
 
 	// Menu backdrop
 
-	// Menu Button
-	RenderButtons();
+	// MainMenu Button
+	RenderMainMenuButtons();
 
 	// Gameplay UI
 
@@ -342,6 +343,15 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 
 
 ////////// Update Methods //////////
+void SceneGame::UpdateDelayTime(double dt)
+{
+	//Delay Time
+	if (delayTime <= 5.f)
+	{
+		delayTime += (float)(5.f * dt);
+	}
+}
+
 void SceneGame::UpdateCamMovement()
 {
 	if (Application::IsKeyPressed('Z'))
@@ -372,60 +382,63 @@ void SceneGame::UpdateAppPolygon()
 
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
+	if (gameMode == E_GAME)
+	{
 	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
 
 	//Player Move Left 1st Column
-	if (Application::IsKeyPressed('J'))
-	{
-		if (Jump <= 0)
+		if (Application::IsKeyPressed('J'))
 		{
-			if (Movement < 6)
+			if (Jump <= 0)
 			{
-				Movement += (float)(50 * dt);
-			}
-			if (Movement > 7)
-			{
-				Movement -= (float)(50 * dt);
+				if (Movement < 6)
+				{
+					Movement += (float)(50 * dt);
+				}
+				if (Movement > 7)
+				{
+					Movement -= (float)(50 * dt);
+				}
 			}
 		}
-	}
-	//Player Move Right 2nd Column
-	if (Application::IsKeyPressed('H'))
-	{
-		if (Jump <= 0)
+		//Player Move Right 2nd Column
+		if (Application::IsKeyPressed('H'))
 		{
-			if (Movement < 12)
+			if (Jump <= 0)
 			{
-				Movement += (float)(50 * dt);
-			}
+				if (Movement < 12)
+				{
+					Movement += (float)(50 * dt);
+				}
 
+			}
 		}
-	}
 
-	//Player MoveRight 3rd Column
-	if (Application::IsKeyPressed('K'))
-	{
-		if (Jump <= 0)
+		//Player MoveRight 3rd Column
+		if (Application::IsKeyPressed('K'))
 		{
-			if (Movement > 0)
+			if (Jump <= 0)
 			{
-				Movement -= (float)(50 * dt);
-			}
-			if (Movement < -1)
-			{
-				Movement += (float)(50 * dt);
-				delayTime = 0;
+				if (Movement > 0)
+				{
+					Movement -= (float)(50 * dt);
+				}
+				if (Movement < -1)
+				{
+					Movement += (float)(50 * dt);
+					delayTime = 0;
+				}
 			}
 		}
-	}
-	//Player Move Right 4th Column
-	if (Application::IsKeyPressed('L'))
-	{
-		if (Jump <= 0)
+		//Player Move Right 4th Column
+		if (Application::IsKeyPressed('L'))
 		{
-			if (Movement > -6)
+			if (Jump <= 0)
 			{
-				Movement -= (float)(50 * dt);
+				if (Movement > -6)
+				{
+					Movement -= (float)(50 * dt);
+				}
 			}
 		}
 	}
@@ -433,69 +446,69 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 
 void SceneGame::UpdatePlayerJump(double dt)
 {
+	if (gameState == E_GAME)
+	{
 	//Player Jump
-	if (Application::IsKeyPressed('I'))
-	{
-		JumpPressed = true;
-	}
-	else
-	{
-		JumpPressed = false;
-	}
-
-	if (JumpPressed == true)
-	{
-		if (Jump < 5.0f)
+		if (Application::IsKeyPressed('I'))
 		{
-			Jump += (float)(50 * dt);
+			JumpPressed = true;
 		}
-	}
-	else
-	{
-		if (Jump > 0)
+		else
 		{
-			Jump -= (float)(50 * dt);
+			JumpPressed = false;
 		}
-	}
 
-	//Delay Time
-	if (delayTime <= 5.f)
-	{
-		delayTime += (float)(5.f * dt);
+		if (JumpPressed == true)
+		{
+			if (Jump < 5.0f)
+			{
+				Jump += (float)(50 * dt);
+			}
+		}
+		else
+		{
+			if (Jump > 0)
+			{
+				Jump -= (float)(50 * dt);
+			}
+		}
 	}
 }
 
-void SceneGame::UpdateCursor()
+void SceneGame::UpdateMainMenuCursor()
 {
-	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+	if (gameState == E_MAINMENU)
 	{
-		cursor.updatePositionIndex(-1);
-		delayTime = 0;
-	}
-
-	if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
-	{
-		cursor.updatePositionIndex(1);
-		delayTime = 0;
-	}
-
-	if (Application::IsKeyPressed(VK_SPACE))
-	{
-		delayTime = 0;
-		switch (cursor.getIndex())
+		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 		{
-		case 0:
-			//play (go to another menu)
-			break;
-		case 1:
-			//shop
-			break;
-		case 2:
-			//exit
-			exit = true;
-			break;
-		default:
-			break;
+			cursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		{
+			cursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_SPACE))
+		{
+			delayTime = 0;
+			switch (cursor.getIndex())
+			{
+			case 0:
+				//play (go to another menu)
+				break;
+			case 1:
+				//shop
+				break;
+			case 2:
+				//exit
+				exit = true;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -688,17 +701,20 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 
 void SceneGame::RenderPlayer()
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(-9, 0, 50.f);
-	modelStack.Rotate(0, 0, 1, 0);
-	modelStack.Scale(3, 3, 3);
-	modelStack.Translate(Movement, 0, 0);
-	modelStack.Translate(0, Jump, 0);
-	RenderMesh(meshList[GEO_PLAYER], true);
-	modelStack.PopMatrix();
+	if (gameState == E_GAME)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Rotate(0, 0, 1, 0);
+		modelStack.Scale(3, 3, 3);
+		modelStack.Translate(Movement, 0, 0);
+		modelStack.Translate(0, Jump, 0);
+		RenderMesh(meshList[GEO_PLAYER], true);
+		modelStack.PopMatrix();
+	}
 }
 
-void SceneGame::RenderButtons()
+void SceneGame::RenderMainMenuButtons()
 {
 	// Render menu buttons
 	if (gameState == E_MAINMENU)
@@ -752,7 +768,7 @@ void SceneGame::RenderButtons()
 void SceneGame::RenderObstacles()
 {
 	// Render obstacles
-	//if (gameState == E_GAME)
+	if (gameState == E_GAME)
 	{
 		for (size_t lane = 0; lane < 4; ++lane)
 		{
