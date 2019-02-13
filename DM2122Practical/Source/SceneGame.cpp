@@ -25,6 +25,8 @@ void SceneGame::Init()
 {
 	//Set Background Color
 	glClearColor(0.0f, 0.f, 0.4f, 0.0f);
+	//Set initial game state
+	gameState = E_MAINMENU;
 	//Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	//Enable back face culling
@@ -145,6 +147,7 @@ void SceneGame::Init()
 	// Menu backdrop
 
 	// Menu Button
+	meshList[GEO_PLAY] = MeshBuilder::GenerateQuad("PlayButton", Color(1, 1, 1), 1.f);
 
 	// Gameplay UI
 
@@ -402,6 +405,15 @@ void SceneGame::Render()
 	// Render Axes X Y Z
 	RenderMesh(meshList[GEO_AXES], false);
 
+
+	// Render menu buttons
+	if (gameState == E_MAINMENU)
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[GEO_PLAY], false);
+		modelStack.PopMatrix();
+	}
+
 	if (gameState == E_GAME)
 	{
 		for (size_t i = 0; i < Obstacle::getNoObstacle(); ++i)
@@ -410,7 +422,8 @@ void SceneGame::Render()
 			//modelStack.Translate(obstacleList[i].getX(), obstacleList[i].getY(), obstacleList[i].getZ(),);
 			modelStack.PopMatrix();
 		}
-	}
+  }
+
 
 	//Light 1
 	//modelStack.PushMatrix();
@@ -419,7 +432,7 @@ void SceneGame::Render()
 	//modelStack.PopMatrix();
 
 	//Skybox
-	//RenderSkybox();
+	RenderSkybox();
 
 	//Text in environment
 	/*modelStack.PushMatrix();
