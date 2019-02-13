@@ -4,11 +4,10 @@
 class Menu
 {
 private:
-	int		buttonIndex	= 0;
+	int	pageIndex;
 public:
 			Menu();
 			~Menu();
-	void	changeIndex(int direction);
-	int		outputCursorPosition();
+	void	changeIndex(int newScreenIndex);
 };
 #endif

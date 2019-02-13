@@ -65,7 +65,12 @@ void SceneGame::Update(double dt)
 
 	UpdatePlayerStrafe(dt);
 	UpdatePlayerJump(dt);
-	
+
+	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f)
+	{
+		
+	}
+  
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 
 	camera.Update(dt);
@@ -298,6 +303,10 @@ void SceneGame::InitMeshes()
 	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(0.2f, 0.2f, 0.2f), 1.f);
 	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(0.2f, 0.2f, 0.2f), 1.f);
 
+	// Menu cursor
+	meshList[GEO_CURSOR] = MeshBuilder::GenerateOBJ("Cursor", "OBJ//Cursor.obj");
+	meshList[GEO_CURSOR]->textureID = LoadTGA("image//Cursor texture.tga");
+
 	// Gameplay UI
 
 	// Player
@@ -390,6 +399,7 @@ void SceneGame::UpdatePlayerJump(double dt)
 		delayTime += (float)(5.f * dt);
 	}
 
+	//camera.Update(dt);
 }
 
 
@@ -617,6 +627,15 @@ void SceneGame::RenderButtons()
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], "Quit", Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Cursor
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5, 0.5, 0.5);
+		modelStack.Translate(3.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90, 1, 0, 0);
+		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}
 

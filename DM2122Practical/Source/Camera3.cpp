@@ -136,6 +136,7 @@ void Camera3::Update(double dt)
 		position = position - view.Normalized();
 		target = position + view;
 	}
+	
 
 	//Camera Movement
 	else if (Application::IsKeyPressed(VK_LEFT))
