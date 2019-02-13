@@ -157,6 +157,10 @@ void SceneGame::Init()
 	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(1, 1, 1), 1.f);
 	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(1, 1, 1), 1.f);
 
+	// Menu cursor
+	meshList[GEO_CURSOR] = MeshBuilder::GenerateOBJ("Cursor", "OBJ//Cursor.obj");
+	meshList[GEO_CURSOR]->textureID = LoadTGA("image//Cursor texture.tga");
+
 	// Gameplay UI
 
 	// Player
@@ -271,6 +275,11 @@ void SceneGame::Update(double dt)
 		}
 	}
 
+	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f)
+	{
+		
+	}
+
 	//Delay Time
 	if (delayTime <= 5.f)
 	{
@@ -278,7 +287,7 @@ void SceneGame::Update(double dt)
 	}
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 
-	camera.Update(dt);
+	//camera.Update(dt);
 }
 
 static const float SKYBOXSIZE = 2000.f;
@@ -501,6 +510,15 @@ void SceneGame::Render()
 		modelStack.Translate(0.f, -1.5f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
 		RenderMesh(meshList[GEO_QUIT], false);
+		modelStack.PopMatrix();
+
+		//Cursor
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5, 0.5, 0.5);
+		modelStack.Translate(3.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90, 1, 0, 0);
+		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}
 

@@ -13,6 +13,7 @@
 #include "Light.h"
 
 #include "Obstacle.h"
+#include "Cursor.h"
 
 class SceneGame : public Scene
 {
@@ -42,6 +43,7 @@ class SceneGame : public Scene
 
 		//OBJ Models
 		GEO_PLANE,
+		GEO_CURSOR,
 		GEO_PLAYER,
     
 		//Menu buttons

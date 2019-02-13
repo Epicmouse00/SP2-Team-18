@@ -2,7 +2,7 @@
 
 Menu::Menu()
 {
-	buttonIndex = 0;
+	pageIndex = 0;
 }
 
 Menu::~Menu()
@@ -10,19 +10,7 @@ Menu::~Menu()
 
 }
 
-void Menu::changeIndex(int direction)
+void Menu::changeIndex(int newPageIndex)
 {
-	if (direction > 0 && buttonIndex > 0)
-	{
-		buttonIndex -= direction;
-	}
-	else if (direction < 0 && buttonIndex < 2)
-	{
-		buttonIndex += direction;
-	}
-}
-
-int Menu::outputCursorPosition()
-{
-	return buttonIndex;
+	pageIndex = newPageIndex;
 }
