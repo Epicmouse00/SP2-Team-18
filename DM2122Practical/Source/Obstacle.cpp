@@ -1,6 +1,6 @@
 #include "Obstacle.h"
 
-int Obstacle::noObstacle = 0;
+unsigned int Obstacle::noObstacle = 0;
 
 Obstacle::Obstacle()
 {
@@ -47,7 +47,7 @@ float Obstacle::getZ()
 	return z;
 }
 
-int Obstacle::getNoObstacle()
+unsigned int Obstacle::getNoObstacle()
 {
 	return noObstacle;
 }

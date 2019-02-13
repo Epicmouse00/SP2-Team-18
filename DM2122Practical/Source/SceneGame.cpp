@@ -422,7 +422,7 @@ void SceneGame::Render()
 			//modelStack.Translate(obstacleList[i].getX(), obstacleList[i].getY(), obstacleList[i].getZ(),);
 			modelStack.PopMatrix();
 		}
-  }
+	}
 
 
 	//Light 1
