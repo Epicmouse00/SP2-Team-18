@@ -459,6 +459,7 @@ void SceneGame::RenderSkybox()
 {
 	//Left
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
@@ -467,6 +468,7 @@ void SceneGame::RenderSkybox()
 
 	//Right
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(-90, 0, 1, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
@@ -475,6 +477,7 @@ void SceneGame::RenderSkybox()
 
 	//Front
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
 	RenderMesh(meshList[GEO_FRONT], false);
@@ -482,6 +485,7 @@ void SceneGame::RenderSkybox()
 
 	//Back
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(180, 0, 1, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
@@ -490,6 +494,7 @@ void SceneGame::RenderSkybox()
 
 	//Top
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(90, 1, 0, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Rotate(90, 0, 0, 1);
@@ -499,6 +504,7 @@ void SceneGame::RenderSkybox()
 
 	//Bottom
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(-90, 1, 0, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Rotate(-90, 0, 0, 1);
