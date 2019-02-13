@@ -128,7 +128,7 @@ void SceneGame::Exit()
 
 bool SceneGame::getExit()
 {
-	return exit;
+	return b_exit;
 }
 
 
@@ -498,13 +498,14 @@ void SceneGame::UpdateMainMenuCursor()
 			{
 			case 0:
 				//play (go to another menu)
+				
 				break;
 			case 1:
 				//shop
 				break;
 			case 2:
 				//exit
-				exit = true;
+				b_exit = true;
 				break;
 			default:
 				break;

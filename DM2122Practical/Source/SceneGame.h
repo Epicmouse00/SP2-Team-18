@@ -182,7 +182,7 @@ private:
 	unsigned	m_parameters[U_TOTAL];
 
 	//Variables
-	bool exit = false;
+	bool b_exit = false;
 	const unsigned int numberOfRows = 100;
 	float Movement;
 	float Jump;
