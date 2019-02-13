@@ -73,11 +73,13 @@ void SceneGame::Update(double dt)
 	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 	{
 		cursor.updatePositionIndex(-1);
+		delayTime = 0;
 	}
 
 	if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
 	{
 		cursor.updatePositionIndex(1);
+		delayTime = 0;
 	}
   
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
@@ -198,6 +200,13 @@ void SceneGame::InitDefault()
 	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
 	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
 	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+
+	//Variables
+	Movement = 0;
+	Jump = 0;
+	delayTime = 0;
+
+	JumpPressed = false;
 }
 
 void SceneGame::InitLights()
@@ -229,13 +238,6 @@ void SceneGame::InitLights()
 	glUseProgram(m_programID);
 	// Get a handle for our "MVP" uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
-
-	//Variables
-	Movement = 0;
-	Jump = 0;
-	delayTime = 0;
-
-	JumpPressed = false;
 
 	//Initialize Light Parameters
 	//First Light
@@ -362,7 +364,7 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 				Obstacle temp;
 				temp.setX((lane * 18) - 27);
 				temp.setY(0);
-				temp.setZ(200 * row);
+				temp.setZ(200 * row + 250);
 				temp.setActive(true);
 				obstacleList[lane][row] = temp;
 			}
