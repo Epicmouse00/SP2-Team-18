@@ -37,52 +37,22 @@ void SceneGame::Init()
 	InitProjection();
 }
 
-static float ROT_LIMIT = 45.0f;
-static float SCALE_LIMIT = 5.0f;
+//static float ROT_LIMIT = 45.0f;
+//static float SCALE_LIMIT = 5.0f;
+//static const float LSPEED = 30.0f;
 
 //////////////////// Update function ////////////////////
 
 void SceneGame::Update(double dt)
 {
-	static const float LSPEED = 30.0f;
-
-	if (Application::IsKeyPressed('1'))
-	{
-		glEnable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('2'))
-	{
-		glDisable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('3'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	if (Application::IsKeyPressed('4'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-
+	UpdateAppPolygon();
 	//Controls / Interactions / etcs.
-
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
-
 	UpdatePlayerStrafe(dt);
 	UpdatePlayerJump(dt);
-
-	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
-	{
-		cursor.updatePositionIndex(-1);
-		delayTime = 0;
-	}
-
-	if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
-	{
-		cursor.updatePositionIndex(1);
-		delayTime = 0;
-	}
-  
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+
+	UpdateCursor();
 
 	camera.Update(dt);
 }
@@ -143,16 +113,7 @@ void SceneGame::Render()
 	// Others?
 
 	////////// RENDER GAME MODELS HERE //////////
-
-	//Text in environment
-	/*modelStack.PushMatrix();
-	modelStack.Translate(63, 35.f, 50.0f);
-	modelStack.Rotate(-120, 0, 1, 0);
-	modelStack.Scale(2.0f, 2.0f, 2.0f);
-	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
-	modelStack.PopMatrix();*/
-	//Text on Screen
-	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
+	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
 }
 
 //Exit Function
@@ -170,6 +131,12 @@ void SceneGame::Exit()
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
 }
+
+
+
+
+
+
 ////////// Init Methods //////////
 void SceneGame::InitDefault()
 {
@@ -373,7 +340,31 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 }
 
 
+
+
+
+
 ////////// Update Methods //////////
+void SceneGame::UpdateAppPolygon()
+{
+	if (Application::IsKeyPressed('1'))
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	if (Application::IsKeyPressed('2'))
+	{
+		glDisable(GL_CULL_FACE);
+	}
+	if (Application::IsKeyPressed('3'))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	if (Application::IsKeyPressed('4'))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+}
+
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
 	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
@@ -473,6 +464,24 @@ void SceneGame::UpdatePlayerJump(double dt)
 		delayTime += (float)(5.f * dt);
 	}
 }
+
+void SceneGame::UpdateCursor()
+{
+	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+	{
+		cursor.updatePositionIndex(-1);
+		delayTime = 0;
+	}
+
+	if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+	{
+		cursor.updatePositionIndex(1);
+		delayTime = 0;
+	}
+}
+
+
+
 
 
 
@@ -740,49 +749,4 @@ void SceneGame::RenderObstacles()
 			}
 		}
 	}
-  
-	//Light 1
-	//modelStack.PushMatrix();
-	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-	//RenderMesh(meshList[GEO_LIGHTBALL], false);
-	//modelStack.PopMatrix();
-
-	////////// RENDER GAME MODELS HERE //////////
-
-	// Menu backdrop
-
-	// Menu Button
-
-	// Gameplay UI
-
-	// Player
-	RenderPlayer();
-
-	// Opponent
-
-	// Coins
-
-	// Items
-
-	// Obstacles
-
-	// Track
-
-	// Others?
-
-	////////// RENDER GAME MODELS HERE //////////
-
-	//Skybox
-	RenderSkybox();
-
-	//Text in environment
-	/*modelStack.PushMatrix();
-	modelStack.Translate(63, 35.f, 50.0f);
-	modelStack.Rotate(-120, 0, 1, 0);
-	modelStack.Scale(2.0f, 2.0f, 2.0f);
-	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
-	modelStack.PopMatrix();*/
-
-	//Text on Screen
-	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
 }

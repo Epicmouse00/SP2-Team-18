@@ -162,8 +162,10 @@ private:
 	void		InitProjection();
 	void		InitObstacles(unsigned int noOfObstacles);
 
+	void		UpdateAppPolygon();
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
+	void		UpdateCursor();
 
 	void		RenderPlayer();
 	void		RenderButtons();
