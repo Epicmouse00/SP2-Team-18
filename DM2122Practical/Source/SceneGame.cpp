@@ -24,7 +24,7 @@ const unsigned int numberOfRows = 100;
 
 void SceneGame::Init()
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	InitDefault();
 	InitLights();
 	InitCamera();
@@ -324,14 +324,14 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 {
 	for (int lane = 0; lane < 4; ++lane)
 	{
-		for (int row = 0; row < noOfObstacles; ++row)
+		for (int row = 0; row < (int)noOfObstacles; ++row)
 		{
 			if (rand() % 2)
 			{
 				Obstacle temp;
-				temp.setX((lane * 18) - 27);
+				temp.setX(((float)lane * 18) - 27);
 				temp.setY(0);
-				temp.setZ(200 * row + 250);
+				temp.setZ(200 * (float)row + 250);
 				temp.setActive(true);
 				obstacleList[lane][row] = temp;
 			}
