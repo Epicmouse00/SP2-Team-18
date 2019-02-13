@@ -1,13 +1,15 @@
 #include "Obstacle.h"
 
-
+int Obstacle::noObstacle = 0;
 
 Obstacle::Obstacle()
 {
+	noObstacle++;
 }
 
 Obstacle::Obstacle(int obstacleType)
 {
+	noObstacle++;
 	this->obstacleType = obstacleType;
 }
 
@@ -43,4 +45,9 @@ float Obstacle::getY()
 float Obstacle::getZ()
 {
 	return z;
+}
+
+int Obstacle::getNoObstacle()
+{
+	return noObstacle;
 }

@@ -179,6 +179,8 @@ void SceneGame::Init()
 static float ROT_LIMIT = 45.0f;
 static float SCALE_LIMIT = 5.0f;
 
+//////////////////// Update function ////////////////////
+
 void SceneGame::Update(double dt)
 {
 	static const float LSPEED = 30.0f;
@@ -381,6 +383,8 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 //Temp Variables
 Mtx44 MVP, modelView, modelView_inverse_transpose;
 
+//////////////////// Render function ////////////////////
+
 void SceneGame::Render()
 {
 	//Clear color & depth buffer every frame 
@@ -397,6 +401,16 @@ void SceneGame::Render()
 
 	// Render Axes X Y Z
 	RenderMesh(meshList[GEO_AXES], false);
+
+	if (gameState == E_GAME)
+	{
+		for (size_t i = 0; i < Obstacle::getNoObstacle(); ++i)
+		{
+			modelStack.PushMatrix();
+			//modelStack.Translate(obstacleList[i].getX(), obstacleList[i].getY(), obstacleList[i].getZ(),);
+			modelStack.PopMatrix();
+		}
+	}
 
 	//Light 1
 	//modelStack.PushMatrix();

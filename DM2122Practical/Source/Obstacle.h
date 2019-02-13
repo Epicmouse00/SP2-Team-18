@@ -18,10 +18,12 @@ public:
 	float	getX();
 	float	getY();
 	float	getZ();
+	static int	getNoObstacle();
 private:
 	int		obstacleType	= O_DEFAULT;
-	int		x				= 0;
-	int		y				= 0;
-	int		z				= 0;
+	float	x				= 0;
+	float	y				= 0;
+	float	z				= 0;
+	static int noObstacle;
 };
 
