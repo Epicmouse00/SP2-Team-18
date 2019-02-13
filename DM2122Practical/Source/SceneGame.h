@@ -160,6 +160,7 @@ private:
 	void		InitCamera();
 	void		InitMeshes();
 	void		InitProjection();
+	void		InitObstacles(unsigned int noOfObstacles);
 
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
@@ -202,5 +203,6 @@ private:
 	int			gameMode = MODE_VS;
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
+	Obstacle	obstacleList[4][100] = { NULL };
 };
 #endif

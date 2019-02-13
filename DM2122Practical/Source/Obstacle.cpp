@@ -1,15 +1,11 @@
 #include "Obstacle.h"
 
-unsigned int Obstacle::noObstacle = 0;
-
 Obstacle::Obstacle()
 {
-	noObstacle++;
 }
 
 Obstacle::Obstacle(int obstacleType)
 {
-	noObstacle++;
 	this->obstacleType = obstacleType;
 }
 
@@ -32,6 +28,11 @@ void Obstacle::setZ(float z)
 	this->z = z;
 }
 
+void Obstacle::setActive(bool active)
+{
+	this->active = active;
+}
+
 float Obstacle::getX()
 {
 	return x;
@@ -47,7 +48,12 @@ float Obstacle::getZ()
 	return z;
 }
 
-unsigned int Obstacle::getNoObstacle()
+bool Obstacle::getActive()
 {
-	return noObstacle;
+	return active;
+}
+
+int Obstacle::getObstacleType()
+{
+	return obstacleType;
 }
