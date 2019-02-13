@@ -345,27 +345,6 @@ void SceneGame::InitProjection()
 ////////// Update Methods //////////
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
-	static const float LSPEED = 30.0f;
-
-	if (Application::IsKeyPressed('1'))
-	{
-		glEnable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('2'))
-	{
-		glDisable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('3'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	if (Application::IsKeyPressed('4'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-
-	//Controls / Interactions / etcs.
-
 	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
 
 	//Player Move Left 1st Column
@@ -424,6 +403,14 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 		}
 	}
 
+	
+	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
+
+	//camera.Update(dt);
+}
+
+void SceneGame::UpdatePlayerJump(double dt)
+{
 	//Player Jump
 	if (Application::IsKeyPressed('I'))
 	{
@@ -454,9 +441,6 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 	{
 		delayTime += (float)(5.f * dt);
 	}
-	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
-
-	//camera.Update(dt);
 }
 
 
@@ -726,7 +710,7 @@ void SceneGame::RenderObstacles()
 	// Gameplay UI
 
 	// Player
-	Player();
+	RenderPlayer();
 
 	// Opponent
 
@@ -755,32 +739,4 @@ void SceneGame::RenderObstacles()
 
 	//Text on Screen
 	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
-}
-
-//Exit Function
-void SceneGame::Exit()
-{
-	//Clean up
-
-	for (int i = 0; i < NUM_GEOMETRY; ++i)
-	{
-		if (meshList[i] != NULL)
-		{
-			delete meshList[i];
-		}
-	}
-	glDeleteVertexArrays(1, &m_vertexArrayID);
-	glDeleteProgram(m_programID);
-}
-
-void SceneGame::Player()
-{
-	modelStack.PushMatrix();
-	modelStack.Translate(-9, 0, 50.f);
-	modelStack.Rotate(0, 0, 1, 0);
-	modelStack.Scale(3, 3, 3);
-	modelStack.Translate(Movement, 0, 0);
-	modelStack.Translate(0, Jump, 0);
-	RenderMesh(meshList[GEO_PLAYER], true);
-	modelStack.PopMatrix();
 }
