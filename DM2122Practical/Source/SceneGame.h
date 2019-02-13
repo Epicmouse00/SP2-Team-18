@@ -47,9 +47,7 @@ class SceneGame : public Scene
 		GEO_PLAYER,
     
 		//Menu buttons
-		GEO_PLAY,
-		GEO_SHOP,
-		GEO_QUIT,
+		GEO_BUTTON,
 
 		//Keep this at the back
 		NUM_GEOMETRY
@@ -169,9 +167,11 @@ private:
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
 	void		UpdateMainMenuCursor();
+	void		UpdateGameChooseCursor();
 
 	void		RenderPlayer();
 	void		RenderMainMenuButtons();
+	void		RenderGameChooseButtons();
 	void		RenderObstacles();
 	void		RenderSkybox();
 
@@ -204,7 +204,7 @@ private:
 
 	Light		light[4];
 
-	Cursor		cursor;
+	//cursor defined in .cpp
 
 	int			gameState = E_MAINMENU;
 	int			gameMode = MODE_VS;

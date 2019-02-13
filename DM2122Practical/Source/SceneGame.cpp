@@ -11,6 +11,8 @@
 
 #include "LoadTGA.h"
 
+Cursor		mainMenuCursor(3.f, -3.f, 3);
+Cursor		gameChooseCursor(3.f, -3.f, 3);
 
 SceneGame::SceneGame()
 {
@@ -52,6 +54,7 @@ void SceneGame::Update(double dt)
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 
 	UpdateMainMenuCursor();
+	UpdateGameChooseCursor();
 
 	UpdateCamMovement();
 	camera.Update(dt);
@@ -81,12 +84,15 @@ void SceneGame::Render()
 	RenderSkybox();
 	RenderMesh(meshList[GEO_AXES], false);
 
-	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
+	////////// RE	NDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
 
 	// Menu backdrop
 
 	// MainMenu Button
 	RenderMainMenuButtons();
+
+	// GameChoose Button
+	RenderGameChooseButtons();
 
 	// Gameplay UI
 
@@ -275,9 +281,7 @@ void SceneGame::InitMeshes()
 	// Menu backdrop
 
 	// Menu Button
-	meshList[GEO_PLAY] = MeshBuilder::GenerateQuad("PlayButton", Color(0.2f, 0.2f, 0.2f), 1.f);
-	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(0.2f, 0.2f, 0.2f), 1.f);
-	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(0.2f, 0.2f, 0.2f), 1.f);
+	meshList[GEO_BUTTON] = MeshBuilder::GenerateQuad("Button", Color(0.2f, 0.2f, 0.2f), 1.f);
 
 	// Menu cursor
 	meshList[GEO_CURSOR] = MeshBuilder::GenerateOBJ("Cursor", "OBJ//Cursor.obj");
@@ -382,7 +386,7 @@ void SceneGame::UpdateAppPolygon()
 
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
-	if (gameMode == E_GAME)
+	if (gameState == E_GAME)
 	{
 	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
 
@@ -481,31 +485,74 @@ void SceneGame::UpdateMainMenuCursor()
 	{
 		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 		{
-			cursor.updatePositionIndex(-1);
+			mainMenuCursor.updatePositionIndex(-1);
 			delayTime = 0;
 		}
 
 		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
 		{
-			cursor.updatePositionIndex(1);
+			mainMenuCursor.updatePositionIndex(1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_SPACE))
+		if (Application::IsKeyPressed(VK_SPACE) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			switch (cursor.getIndex())
+			switch (mainMenuCursor.getIndex())
 			{
 			case 0:
 				//play (go to another menu)
-				
+				gameState = E_GAMECHOOSE;
 				break;
 			case 1:
 				//shop
+				//gameState = E_SHOP;
 				break;
 			case 2:
 				//exit
 				b_exit = true;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void SceneGame::UpdateGameChooseCursor()
+{
+	if (gameState == E_GAMECHOOSE)
+	{
+		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		{
+			gameChooseCursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		{
+			gameChooseCursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_SPACE) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			switch (gameChooseCursor.getIndex())
+			{
+			case 0:
+				//vs
+				gameState = E_GAME;
+				gameMode = MODE_VS;
+				break;
+			case 1:
+				//time
+				gameState = E_GAME;
+				gameMode = MODE_TIME;
+				break;
+			case 2:
+				//back
+				gameState = E_MAINMENU;
 				break;
 			default:
 				break;
@@ -725,7 +772,7 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.Translate(0.f, 1.5f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_PLAY], false);
+		RenderMesh(meshList[GEO_BUTTON], false);
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], "Play", Color(0.f, 0.9f, 1.f));
@@ -736,7 +783,7 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.Translate(0.f, 0.f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_SHOP], false);
+		RenderMesh(meshList[GEO_BUTTON], false);
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], "Shop", Color(0.f, 0.9f, 1.f));
@@ -747,16 +794,16 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.Translate(0.f, -1.5f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_QUIT], false);
+		RenderMesh(meshList[GEO_BUTTON], false);
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Quit", Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], "Quit", Color(1.f, 0.f, 0.f));
 		modelStack.PopMatrix();
 
 		//Cursor
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
-		modelStack.Translate(3.f, cursor.outputPosition(), 0.f);
+		modelStack.Translate(3.f, mainMenuCursor.outputPosition(), 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
@@ -764,6 +811,56 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.PopMatrix();
 	}
 
+}
+
+void SceneGame::RenderGameChooseButtons()
+{
+	// Render gamechoose buttons
+	if (gameState == E_GAMECHOOSE)
+	{
+		//VS mode
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale(0.25f, 0.5f, 0.5f);
+		modelStack.Translate(-1.2f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], "VS Mode", Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Time mode
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale(0.25f, 0.5f, 0.5f);
+		modelStack.Translate(-1.2f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], "Time Mode", Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Back
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale(0.25f, 0.5f, 0.5f);
+		modelStack.Translate(-1.2f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], "Back", Color(1.f, 0.f, 0.f));
+		modelStack.PopMatrix();
+
+		//Cursor
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(3.f, gameChooseCursor.outputPosition(), 0.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+	}
 }
 
 void SceneGame::RenderObstacles()
