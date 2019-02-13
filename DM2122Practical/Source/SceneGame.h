@@ -196,6 +196,8 @@ private:
 
 	Light		light[4];
 
+	Cursor		cursor;
+
 	int			gameState = E_MAINMENU;
 	int			gameMode = MODE_VS;
 	

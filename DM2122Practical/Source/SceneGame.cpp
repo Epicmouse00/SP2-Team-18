@@ -68,7 +68,12 @@ void SceneGame::Update(double dt)
 
 	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 	{
-		
+		cursor.updatePositionIndex(-1);
+	}
+
+	if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+	{
+		cursor.updatePositionIndex(1);
 	}
   
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
@@ -673,7 +678,8 @@ void SceneGame::RenderButtons()
 		//Cursor
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5, 0.5, 0.5);
-		modelStack.Translate(3.f, 0.f, 0.f);
+		modelStack.Translate(3.f, cursor.outputPosition(), 0.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90, 1, 0, 0);
 		RenderMesh(meshList[GEO_CURSOR], false);
