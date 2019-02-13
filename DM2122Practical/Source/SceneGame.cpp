@@ -25,8 +25,6 @@ void SceneGame::Init()
 {
 	//Set Background Color
 	glClearColor(0.0f, 0.f, 0.4f, 0.0f);
-	//Set initial game state
-	gameState = E_MAINMENU;
 	//Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	//Enable back face culling
@@ -108,7 +106,7 @@ void SceneGame::Init()
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
 	//Initialize camera settings
-	camera.Init(Vector3(0, 20, -100), Vector3(0, 45, 180), Vector3(0, 1, 0));
+	camera.Init(Vector3(0, 1.5, -10), Vector3(0, 0, 180), Vector3(0, 1, 0));
 
 	//Initialize all meshes to NULL
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
@@ -148,6 +146,8 @@ void SceneGame::Init()
 
 	// Menu Button
 	meshList[GEO_PLAY] = MeshBuilder::GenerateQuad("PlayButton", Color(1, 1, 1), 1.f);
+	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(1, 1, 1), 1.f);
+	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(1, 1, 1), 1.f);
 
 	// Gameplay UI
 
@@ -173,6 +173,12 @@ void SceneGame::Init()
 	// Others?
 
 	////////// ADD GAME MODELS HERE //////////
+	
+
+	// Set initial game state
+	gameState = E_MAINMENU;
+
+
 
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
@@ -409,11 +415,30 @@ void SceneGame::Render()
 	// Render menu buttons
 	if (gameState == E_MAINMENU)
 	{
+		//Play
 		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
 		RenderMesh(meshList[GEO_PLAY], false);
+		modelStack.PopMatrix();
+
+		//Shop
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
+		RenderMesh(meshList[GEO_SHOP], false);
+		modelStack.PopMatrix();
+
+		//Quit
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
+		RenderMesh(meshList[GEO_QUIT], false);
 		modelStack.PopMatrix();
 	}
 
+
+	// Render obstacles
 	if (gameState == E_GAME)
 	{
 		for (size_t i = 0; i < Obstacle::getNoObstacle(); ++i)
