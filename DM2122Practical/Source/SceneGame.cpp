@@ -223,28 +223,64 @@ void SceneGame::Update(double dt)
 
 	//Controls / Interactions / etcs.
 
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
 
-	//Player Move Right 1 units
-	if (Application::IsKeyPressed('J') && delayTime >= 1.f)
+	//Player Move Left 1st Column
+	if (Application::IsKeyPressed('J'))
 	{
-		if (Movement <= 6)
+		if (Jump <= 0)
 		{
-			Movement += 6.0f;
-			delayTime = 0.f;
+			if (Movement < 6)
+			{
+				Movement += (float)(50 * dt);
+			}
+			if (Movement > 7)
+			{
+				Movement -= (float)(50 * dt);
+			}
+		}
+	}
+	//Player Move Right 2nd Column
+	if (Application::IsKeyPressed('H'))
+	{
+		if (Jump <= 0)
+		{
+			if (Movement < 12)
+			{
+				Movement += (float)(50 * dt);
+			}
+
 		}
 	}
 
-	//Player MoveRight 1 units 
-	if (Application::IsKeyPressed('L') && delayTime >= 1.f)
+	//Player MoveRight 3rd Column
+	if (Application::IsKeyPressed('K'))
 	{
-		if (Movement > -6)
+		if (Jump <= 0)
 		{
-			Movement -= 6.0f;
-			delayTime = 0.f;
+			if (Movement > 0)
+			{
+				Movement -= (float)(50 * dt);
+			}
+			if (Movement < -1)
+			{
+				Movement += (float)(50 * dt);
+				delayTime = 0;
+			}
 		}
 	}
-	
+	//Player Move Right 4th Column
+	if (Application::IsKeyPressed('L'))
+	{
+		if (Jump <= 0)
+		{
+			if (Movement > -6)
+			{
+				Movement -= (float)(50 * dt);
+			}
+		}
+	}
+
 	//Player Jump
 	if (Application::IsKeyPressed('I'))
 	{
@@ -276,7 +312,7 @@ void SceneGame::Update(double dt)
 	{
 		delayTime += (float)(5.f * dt);
 	}
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
 
 	camera.Update(dt);
 }
@@ -560,7 +596,7 @@ void SceneGame::Render()
 	modelStack.PopMatrix();*/
 
 	//Text on Screen
-	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
+	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
 }
 
 //Exit Function
