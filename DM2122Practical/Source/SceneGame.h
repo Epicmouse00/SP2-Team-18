@@ -163,6 +163,7 @@ private:
 	void		InitProjection();
 	void		InitObstacles(unsigned int noOfObstacles);
 
+	void		UpdateCamMovement();
 	void		UpdateAppPolygon();
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
@@ -181,6 +182,7 @@ private:
 
 	//Variables
 	bool exit = false;
+	const unsigned int numberOfRows = 100;
 	float Movement;
 	float Jump;
 	float delayTime;

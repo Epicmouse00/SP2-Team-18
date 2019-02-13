@@ -5,6 +5,8 @@
 
 class Camera3 : public Camera
 {
+private:
+	bool active = false;
 public:
 	//Vector3 position;
 	//Vector3 target;
@@ -20,6 +22,8 @@ public:
 	virtual void	Init(const Vector3& pos, const Vector3& target, const Vector3& up);
 	virtual void	Update(double dt);
 	virtual void	Reset();
+	virtual void	Enable();
+	virtual void	Disable();
 };
 
 #endif

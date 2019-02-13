@@ -20,8 +20,6 @@ SceneGame::~SceneGame()
 {
 }
 
-const unsigned int numberOfRows = 100;
-
 void SceneGame::Init()
 {
 	srand((unsigned int)time(NULL));
@@ -54,6 +52,7 @@ void SceneGame::Update(double dt)
 
 	UpdateCursor();
 
+	UpdateCamMovement();
 	camera.Update(dt);
 }
 
@@ -343,6 +342,14 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 
 
 ////////// Update Methods //////////
+void SceneGame::UpdateCamMovement()
+{
+	if (Application::IsKeyPressed('Z'))
+		camera.Enable();
+	if (Application::IsKeyPressed('X'))
+		camera.Disable();
+}
+
 void SceneGame::UpdateAppPolygon()
 {
 	if (Application::IsKeyPressed('1'))
@@ -477,12 +484,18 @@ void SceneGame::UpdateCursor()
 		delayTime = 0;
 		switch (cursor.getIndex())
 		{
+		case 0:
+			//play (go to another menu)
+			break;
 		case 1:
-			//choose beetween vs or time
-		case 2:
 			//shop
-		case 3:
+			break;
+		case 2:
+			//exit
 			exit = true;
+			break;
+		default:
+			break;
 		}
 	}
 }
