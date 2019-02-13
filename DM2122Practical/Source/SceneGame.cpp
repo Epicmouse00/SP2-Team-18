@@ -345,29 +345,86 @@ void SceneGame::InitProjection()
 ////////// Update Methods //////////
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
-	//Player Move Right 1 units
-	if (Application::IsKeyPressed('J') && delayTime >= 1.f)
+	static const float LSPEED = 30.0f;
+
+	if (Application::IsKeyPressed('1'))
 	{
-		if (Movement <= 6)
+		glEnable(GL_CULL_FACE);
+	}
+	if (Application::IsKeyPressed('2'))
+	{
+		glDisable(GL_CULL_FACE);
+	}
+	if (Application::IsKeyPressed('3'))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	if (Application::IsKeyPressed('4'))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	//Controls / Interactions / etcs.
+
+	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
+
+	//Player Move Left 1st Column
+	if (Application::IsKeyPressed('J'))
+	{
+		if (Jump <= 0)
 		{
-			Movement += 6.0f;
-			delayTime = 0.f;
+			if (Movement < 6)
+			{
+				Movement += (float)(50 * dt);
+			}
+			if (Movement > 7)
+			{
+				Movement -= (float)(50 * dt);
+			}
+		}
+	}
+	//Player Move Right 2nd Column
+	if (Application::IsKeyPressed('H'))
+	{
+		if (Jump <= 0)
+		{
+			if (Movement < 12)
+			{
+				Movement += (float)(50 * dt);
+			}
+
 		}
 	}
 
-	//Player MoveRight 1 units 
-	if (Application::IsKeyPressed('L') && delayTime >= 1.f)
+	//Player MoveRight 3rd Column
+	if (Application::IsKeyPressed('K'))
 	{
-		if (Movement > -6)
+		if (Jump <= 0)
 		{
-			Movement -= 6.0f;
-			delayTime = 0.f;
+			if (Movement > 0)
+			{
+				Movement -= (float)(50 * dt);
+			}
+			if (Movement < -1)
+			{
+				Movement += (float)(50 * dt);
+				delayTime = 0;
+			}
 		}
 	}
-}
+	//Player Move Right 4th Column
+	if (Application::IsKeyPressed('L'))
+	{
+		if (Jump <= 0)
+		{
+			if (Movement > -6)
+			{
+				Movement -= (float)(50 * dt);
+			}
+		}
+	}
 
-void SceneGame::UpdatePlayerJump(double dt)
-{
+	//Player Jump
 	if (Application::IsKeyPressed('I'))
 	{
 		JumpPressed = true;
@@ -382,7 +439,6 @@ void SceneGame::UpdatePlayerJump(double dt)
 		if (Jump < 5.0f)
 		{
 			Jump += (float)(50 * dt);
-
 		}
 	}
 	else
@@ -398,6 +454,7 @@ void SceneGame::UpdatePlayerJump(double dt)
 	{
 		delayTime += (float)(5.f * dt);
 	}
+	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
 
 	//camera.Update(dt);
 }
@@ -653,4 +710,77 @@ void SceneGame::RenderObstacles()
 			modelStack.PopMatrix();
 		}
 	}
+  
+	//Light 1
+	//modelStack.PushMatrix();
+	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
+	//RenderMesh(meshList[GEO_LIGHTBALL], false);
+	//modelStack.PopMatrix();
+
+	////////// RENDER GAME MODELS HERE //////////
+
+	// Menu backdrop
+
+	// Menu Button
+
+	// Gameplay UI
+
+	// Player
+	Player();
+
+	// Opponent
+
+	// Coins
+
+	// Items
+
+	// Obstacles
+
+	// Track
+
+	// Others?
+
+	////////// RENDER GAME MODELS HERE //////////
+
+	//Skybox
+	RenderSkybox();
+
+	//Text in environment
+	/*modelStack.PushMatrix();
+	modelStack.Translate(63, 35.f, 50.0f);
+	modelStack.Rotate(-120, 0, 1, 0);
+	modelStack.Scale(2.0f, 2.0f, 2.0f);
+	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
+	modelStack.PopMatrix();*/
+
+	//Text on Screen
+	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
+}
+
+//Exit Function
+void SceneGame::Exit()
+{
+	//Clean up
+
+	for (int i = 0; i < NUM_GEOMETRY; ++i)
+	{
+		if (meshList[i] != NULL)
+		{
+			delete meshList[i];
+		}
+	}
+	glDeleteVertexArrays(1, &m_vertexArrayID);
+	glDeleteProgram(m_programID);
+}
+
+void SceneGame::Player()
+{
+	modelStack.PushMatrix();
+	modelStack.Translate(-9, 0, 50.f);
+	modelStack.Rotate(0, 0, 1, 0);
+	modelStack.Scale(3, 3, 3);
+	modelStack.Translate(Movement, 0, 0);
+	modelStack.Translate(0, Jump, 0);
+	RenderMesh(meshList[GEO_PLAYER], true);
+	modelStack.PopMatrix();
 }
