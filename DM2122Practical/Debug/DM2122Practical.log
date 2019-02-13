@@ -1,8 +1,0 @@
-﻿  Application.cpp
-  Camera3.cpp
-  Cursor.cpp
-  Menu.cpp
-  SceneGame.cpp
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  DM2122Practical.vcxproj -> C:\Users\Jeremy Yeo\source\repos\SP2-Team-18\Debug\DM2122Practical.exe
