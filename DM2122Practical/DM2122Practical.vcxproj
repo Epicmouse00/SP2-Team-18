@@ -103,6 +103,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\glew\include;$(SolutionDir)\glfw\include;$(SolutionDir)\Common\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -197,6 +198,7 @@
     <Image Include="Image\back.tga" />
     <Image Include="Image\bottom.tga" />
     <Image Include="Image\front.tga" />
+    <Image Include="Image\gray.tga" />
     <Image Include="Image\left.tga" />
     <Image Include="Image\right.tga" />
     <Image Include="Image\top.tga" />

@@ -42,7 +42,8 @@ class SceneGame : public Scene
 
 		//OBJ Models
 		GEO_PLANE,
-
+		GEO_PLAYER,
+    
 		//Menu buttons
 		GEO_PLAY,
 		GEO_SHOP,
@@ -151,6 +152,7 @@ public:
 	virtual void	Render();
 	virtual void	Exit();
 
+	void Player();
 private:
 
 	unsigned	m_vertexArrayID;
@@ -158,6 +160,13 @@ private:
 
 	unsigned	m_programID;
 	unsigned	m_parameters[U_TOTAL];
+
+	//Variables
+	float Movement;
+	float Jump;
+	float delayTime;
+
+	bool JumpPressed;
 
 	//Skybox
 	void		RenderSkybox();
