@@ -152,8 +152,8 @@ public:
 	virtual void	Render();
 	virtual void	Exit();
 
-	void Player();
 private:
+	void			RenderPlayer();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];

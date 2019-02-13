@@ -153,9 +153,9 @@ void SceneGame::Init()
 	// Menu backdrop
 
 	// Menu Button
-	meshList[GEO_PLAY] = MeshBuilder::GenerateQuad("PlayButton", Color(1, 1, 1), 1.f);
-	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(1, 1, 1), 1.f);
-	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(1, 1, 1), 1.f);
+	meshList[GEO_PLAY] = MeshBuilder::GenerateQuad("PlayButton", Color(0.2f, 0.2f, 0.2f), 1.f);
+	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(0.2f, 0.2f, 0.2f), 1.f);
+	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(0.2f, 0.2f, 0.2f), 1.f);
 
 	// Gameplay UI
 
@@ -475,6 +475,9 @@ void SceneGame::Render()
 	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
+	//Skybox
+	RenderSkybox();
+
 	// Render Axes X Y Z
 	RenderMesh(meshList[GEO_AXES], false);
 
@@ -486,21 +489,33 @@ void SceneGame::Render()
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 1.5f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_PLAY], false);
+		modelStack.Scale(0.25f, 0.5f, 0.5f);
+		modelStack.Translate(-1.2f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], "Play", Color(0, 0.9, 1));
 		modelStack.PopMatrix();
 
 		//Shop
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 0.f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_SHOP], false);
+		modelStack.Scale(0.25f, 0.5f, 0.5f);
+		modelStack.Translate(-1.2f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], "Shop", Color(0, 0.9, 1));
 		modelStack.PopMatrix();
 
 		//Quit
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
 		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_QUIT], false);
+		modelStack.Scale(0.25f, 0.5f, 0.5f);
+		modelStack.Translate(-1.2f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], "Quit", Color(0, 0.9, 1));
 		modelStack.PopMatrix();
 	}
 
@@ -532,7 +547,7 @@ void SceneGame::Render()
 	// Gameplay UI
 
 	// Player
-	Player();
+	RenderPlayer();
 
 	// Opponent
 
@@ -548,9 +563,6 @@ void SceneGame::Render()
 
 	////////// RENDER GAME MODELS HERE //////////
 
-	//Skybox
-	RenderSkybox();
-
 	//Text in environment
 	/*modelStack.PushMatrix();
 	modelStack.Translate(63, 35.f, 50.0f);
@@ -558,7 +570,6 @@ void SceneGame::Render()
 	modelStack.Scale(2.0f, 2.0f, 2.0f);
 	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
 	modelStack.PopMatrix();*/
-
 	//Text on Screen
 	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
 }
@@ -579,7 +590,7 @@ void SceneGame::Exit()
 	glDeleteProgram(m_programID);
 }
 
-void SceneGame::Player()
+void SceneGame::RenderPlayer()
 {
 	modelStack.PushMatrix();
 	modelStack.Translate(-9, 0, 50.f);
