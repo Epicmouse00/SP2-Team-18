@@ -114,31 +114,31 @@ void SceneGame::Init()
 		meshList[i] = NULL;
 	}
 
-	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
-	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("Plane", Color(1, 1, 1), 1);
-	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Plane", Color(0, 0, 0), 50);
+	meshList[GEO_AXES]		= MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
+	meshList[GEO_QUAD]		= MeshBuilder::GenerateQuad("Plane", Color(1, 1, 1), 1);
+	meshList[GEO_PLANE]		= MeshBuilder::GenerateQuad("Plane", Color(0, 0, 0), 50);
 
 	//TEXT
-	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXT]		= MeshBuilder::GenerateText("text", 16, 16);
 
 	//Skybox
-	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("SkyFront", Color(1, 1, 1), 1.f);
-	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("SkyBack", Color(1, 1, 1), 1.f);
-	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("SkyTop", Color(1, 1, 1), 1.f);
-	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("SkyLeft", Color(1, 1, 1), 1.f);
-	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("SkyRight", Color(1, 1, 1), 1.f);
-	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("SkyBottom", Color(1, 1, 1), 1.f);
+	meshList[GEO_FRONT]		= MeshBuilder::GenerateQuad("SkyFront", Color(1, 1, 1), 1.f);
+	meshList[GEO_BACK]		= MeshBuilder::GenerateQuad("SkyBack", Color(1, 1, 1), 1.f);
+	meshList[GEO_TOP]		= MeshBuilder::GenerateQuad("SkyTop", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEFT]		= MeshBuilder::GenerateQuad("SkyLeft", Color(1, 1, 1), 1.f);
+	meshList[GEO_RIGHT]		= MeshBuilder::GenerateQuad("SkyRight", Color(1, 1, 1), 1.f);
+	meshList[GEO_BOTTOM]	= MeshBuilder::GenerateQuad("SkyBottom", Color(1, 1, 1), 1.f);
 	
 	//Texture Load
-	meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
+	meshList[GEO_TEXT]->textureID	= LoadTGA("Image//calibri.tga");
 
 	//Skybox
-	meshList[GEO_FRONT]->textureID = LoadTGA("Image//front.tga");
-	meshList[GEO_BACK]->textureID = LoadTGA("Image//back.tga");
-	meshList[GEO_TOP]->textureID = LoadTGA("Image//top.tga");
-	meshList[GEO_LEFT]->textureID = LoadTGA("Image//left.tga");
-	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//right.tga");
-	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//bottom.tga");
+	meshList[GEO_FRONT]->textureID	= LoadTGA("Image//front.tga");
+	meshList[GEO_BACK]->textureID	= LoadTGA("Image//back.tga");
+	meshList[GEO_TOP]->textureID	= LoadTGA("Image//top.tga");
+	meshList[GEO_LEFT]->textureID	= LoadTGA("Image//left.tga");
+	meshList[GEO_RIGHT]->textureID	= LoadTGA("Image//right.tga");
+	meshList[GEO_BOTTOM]->textureID	= LoadTGA("Image//bottom.tga");
 
 	////////// ADD GAME MODELS HERE //////////
 
@@ -156,7 +156,14 @@ void SceneGame::Init()
 
 	// Items
 
-	// Obstacles
+	// Obstacles (1	x	1	x	1)
+	meshList[GEO_OBSTACLE_DEFAULT]	= MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
+
+	// Obstacles (1	x	4	x	1)
+	meshList[GEO_OBSTACLE_TALL]		= MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
+
+	// Obstacles (1	x	0.1	x	10)
+	meshList[GEO_OBSTACLE_LONG]		= MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 0.1f, 10.f);
 
 	// Track
 
