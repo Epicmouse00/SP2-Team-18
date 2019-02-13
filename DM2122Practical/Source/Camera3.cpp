@@ -30,6 +30,7 @@ void Camera3::Update(double dt)
 	//Movement
 	if (Application::IsKeyPressed('A'))
 	{
+		/*
 		if (target.x < 110)
 		{
 			if (target.x > -110)
@@ -40,7 +41,6 @@ void Camera3::Update(double dt)
 					{
 						if (target.z < 300)
 						{
-
 							if (target.z > -240)
 							{
 								position = position - right;
@@ -51,9 +51,13 @@ void Camera3::Update(double dt)
 				}
 			}
 		}
+		*/
+		position = position - right;
+		target = position + view;
 	}
 	if (Application::IsKeyPressed('D'))
 	{
+		/*
 		if (target.x < 110)
 		{
 			if (target.x > -110)
@@ -74,9 +78,13 @@ void Camera3::Update(double dt)
 				}
 			}
 		}
+		*/
+		position = position + right;
+		target = position + view;
 	}
 	if (Application::IsKeyPressed('W'))
 	{
+		/*
 		if (target.x < 110)
 		{
 			if (target.x > -110)
@@ -97,9 +105,13 @@ void Camera3::Update(double dt)
 				}
 			}
 		}
+		*/
+		position = position + view.Normalized();
+		target = position + view;
 	}
 	if (Application::IsKeyPressed('S'))
 	{
+		/*
 		if (target.x < 100)
 		{
 			if (target.x > -110)
@@ -120,7 +132,11 @@ void Camera3::Update(double dt)
 				}
 			}
 		}
+		*/
+		position = position - view.Normalized();
+		target = position + view;
 	}
+	
 
 	//Camera Movement
 	else if (Application::IsKeyPressed(VK_LEFT))

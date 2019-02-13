@@ -12,6 +12,9 @@
 #include "MatrixStack.h"
 #include "Light.h"
 
+#include "Obstacle.h"
+#include "Cursor.h"
+
 class SceneGame : public Scene
 {
 	enum GEOMETRY_TYPE
@@ -33,9 +36,23 @@ class SceneGame : public Scene
 		//Text
 		GEO_TEXT,
 
+		//GAME MODELS
+		GEO_OBSTACLE_DEFAULT,
+		GEO_OBSTACLE_TALL,
+		GEO_OBSTACLE_LONG,
+
 		//OBJ Models
 		GEO_PLANE,
-		NUM_GEOMETRY,
+		GEO_CURSOR,
+		GEO_PLAYER,
+    
+		//Menu buttons
+		GEO_PLAY,
+		GEO_SHOP,
+		GEO_QUIT,
+
+		//Keep this at the back
+		NUM_GEOMETRY
 	};
 
 	enum UNIFORM_TYPE
@@ -138,6 +155,19 @@ public:
 	virtual void	Exit();
 
 private:
+	void		InitDefault();
+	void		InitLights();
+	void		InitCamera();
+	void		InitMeshes();
+	void		InitProjection();
+
+	void		UpdatePlayerStrafe(double dt);
+	void		UpdatePlayerJump(double dt);
+
+	void		RenderPlayer();
+	void		RenderButtons();
+	void		RenderObstacles();
+	void		RenderSkybox();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -145,8 +175,14 @@ private:
 	unsigned	m_programID;
 	unsigned	m_parameters[U_TOTAL];
 
+	//Variables
+	float Movement;
+	float Jump;
+	float delayTime;
+
+	bool JumpPressed;
+
 	//Skybox
-	void		RenderSkybox();
 
 	//Text
 	void		RenderText(Mesh* mesh, std::string text, Color color);
