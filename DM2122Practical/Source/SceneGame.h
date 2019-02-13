@@ -153,6 +153,7 @@ public:
 	virtual void	Update(double dt);
 	virtual void	Render();
 	virtual void	Exit();
+	virtual bool	getExit();
 
 private:
 	void		InitDefault();
@@ -179,6 +180,7 @@ private:
 	unsigned	m_parameters[U_TOTAL];
 
 	//Variables
+	bool exit = false;
 	float Movement;
 	float Jump;
 	float delayTime;

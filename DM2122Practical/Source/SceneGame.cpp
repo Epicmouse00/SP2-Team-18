@@ -81,12 +81,6 @@ void SceneGame::Render()
 	RenderSkybox();
 	RenderMesh(meshList[GEO_AXES], false);
 
-	//Light 1
-	//modelStack.PushMatrix();
-	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-	//RenderMesh(meshList[GEO_LIGHTBALL], false);
-	//modelStack.PopMatrix();
-
 	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
 
 	// Menu backdrop
@@ -132,6 +126,10 @@ void SceneGame::Exit()
 	glDeleteProgram(m_programID);
 }
 
+bool SceneGame::getExit()
+{
+	return exit;
+}
 
 
 
@@ -424,11 +422,6 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 			}
 		}
 	}
-
-	
-	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
-
-	//camera.Update(dt);
 }
 
 void SceneGame::UpdatePlayerJump(double dt)
@@ -477,6 +470,20 @@ void SceneGame::UpdateCursor()
 	{
 		cursor.updatePositionIndex(1);
 		delayTime = 0;
+	}
+
+	if (Application::IsKeyPressed(VK_SPACE))
+	{
+		delayTime = 0;
+		switch (cursor.getIndex())
+		{
+		case 1:
+			//choose beetween vs or time
+		case 2:
+			//shop
+		case 3:
+			exit = true;
+		}
 	}
 }
 
@@ -718,11 +725,11 @@ void SceneGame::RenderButtons()
 
 		//Cursor
 		modelStack.PushMatrix();
-		modelStack.Scale(0.5, 0.5, 0.5);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Translate(3.f, cursor.outputPosition(), 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
-		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}

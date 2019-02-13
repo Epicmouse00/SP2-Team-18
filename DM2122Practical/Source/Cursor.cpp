@@ -3,7 +3,7 @@
 Cursor::Cursor()
 {
 	initialPosition = 3.0f;
-	positionIndex = 0.f;
+	positionIndex = 0;
 }
 
 Cursor::~Cursor()
@@ -27,4 +27,9 @@ void Cursor::updatePositionIndex(int direction)
 float Cursor::outputPosition()
 {
 	return initialPosition + (positionIndex * -3.f);
+}
+
+int Cursor::getIndex()
+{
+	return positionIndex;
 }
