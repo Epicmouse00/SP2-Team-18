@@ -13,6 +13,7 @@
 #include "Light.h"
 
 #include "Obstacle.h"
+#include "Cursor.h"
 
 class SceneGame : public Scene
 {
@@ -42,6 +43,7 @@ class SceneGame : public Scene
 
 		//OBJ Models
 		GEO_PLANE,
+		GEO_CURSOR,
 		GEO_PLAYER,
     
 		//Menu buttons
@@ -152,8 +154,20 @@ public:
 	virtual void	Render();
 	virtual void	Exit();
 
-	void Player();
 private:
+	void		InitDefault();
+	void		InitLights();
+	void		InitCamera();
+	void		InitMeshes();
+	void		InitProjection();
+
+	void		UpdatePlayerStrafe(double dt);
+	void		UpdatePlayerJump(double dt);
+
+	void		RenderPlayer();
+	void		RenderButtons();
+	void		RenderObstacles();
+	void		RenderSkybox();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -169,7 +183,6 @@ private:
 	bool JumpPressed;
 
 	//Skybox
-	void		RenderSkybox();
 
 	//Text
 	void		RenderText(Mesh* mesh, std::string text, Color color);
