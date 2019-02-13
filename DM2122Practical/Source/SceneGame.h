@@ -33,6 +33,11 @@ class SceneGame : public Scene
 		//Text
 		GEO_TEXT,
 
+		//GAME MODELS
+		GEO_OBSTACLE_DEFAULT,
+		GEO_OBSTACLE_TALL,
+		GEO_OBSTACLE_LONG,
+
 		//OBJ Models
 		GEO_PLANE,
 		NUM_GEOMETRY,
