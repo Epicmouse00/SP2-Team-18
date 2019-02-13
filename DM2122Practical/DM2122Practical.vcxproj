@@ -157,6 +157,7 @@
     <ClInclude Include="Source\Menu.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\Obstacle.h" />
     <ClInclude Include="Source\Saving.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneGame.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Source\Menu.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\Obstacle.cpp" />
     <ClCompile Include="Source\Saving.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -194,34 +196,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Image\back.tga" />
-    <Image Include="Image\BoatModel.tga" />
     <Image Include="Image\bottom.tga" />
-    <Image Include="Image\Button.tga" />
-    <Image Include="Image\calibri.tga" />
-    <Image Include="Image\color2.tga" />
-    <Image Include="Image\console.tga" />
-    <Image Include="Image\ConsolePlatform.tga" />
-    <Image Include="Image\crystal.tga" />
-    <Image Include="Image\crystalstand.tga" />
-    <Image Include="Image\Floor.tga" />
     <Image Include="Image\front.tga" />
     <Image Include="Image\gray.tga" />
     <Image Include="Image\left.tga" />
-    <Image Include="Image\Lever.tga" />
-    <Image Include="Image\LeverBase.tga" />
-    <Image Include="Image\Missile.tga" />
-    <Image Include="Image\Monitor.tga" />
-    <Image Include="Image\PanelConsole.tga" />
-    <Image Include="Image\Pillar.tga" />
-    <Image Include="Image\platform2.tga" />
-    <Image Include="Image\PlatformChair.tga" />
-    <Image Include="Image\PlatformConsoleColor.tga" />
     <Image Include="Image\right.tga" />
-    <Image Include="Image\stair.tga" />
-    <Image Include="Image\SteeringStand.tga" />
-    <Image Include="Image\SteeringWheel.tga" />
     <Image Include="Image\top.tga" />
-    <Image Include="Image\WingModel.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

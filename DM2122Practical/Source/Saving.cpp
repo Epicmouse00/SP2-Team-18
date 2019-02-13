@@ -2,17 +2,18 @@
 
 Saving::Saving()
 {
-	string line;
-	int i = 0;
+	//open savedata and set balance from .txt
+	fstream saveData("Save/Balance.txt");
 
-	ifstream myfile("Save/SaveData.txt");
-	if (myfile.is_open())
+	if (saveData.is_open())
 	{
-		while (getline(myfile, line))
+		string line;
+
+		while (getline(cin, line))
 		{
 			balance = stoi(line);
 		}
-		myfile.close();
+		saveData.close();
 	}
 	else cout << "Unable to open file";
 }
@@ -21,9 +22,14 @@ Saving::~Saving()
 {
 }
 
-void Saving::setBalance(int amount)
+void Saving::setBalance(int amount) 
 {
-	//set balance in .txt
+	//save balance in .txt
+	fstream saveData;
+
+	saveData.open("Save/Balance.txt", fstream::in | fstream::out | fstream::trunc);
+	saveData << to_string(balance);
+	saveData.close();
 }
 
 int Saving::getBalance()
