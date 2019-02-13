@@ -35,7 +35,14 @@ class SceneGame : public Scene
 
 		//OBJ Models
 		GEO_PLANE,
-		NUM_GEOMETRY,
+
+		//Menu buttons
+		GEO_PLAY,
+		GEO_SHOP,
+		GEO_QUIT,
+
+		//Keep this at the back
+		NUM_GEOMETRY
 	};
 
 	enum UNIFORM_TYPE
