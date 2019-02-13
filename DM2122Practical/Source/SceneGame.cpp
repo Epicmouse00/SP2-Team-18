@@ -16,12 +16,146 @@ SceneGame::SceneGame()
 {
 }
 
-
 SceneGame::~SceneGame()
 {
 }
 
 void SceneGame::Init()
+{
+	InitDefault();
+	InitLights();
+	InitCamera();
+	InitMeshes();
+
+	// Set initial game state
+	gameState = E_MAINMENU;
+
+	InitProjection();
+}
+
+static float ROT_LIMIT = 45.0f;
+static float SCALE_LIMIT = 5.0f;
+
+//////////////////// Update function ////////////////////
+
+void SceneGame::Update(double dt)
+{
+	static const float LSPEED = 30.0f;
+
+	if (Application::IsKeyPressed('1'))
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	if (Application::IsKeyPressed('2'))
+	{
+		glDisable(GL_CULL_FACE);
+	}
+	if (Application::IsKeyPressed('3'))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	if (Application::IsKeyPressed('4'))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	//Controls / Interactions / etcs.
+
+	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+
+	UpdatePlayerStrafe(dt);
+	UpdatePlayerJump(dt);
+	
+	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+
+	camera.Update(dt);
+}
+
+static const float SKYBOXSIZE = 2000.f;
+
+//Temp Variables
+Mtx44 MVP, modelView, modelView_inverse_transpose;
+
+//////////////////// Render function ////////////////////
+
+void SceneGame::Render()
+{
+	//Clear color & depth buffer every frame 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	viewStack.LoadIdentity();
+	viewStack.LookAt(camera.position.x, camera.position.y, camera.position.z,
+		camera.target.x, camera.target.y, camera.target.z,
+		camera.up.x, camera.up.y, camera.up.z);
+	modelStack.LoadIdentity();
+
+	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+
+	RenderSkybox();
+	RenderMesh(meshList[GEO_AXES], false);
+
+	//Light 1
+	//modelStack.PushMatrix();
+	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
+	//RenderMesh(meshList[GEO_LIGHTBALL], false);
+	//modelStack.PopMatrix();
+
+	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
+
+	// Menu backdrop
+
+	// Menu Button
+	RenderButtons();
+
+	// Gameplay UI
+
+	// Player
+	RenderPlayer();
+
+	// Opponent
+
+	// Coins
+
+	// Items
+
+	// Obstacles
+	RenderObstacles();
+
+	// Track
+
+	// Others?
+
+	////////// RENDER GAME MODELS HERE //////////
+
+	//Text in environment
+	/*modelStack.PushMatrix();
+	modelStack.Translate(63, 35.f, 50.0f);
+	modelStack.Rotate(-120, 0, 1, 0);
+	modelStack.Scale(2.0f, 2.0f, 2.0f);
+	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
+	modelStack.PopMatrix();*/
+	//Text on Screen
+	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
+}
+
+//Exit Function
+void SceneGame::Exit()
+{
+	//Clean up
+
+	for (int i = 0; i < NUM_GEOMETRY; ++i)
+	{
+		if (meshList[i] != NULL)
+		{
+			delete meshList[i];
+		}
+	}
+	glDeleteVertexArrays(1, &m_vertexArrayID);
+	glDeleteProgram(m_programID);
+}
+////////// Init Methods //////////
+void SceneGame::InitDefault()
 {
 	//Set Background Color
 	glClearColor(0.0f, 0.f, 0.4f, 0.0f);
@@ -50,7 +184,10 @@ void SceneGame::Init()
 	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
 	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
 	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+}
 
+void SceneGame::InitLights()
+{
 	//First Light
 	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
 	m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
@@ -68,8 +205,8 @@ void SceneGame::Init()
 	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
 	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
 
-	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID,"textEnabled");
-	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID,"textColor");
+	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
+	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
 	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
@@ -111,42 +248,46 @@ void SceneGame::Init()
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], light[0].exponent);
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+}
 
-	//Initialize camera settings
-
+void SceneGame::InitCamera()
+{
 	camera.Init(Vector3(0, 1.5, -10), Vector3(0, 0, 180), Vector3(0, 1, 0));
+}
 
+void SceneGame::InitMeshes()
+{
 	//Initialize all meshes to NULL
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
 
-	meshList[GEO_AXES]		= MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
-	meshList[GEO_QUAD]		= MeshBuilder::GenerateQuad("Plane", Color(1, 1, 1), 1);
-	meshList[GEO_PLANE]		= MeshBuilder::GenerateQuad("Plane", Color(0, 0, 0), 50);
+	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
+	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("Plane", Color(1, 1, 1), 1);
+	meshList[GEO_PLANE] = MeshBuilder::GenerateQuad("Plane", Color(0, 0, 0), 50);
 
 	//TEXT
-	meshList[GEO_TEXT]		= MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 
 	//Skybox
-	meshList[GEO_FRONT]		= MeshBuilder::GenerateQuad("SkyFront", Color(1, 1, 1), 1.f);
-	meshList[GEO_BACK]		= MeshBuilder::GenerateQuad("SkyBack", Color(1, 1, 1), 1.f);
-	meshList[GEO_TOP]		= MeshBuilder::GenerateQuad("SkyTop", Color(1, 1, 1), 1.f);
-	meshList[GEO_LEFT]		= MeshBuilder::GenerateQuad("SkyLeft", Color(1, 1, 1), 1.f);
-	meshList[GEO_RIGHT]		= MeshBuilder::GenerateQuad("SkyRight", Color(1, 1, 1), 1.f);
-	meshList[GEO_BOTTOM]	= MeshBuilder::GenerateQuad("SkyBottom", Color(1, 1, 1), 1.f);
-	
+	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("SkyFront", Color(1, 1, 1), 1.f);
+	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("SkyBack", Color(1, 1, 1), 1.f);
+	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("SkyTop", Color(1, 1, 1), 1.f);
+	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("SkyLeft", Color(1, 1, 1), 1.f);
+	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("SkyRight", Color(1, 1, 1), 1.f);
+	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("SkyBottom", Color(1, 1, 1), 1.f);
+
 	//Texture Load
-	meshList[GEO_TEXT]->textureID	= LoadTGA("Image//calibri.tga");
+	meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 
 	//Skybox
-	meshList[GEO_FRONT]->textureID	= LoadTGA("Image//front.tga");
-	meshList[GEO_BACK]->textureID	= LoadTGA("Image//back.tga");
-	meshList[GEO_TOP]->textureID	= LoadTGA("Image//top.tga");
-	meshList[GEO_LEFT]->textureID	= LoadTGA("Image//left.tga");
-	meshList[GEO_RIGHT]->textureID	= LoadTGA("Image//right.tga");
-	meshList[GEO_BOTTOM]->textureID	= LoadTGA("Image//bottom.tga");
+	meshList[GEO_FRONT]->textureID = LoadTGA("Image//front.tga");
+	meshList[GEO_BACK]->textureID = LoadTGA("Image//back.tga");
+	meshList[GEO_TOP]->textureID = LoadTGA("Image//top.tga");
+	meshList[GEO_LEFT]->textureID = LoadTGA("Image//left.tga");
+	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//right.tga");
+	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//bottom.tga");
 
 	////////// ADD GAME MODELS HERE //////////
 
@@ -170,61 +311,31 @@ void SceneGame::Init()
 	// Items
 
 	// Obstacles (1	x	1	x	1)
-	meshList[GEO_OBSTACLE_DEFAULT]	= MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	4	x	1)
-	meshList[GEO_OBSTACLE_TALL]		= MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	0.1	x	10)
-	meshList[GEO_OBSTACLE_LONG]		= MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 0.1f, 10.f);
+	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 0.1f, 10.f);
 
 	// Track
 
 	// Others?
 
 	////////// ADD GAME MODELS HERE //////////
-	
+}
 
-	// Set initial game state
-	gameState = E_MAINMENU;
-
-
-
+void SceneGame::InitProjection()
+{
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
 }
 
-static float ROT_LIMIT = 45.0f;
-static float SCALE_LIMIT = 5.0f;
-
-//////////////////// Update function ////////////////////
-
-void SceneGame::Update(double dt)
+////////// Update Methods //////////
+void SceneGame::UpdatePlayerStrafe(double dt)
 {
-	static const float LSPEED = 30.0f;
-
-	if (Application::IsKeyPressed('1'))
-	{
-		glEnable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('2'))
-	{
-		glDisable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('3'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	if (Application::IsKeyPressed('4'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-
-	//Controls / Interactions / etcs.
-
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
-
 	//Player Move Right 1 units
 	if (Application::IsKeyPressed('J') && delayTime >= 1.f)
 	{
@@ -244,8 +355,10 @@ void SceneGame::Update(double dt)
 			delayTime = 0.f;
 		}
 	}
-	
-	//Player Jump
+}
+
+void SceneGame::UpdatePlayerJump(double dt)
+{
 	if (Application::IsKeyPressed('I'))
 	{
 		JumpPressed = true;
@@ -276,12 +389,12 @@ void SceneGame::Update(double dt)
 	{
 		delayTime += (float)(5.f * dt);
 	}
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 
-	camera.Update(dt);
 }
 
-static const float SKYBOXSIZE = 2000.f;
+
+
+////////// Render Methods //////////
 
 //Mesh Renderer
 void SceneGame::RenderMesh(Mesh* mesh, bool enableLight)
@@ -391,7 +504,7 @@ void SceneGame::RenderText(Mesh* mesh, std::string text, Color color)
 		return;
 
 	glDisable(GL_DEPTH_TEST);
-	glUniform1i(m_parameters[U_TEXT_ENABLED],1);
+	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
 	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
@@ -404,7 +517,7 @@ void SceneGame::RenderText(Mesh* mesh, std::string text, Color color)
 		characterSpacing.SetToTranslation(i * 1.0f, 0, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-		
+
 		mesh->Render((unsigned)text[i] * 6, 6);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -456,32 +569,20 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	modelStack.PopMatrix();
 }
 
-//Temp Variables
-Mtx44 MVP, modelView, modelView_inverse_transpose;
-
-//////////////////// Render function ////////////////////
-
-void SceneGame::Render()
+void SceneGame::RenderPlayer()
 {
-	//Clear color & depth buffer every frame 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	modelStack.PushMatrix();
+	modelStack.Translate(-9, 0, 50.f);
+	modelStack.Rotate(0, 0, 1, 0);
+	modelStack.Scale(3, 3, 3);
+	modelStack.Translate(Movement, 0, 0);
+	modelStack.Translate(0, Jump, 0);
+	RenderMesh(meshList[GEO_PLAYER], true);
+	modelStack.PopMatrix();
+}
 
-	viewStack.LoadIdentity();
-	viewStack.LookAt(camera.position.x, camera.position.y, camera.position.z,
-		camera.target.x, camera.target.y, camera.target.z,
-		camera.up.x, camera.up.y, camera.up.z);
-	modelStack.LoadIdentity();
-
-	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-
-	//Skybox
-	RenderSkybox();
-
-	// Render Axes X Y Z
-	RenderMesh(meshList[GEO_AXES], false);
-
-
+void SceneGame::RenderButtons()
+{
 	// Render menu buttons
 	if (gameState == E_MAINMENU)
 	{
@@ -493,7 +594,7 @@ void SceneGame::Render()
 		RenderMesh(meshList[GEO_PLAY], false);
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Play", Color(0, 0.9, 1));
+		RenderText(meshList[GEO_TEXT], "Play", Color(0.f, 0.9f, 1.f));
 		modelStack.PopMatrix();
 
 		//Shop
@@ -504,7 +605,7 @@ void SceneGame::Render()
 		RenderMesh(meshList[GEO_SHOP], false);
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Shop", Color(0, 0.9, 1));
+		RenderText(meshList[GEO_TEXT], "Shop", Color(0.f, 0.9f, 1.f));
 		modelStack.PopMatrix();
 
 		//Quit
@@ -515,11 +616,14 @@ void SceneGame::Render()
 		RenderMesh(meshList[GEO_QUIT], false);
 		modelStack.Scale(0.25f, 0.5f, 0.5f);
 		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Quit", Color(0, 0.9, 1));
+		RenderText(meshList[GEO_TEXT], "Quit", Color(0.f, 0.9f, 1.f));
 		modelStack.PopMatrix();
 	}
 
+}
 
+void SceneGame::RenderObstacles()
+{
 	// Render obstacles
 	if (gameState == E_GAME)
 	{
@@ -530,74 +634,4 @@ void SceneGame::Render()
 			modelStack.PopMatrix();
 		}
 	}
-
-
-	//Light 1
-	//modelStack.PushMatrix();
-	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-	//RenderMesh(meshList[GEO_LIGHTBALL], false);
-	//modelStack.PopMatrix();
-
-	////////// RENDER GAME MODELS HERE //////////
-
-	// Menu backdrop
-
-	// Menu Button
-
-	// Gameplay UI
-
-	// Player
-	RenderPlayer();
-
-	// Opponent
-
-	// Coins
-
-	// Items
-
-	// Obstacles
-
-	// Track
-
-	// Others?
-
-	////////// RENDER GAME MODELS HERE //////////
-
-	//Text in environment
-	/*modelStack.PushMatrix();
-	modelStack.Translate(63, 35.f, 50.0f);
-	modelStack.Rotate(-120, 0, 1, 0);
-	modelStack.Scale(2.0f, 2.0f, 2.0f);
-	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
-	modelStack.PopMatrix();*/
-	//Text on Screen
-	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
-}
-
-//Exit Function
-void SceneGame::Exit()
-{
-	//Clean up
-
-	for (int i = 0; i < NUM_GEOMETRY; ++i)
-	{
-		if (meshList[i] != NULL)
-		{
-			delete meshList[i];
-		}
-	}
-	glDeleteVertexArrays(1, &m_vertexArrayID);
-	glDeleteProgram(m_programID);
-}
-
-void SceneGame::RenderPlayer()
-{
-	modelStack.PushMatrix();
-	modelStack.Translate(-9, 0, 50.f);
-	modelStack.Rotate(0, 0, 1, 0);
-	modelStack.Scale(3, 3, 3);
-	modelStack.Translate(Movement, 0, 0);
-	modelStack.Translate(0, Jump, 0);
-	RenderMesh(meshList[GEO_PLAYER], true);
-	modelStack.PopMatrix();
 }
