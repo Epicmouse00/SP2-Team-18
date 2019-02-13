@@ -66,7 +66,7 @@ void SceneGame::Update(double dt)
 	UpdatePlayerStrafe(dt);
 	UpdatePlayerJump(dt);
 
-	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f)
+	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 	{
 		
 	}
