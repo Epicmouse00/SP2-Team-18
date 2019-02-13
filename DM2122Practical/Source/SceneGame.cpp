@@ -20,12 +20,16 @@ SceneGame::~SceneGame()
 {
 }
 
+const unsigned int numberOfRows = 100;
+
 void SceneGame::Init()
 {
+	srand(time(NULL));
 	InitDefault();
 	InitLights();
 	InitCamera();
 	InitMeshes();
+	InitObstacles(numberOfRows);
 
 	// Set initial game state
 	gameState = E_MAINMENU;
@@ -342,6 +346,26 @@ void SceneGame::InitProjection()
 	projectionStack.LoadMatrix(projection);
 }
 
+void SceneGame::InitObstacles(unsigned int noOfObstacles)
+{
+	for (int lane = 0; lane < 4; ++lane)
+	{
+		for (int row = 0; row < noOfObstacles; ++row)
+		{
+			if (rand() % 2)
+			{
+				Obstacle temp;
+				temp.setX((lane * 18) - 27);
+				temp.setY(0);
+				temp.setZ(200 * row);
+				temp.setActive(true);
+				obstacleList[lane][row] = temp;
+			}
+		}
+	}
+}
+
+
 ////////// Update Methods //////////
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
@@ -650,13 +674,21 @@ void SceneGame::RenderButtons()
 void SceneGame::RenderObstacles()
 {
 	// Render obstacles
-	if (gameState == E_GAME)
+	//if (gameState == E_GAME)
 	{
-		for (size_t i = 0; i < Obstacle::getNoObstacle(); ++i)
+		for (size_t lane = 0; lane < 4; ++lane)
 		{
-			modelStack.PushMatrix();
-			//modelStack.Translate(obstacleList[i].getX(), obstacleList[i].getY(), obstacleList[i].getZ(),);
-			modelStack.PopMatrix();
+			for (size_t row = 0; row < numberOfRows; ++row)
+			{
+				if (obstacleList[lane][row].getActive())
+				{
+					modelStack.PushMatrix();
+					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
+					modelStack.Scale(10.f, 10.f, 10.f);
+					RenderMesh(meshList[10 + obstacleList[lane][row].getObstacleType()], false);
+					modelStack.PopMatrix();
+				}
+			}
 		}
 	}
 }
