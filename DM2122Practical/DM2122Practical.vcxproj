@@ -197,6 +197,7 @@
   <ItemGroup>
     <Image Include="Image\back.tga" />
     <Image Include="Image\bottom.tga" />
+    <Image Include="Image\calibri.tga" />
     <Image Include="Image\front.tga" />
     <Image Include="Image\gray.tga" />
     <Image Include="Image\left.tga" />
