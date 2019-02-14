@@ -67,7 +67,6 @@ void SceneGame::Update(double dt)
 {
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
-	UpdateMenuIndex();
 	//Controls / Interactions / etcs.
 	/////////////MOVEMENT V1.3 (REFINED)/////////////
 	UpdatePlayerStrafe(dt);
@@ -397,12 +396,6 @@ void SceneGame::UpdateAppPolygon()
 	}
 }
 
-void SceneGame::UpdateMenuIndex()
-{
-	//Sets the current gameState 
-	gameState = menu.getIndex();
-}
-
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
 	if (gameState == E_GAME)
@@ -551,7 +544,7 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 
 void SceneGame::UpdatePlayerJump(double dt)
 {
-	if (gameState == E_GAME)
+	if (menu.getIndex() == E_GAME)
 	{
 		//Player Jump
 		if (Application::IsKeyPressed('I'))
@@ -599,14 +592,14 @@ void SceneGame::UpdateMainMenuCursor()
 		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			menu.setIndex(mainMenuCursor.getIndex());
+			b_exit = menu.menuChange(mainMenuCursor.getIndex());
 		}
 	}
 }
 
 void SceneGame::UpdateGameChooseCursor()
 {
-	if (gameState == E_GAMECHOOSE)
+	if (menu.getIndex() == E_GAMECHOOSE)
 	{
 		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 		{
@@ -623,6 +616,7 @@ void SceneGame::UpdateGameChooseCursor()
 		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
+			menu.menuChange(gameChooseCursor.getIndex());
 		}
 	}
 }
@@ -816,7 +810,7 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 
 void SceneGame::RenderPlayer()
 {
-	if (gameState == E_GAME)
+	if (menu.getIndex() == E_GAME)
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(-9, 0, 50.f);
@@ -832,7 +826,7 @@ void SceneGame::RenderPlayer()
 void SceneGame::RenderMainMenuButtons()
 {
 	// Render menu buttons
-	if (gameState == E_MAINMENU)
+	if (menu.getIndex() == E_MAINMENU)
 	{
 		const float textTranslate = -3.f;
 		std::string text;
@@ -902,7 +896,7 @@ void SceneGame::RenderMainMenuButtons()
 void SceneGame::RenderGameChooseButtons()
 {
 	// Render gamechoose buttons
-	if (gameState == E_GAMECHOOSE)
+	if (menu.getIndex() == E_GAMECHOOSE)
 	{
 		const float textTranslate = -3.f;
 		std::string text;
