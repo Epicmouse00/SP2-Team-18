@@ -6,6 +6,7 @@ Car::Car()
 	Movement = 0.f;
 	Lane = 0;
 	Jump = 0.f;
+	Forward = 0.f;
 	JumpPressed = false;
 	isPlayer = true;
 	resetTime = false;
@@ -15,6 +16,7 @@ Car::Car()
 Car::Car(bool isPlayer)
 {
 	Jump = 0.f;
+	Forward = 0.f;
 	JumpPressed = false;
 	resetTime = false;
 	this->isPlayer = isPlayer;
@@ -49,6 +51,11 @@ float Car::getMovement() const
 float Car::getJump() const
 {
 	return Jump;
+}
+
+float Car::getForward() const
+{
+	return Forward;
 }
 
 
@@ -120,6 +127,10 @@ void Car::UpdatePlayerJump(double dt, bool jump)
 		{
 			Jump += (float)(40 * dt);
 		}
+		else if (Jump < jumpHeight + 2.f)
+		{
+			Jump += (float)(20 * dt);
+		}
 		else
 		{
 			JumpPressed = false;
@@ -140,6 +151,11 @@ void Car::UpdatePlayerJump(double dt, bool jump)
 		}
 	}
 
+}
+
+void Car::UpdatePlayerForward(double dt, float boost)
+{
+	Forward += (float)((150 + boost) * dt);
 }
 
 void Car::setTexture(int texture)

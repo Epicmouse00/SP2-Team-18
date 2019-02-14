@@ -67,7 +67,7 @@ void SceneGame::Update(double dt)
 	UpdateCam(dt);
 }
 
-static const float SKYBOXSIZE = 2000.f;
+static const float SKYBOXSIZE = 10000.f;
 
 //Temp Variables
 Mtx44 MVP, modelView, modelView_inverse_transpose;
@@ -335,7 +335,7 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 				Obstacle temp(rand() % 2);
 				temp.setX(((float)lane * laneSpacing) - (laneSpacing * (float)1.5));
 				temp.setY(0);
-				temp.setZ(200 * (float)row + 250);
+				temp.setZ(400 * (float)row + 1000);
 				temp.setActive(true);
 				obstacleList[lane][row] = temp;
 			}
@@ -345,7 +345,7 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 		Obstacle temp(0);
 		temp.setX(((float)randomLane * laneSpacing) - (laneSpacing * (float)1.5));
 		temp.setY(0);
-		temp.setZ(200 * (float)row + 250);
+		temp.setZ(400 * (float)row + 1000);
 		temp.setActive(true);
 		obstacleList[randomLane][row] = temp;
 
@@ -388,7 +388,7 @@ void SceneGame::UpdateCamLoc()
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			camera.setPosition(Vector3(0.f, 50.f, -100.f), Vector3((float)Player.getMovement(), (float)Player.getJump(), 120.f), Vector3(0.f, 1.f, 0.f));
+			camera.setPosition(Vector3(0.f, 30.f, -50.f + 3.f * Player.getForward()), Vector3(3.f * (float)Player.getMovement(), 3.f * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
 		{
@@ -421,6 +421,10 @@ void SceneGame::UpdateCar(double dt)
 {
 	if (menu.getIndex() == E_GAME)
 	{
+		//Change with collectibles
+		const float boost = 0.f;
+
+		Player.UpdatePlayerForward(dt, boost);
 		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
 			delayTime = 0.f;
@@ -697,8 +701,7 @@ void SceneGame::RenderCar()
 		modelStack.Translate(-9, 0, 50.f);
 		modelStack.Rotate(0, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Player.getMovement(), 0, 0);
-		modelStack.Translate(0, Player.getJump(), 0);
+		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
 		RenderMesh(meshList[GEO_PLAYER], true);
 		modelStack.PopMatrix();
 	}
