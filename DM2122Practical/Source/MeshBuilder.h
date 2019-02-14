@@ -31,14 +31,6 @@ public:
 	static Mesh* GenerateText(const std::string &meshName, unsigned numRow, unsigned numCol);
 
 
-	//Characters
-	static Mesh* GenerateStar(const std::string &meshName, Color color, float length); // Helmet Star, Body Star
-	static Mesh* GenerateBody(const std::string &meshName, Color color, unsigned numStack, unsigned numSlice, float radius); // Body
-	static Mesh* GenerateHat(const std::string &meshName, Color color, unsigned numStack, unsigned numSlice, float radius); // Hat
-	static Mesh* GenerateHatSide(const std::string & meshName, Color color, unsigned numStack, unsigned numSlice, float radius); // Hat Side
-	static Mesh* GenerateFoot(const std::string &meshName, Color color, unsigned numStack, unsigned numSlice, float radius); // The Foot
-	static Mesh* GenerateMouth(const std::string &meshName, Color color, unsigned numStack, unsigned numSlice, float radius); // Mouth Line (The White Part)
-	static Mesh* GenerateMouth2(const std::string &meshName, Color color, unsigned numStack, unsigned numSlice, float radius); // The Mouth Itself
 	static Mesh* GenerateCylinder(const std::string &meshName, Color color, unsigned numStack, unsigned numSlice, float radius, float height); // Legs, Arms, Barrel, Gun Body
 	static Mesh* GenerateCone(const std::string &meshName, Color color, unsigned numSlice, float radius, float height); // Laser Gun Point
 };

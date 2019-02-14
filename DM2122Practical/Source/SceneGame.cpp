@@ -42,7 +42,7 @@ void SceneGame::Init()
 
 
 
-	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
 
 	InitProjection();
@@ -64,8 +64,7 @@ void SceneGame::Update(double dt)
 	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
-	UpdateCamMovement();
-	camera.Update(dt);
+	UpdateCam(dt);
 }
 
 static const float SKYBOXSIZE = 2000.f;
@@ -310,6 +309,7 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Track
+	//meshList[GEO_TRACK] = 
 
 	// Others?
 
@@ -325,13 +325,13 @@ void SceneGame::InitProjection()
 
 void SceneGame::InitObstacles(unsigned int noOfObstacles)
 {
-	for (int lane = 0; lane < 4; ++lane)
+	const float laneSpacing = 22.5f; // 7.5 x 3
+	for (int row = 0; row < (int)noOfObstacles; ++row)
 	{
-		for (int row = 0; row < (int)noOfObstacles; ++row)
+		for (int lane = 0; lane < 4; ++lane)
 		{
 			if (rand() % 2)
 			{
-				const float laneSpacing = 22.5f; // 7.5 x 3
 				Obstacle temp(rand() % 2);
 				temp.setX(((float)lane * laneSpacing) - (laneSpacing * (float)1.5));
 				temp.setY(0);
@@ -340,6 +340,15 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 				obstacleList[lane][row] = temp;
 			}
 		}
+		//At least one obstacle is a Default in a row
+		int randomLane = rand() % 4;
+		Obstacle temp(0);
+		temp.setX(((float)randomLane * laneSpacing) - (laneSpacing * (float)1.5));
+		temp.setY(0);
+		temp.setZ(200 * (float)row + 250);
+		temp.setActive(true);
+		obstacleList[randomLane][row] = temp;
+
 	}
 }
 
@@ -358,12 +367,34 @@ void SceneGame::UpdateDelayTime(double dt)
 	}
 }
 
+void SceneGame::UpdateCam(double dt)
+{
+	UpdateCamMovement();
+	UpdateCamLoc();
+	camera.Update(dt);
+}
+
 void SceneGame::UpdateCamMovement()
 {
 	if (Application::IsKeyPressed('Z'))
 		camera.Enable();
 	if (Application::IsKeyPressed('X'))
 		camera.Disable();
+}
+
+void SceneGame::UpdateCamLoc()
+{
+	if (!camera.getActive())
+	{
+		if (menu.getIndex() == E_GAME)
+		{
+			camera.setPosition(Vector3(0.f, 50.f, -100.f), Vector3((float)Player.getMovement(), (float)Player.getJump(), 120.f), Vector3(0.f, 1.f, 0.f));
+		}
+		else
+		{
+			camera.setPosition(Vector3(0.f, 1.5f, -10.f), Vector3(0.f, 1.5f, 180.f), Vector3(0.f, 1.f, 0.f));
+		}
+	}
 }
 
 void SceneGame::UpdateAppPolygon()
