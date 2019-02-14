@@ -32,8 +32,6 @@ void SceneGame::Init()
 	InitMeshes();
 	InitObstacles(numberOfRows);
 
-	// Set initial game state
-	gameState = E_MAINMENU;
 	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 
 	//Variables
@@ -398,7 +396,7 @@ void SceneGame::UpdateAppPolygon()
 
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
-	if (gameState == E_GAME)
+	if (menu.getIndex() == E_GAME)
 	{
 		//Player Move Left 1st Column
 		if (Application::IsKeyPressed('J'))
@@ -953,7 +951,7 @@ void SceneGame::RenderGameChooseButtons()
 void SceneGame::RenderObstacles()
 {
 	// Render obstacles
-	if (gameState == E_GAME)
+	if (menu.getIndex() == E_GAME)
 	{
 		for (size_t lane = 0; lane < 4; ++lane)
 		{

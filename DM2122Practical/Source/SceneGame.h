@@ -212,9 +212,6 @@ private:
 	Light		light[4];
 
 	//cursor defined in .cpp
-
-	int			gameState = E_MAINMENU;
-	int			gameMode = MODE_VS;
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
 	Obstacle	obstacleList[4][100] = { NULL };

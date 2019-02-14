@@ -12,11 +12,15 @@ Menu::~Menu()
 
 bool Menu::menuChange(int cursorIndex)
 {
-	if (pageIndex == 0 && cursorIndex == 3)
+	cursorIndex += 1;
+	if (pageIndex == 0 && cursorIndex == 4)
 	{
 		return true;
 	}
-	cursorIndex += 1;
+	if (pageIndex == 0 && (cursorIndex == 2 || cursorIndex == 3))
+	{
+		return false;
+	}
 	if (pageIndex == 1 && cursorIndex == 3)
 	{
 		setIndex(0);
