@@ -38,12 +38,13 @@ class SceneGame : public Scene
 		//Text
 		GEO_TEXT,
 
+		//Track
+		//GEO_TRACK,
+
 		//GAME MODELS
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
 		GEO_OBSTACLE_LONG,
-
-		//OBJ Models
 		GEO_PLANE,
 		GEO_CURSOR,
 		GEO_PLAYER,
@@ -174,7 +175,9 @@ private:
 	void		InitObstacles(unsigned int noOfObstacles);
 
 	void		UpdateDelayTime(double dt);
+	void		UpdateCam(double dt);
 	void		UpdateCamMovement();
+	void		UpdateCamLoc();
 	void		UpdateAppPolygon();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
