@@ -545,13 +545,13 @@ void SceneGame::UpdatePlayerJump(double dt)
 	if (menu.getIndex() == E_GAME)
 	{
 		//Player Jump
-		if (Application::IsKeyPressed('I'))
+		if (Application::IsKeyPressed('I') && delayTime > 5.0f)
 		{
-			JumpPressed = true;
-		}
-		else
-		{
-			JumpPressed = false;
+			if (Jump <= 0)
+			{
+				JumpPressed = true;
+				delayTime = 0;
+			}
 		}
 
 		if (JumpPressed == true)
@@ -560,12 +560,23 @@ void SceneGame::UpdatePlayerJump(double dt)
 			{
 				Jump += (float)(50 * dt);
 			}
+			else
+			{
+				JumpPressed = false;
+			}
 		}
 		else
 		{
 			if (Jump > 0)
 			{
-				Jump -= (float)(50 * dt);
+				if ((Jump -= (float)(50 * dt)) >= 0)
+				{
+					Jump -= (float)(50 * dt);
+				}
+				else
+				{
+					Jump = 0;
+				}
 			}
 		}
 	}
