@@ -16,6 +16,7 @@
 #include "Cursor.h"
 #include "Menu.h"
 #include "Car.h"
+#include "AImovement.h"
 
 class SceneGame : public Scene
 {

@@ -110,6 +110,7 @@ bool Car::UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right)
 		Movement = lanePos + laneOffset;
 
 	return resetTime;
+
 }
 
 void Car::UpdatePlayerJump(double dt, bool jump)

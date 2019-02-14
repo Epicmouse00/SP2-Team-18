@@ -15,6 +15,7 @@ Menu menu;
 Cursor		mainMenuCursor(3.f, -2.f, 4);
 Cursor		gameChooseCursor(3.f, -3.f, 3);
 Car			Player(true);
+Car			Opponent(false);
 
 
 SceneGame::SceneGame()
@@ -421,12 +422,24 @@ void SceneGame::UpdateCar(double dt)
 {
 	if (menu.getIndex() == E_GAME)
 	{
+		//Player
 		//Change with collectibles
-		const float boost = 0.f;
+		const float playerboost = 0.f;
 
-		Player.UpdatePlayerForward(dt, boost);
+		Player.UpdatePlayerForward(dt, playerboost);
 		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
+			delayTime = 0.f;
+
+
+		//Opponent
+		//Change with collectibles
+		const float opponentboost = 0.f;
+
+		AImovement AI(Opponent, obstacleList);
+		Opponent.UpdatePlayerForward(dt, opponentboost);
+		Opponent.UpdatePlayerJump(dt, AI.getJump());
+		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
 			delayTime = 0.f;
 	}
 }
@@ -703,6 +716,15 @@ void SceneGame::RenderCar()
 		modelStack.Scale(3, 3, 3);
 		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
 		RenderMesh(meshList[GEO_PLAYER], true);
+		modelStack.PopMatrix();
+
+		//Player
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Rotate(0, 0, 1, 0);
+		modelStack.Scale(3, 3, 3);
+		modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+		RenderMesh(meshList[GEO_OPPONENT], true);
 		modelStack.PopMatrix();
 	}
 }
