@@ -10,38 +10,27 @@ Menu::~Menu()
 
 }
 
-void Menu::changeIndex(int newPageIndex)
+bool Menu::menuChange(int cursorIndex)
 {
-	pageIndex = newPageIndex;
-}
-
-int Menu::menuChange(int cursorIndex)
-{
-	if (pageIndex == 1)
+	if (pageIndex == 0 && cursorIndex == 3)
 	{
-
-		/*switch (gameChooseCursor.getIndex())
-		{
-		case 0:
-			//vs
-			gameState = E_GAME;
-			gameMode = MODE_VS;
-			break;
-		case 1:
-			//time
-			gameState = E_GAME;
-			gameMode = MODE_TIME;
-			break;
-		case 2:
-			//back
-			gameState = E_MAINMENU;
-			break;
-		default:
-			break;
-		}*/
-		//return
+		return true;
 	}
-	return cursorIndex;
+	cursorIndex += 1;
+	if (pageIndex == 1 && cursorIndex == 3)
+	{
+		setIndex(0);
+	}
+	else if (pageIndex == 1 && cursorIndex != 3)
+	{
+		setGameMode(cursorIndex);
+		setIndex(2);
+	}
+	else
+	{
+		setIndex(cursorIndex);
+	}
+	return false;
 }
 
 void Menu::setIndex(int index)
@@ -52,4 +41,14 @@ void Menu::setIndex(int index)
 int Menu::getIndex()
 {
 	return pageIndex;
+}
+
+void Menu::setGameMode(int index)
+{
+	pageIndex = index;
+}
+
+int Menu::getGameMode()
+{
+	return gameMode;
 }

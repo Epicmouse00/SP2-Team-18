@@ -5,12 +5,14 @@ class Menu
 {
 private:
 	int	pageIndex;
+	int gameMode;
+	void setGameMode(int index);
+	void setIndex(int index);
 public:
 			Menu();
 			~Menu();
-	void	changeIndex(int newScreenIndex);
-	int menuChange(int cursorIndex);
-	void setIndex(int index);
+	bool menuChange(int cursorIndex);
 	int getIndex();
+	int getGameMode();
 };
 #endif

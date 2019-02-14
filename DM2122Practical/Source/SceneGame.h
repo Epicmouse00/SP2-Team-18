@@ -165,7 +165,6 @@ private:
 	void		UpdateDelayTime(double dt);
 	void		UpdateCamMovement();
 	void		UpdateAppPolygon();
-	void		UpdateMenuIndex();
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
 	void		UpdateMainMenuCursor();
