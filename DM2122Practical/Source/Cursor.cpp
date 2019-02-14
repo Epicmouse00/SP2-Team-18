@@ -39,7 +39,7 @@ float Cursor::outputPosition()
 	return initialPosition + (positionIndex * spacing);
 }
 
-int Cursor::getIndex()
+int Cursor::getIndex() const
 {
 	return positionIndex;
 }

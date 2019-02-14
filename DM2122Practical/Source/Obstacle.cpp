@@ -33,17 +33,17 @@ void Obstacle::setActive(bool active)
 	this->active = active;
 }
 
-float Obstacle::getX()
+float Obstacle::getX() const
 {
 	return x;
 }
 
-float Obstacle::getY()
+float Obstacle::getY() const
 {
 	return y;
 }
 
-float Obstacle::getZ()
+float Obstacle::getZ() const
 {
 	return z;
 }

@@ -19,7 +19,7 @@ void Currency::deductBalance(int amount)
 	balance -= amount;
 }
 
-int Currency::getBalance()
+int Currency::getBalance() const
 {
 	return balance;
 }

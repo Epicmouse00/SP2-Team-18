@@ -42,7 +42,7 @@ void Menu::setIndex(int index)
 	pageIndex = index;
 }
 
-int Menu::getIndex()
+int Menu::getIndex() const
 {
 	return pageIndex;
 }
@@ -52,7 +52,7 @@ void Menu::setGameMode(int index)
 	pageIndex = index;
 }
 
-int Menu::getGameMode()
+int Menu::getGameMode() const
 {
 	return gameMode;
 }

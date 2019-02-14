@@ -13,7 +13,7 @@ public:
 	~Cursor();
 	void updatePositionIndex(int direction);
 	float outputPosition();
-	int getIndex();
+	int getIndex() const;
 };
 
 #endif
