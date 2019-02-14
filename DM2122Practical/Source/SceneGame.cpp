@@ -11,6 +11,9 @@
 
 #include "LoadTGA.h"
 
+Menu menu;
+Cursor		mainMenuCursor(3.f, -2.f, 4);
+Cursor		gameChooseCursor(3.f, -3.f, 3);
 
 SceneGame::SceneGame()
 {
@@ -22,57 +25,52 @@ SceneGame::~SceneGame()
 
 void SceneGame::Init()
 {
+	srand((unsigned int)time(NULL));
 	InitDefault();
 	InitLights();
 	InitCamera();
 	InitMeshes();
+	InitObstacles(numberOfRows);
 
 	// Set initial game state
 	gameState = E_MAINMENU;
 
+	//Variables
+	Movement = 0;
+	bool Lane1 = false;
+	bool Lane2 = false;
+	bool Lane2a = false;
+	bool Lane3 = false;
+	bool Lane3a = false;
+	bool Lane4 = false;
+	Jump = 0;
+	delayTime = 0;
+	JumpPressed = false;
+
 	InitProjection();
 }
 
-static float ROT_LIMIT = 45.0f;
-static float SCALE_LIMIT = 5.0f;
+//static float ROT_LIMIT = 45.0f;
+//static float SCALE_LIMIT = 5.0f;
+//static const float LSPEED = 30.0f;
 
 //////////////////// Update function ////////////////////
 
 void SceneGame::Update(double dt)
 {
-	static const float LSPEED = 30.0f;
-
-	if (Application::IsKeyPressed('1'))
-	{
-		glEnable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('2'))
-	{
-		glDisable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('3'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	if (Application::IsKeyPressed('4'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-
+	UpdateDelayTime(dt);
+	UpdateAppPolygon();
+	UpdateMenuIndex();
 	//Controls / Interactions / etcs.
-
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
-
+	/////////////MOVEMENT V1.3 (REFINED)/////////////
 	UpdatePlayerStrafe(dt);
 	UpdatePlayerJump(dt);
+	/////////////MOVEMENT V1.3 (REFINED)/////////////
 
-	if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
-	{
-		
-	}
-  
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+	UpdateMainMenuCursor();
+	UpdateGameChooseCursor();
 
+	UpdateCamMovement();
 	camera.Update(dt);
 }
 
@@ -100,18 +98,15 @@ void SceneGame::Render()
 	RenderSkybox();
 	RenderMesh(meshList[GEO_AXES], false);
 
-	//Light 1
-	//modelStack.PushMatrix();
-	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-	//RenderMesh(meshList[GEO_LIGHTBALL], false);
-	//modelStack.PopMatrix();
-
 	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
 
 	// Menu backdrop
 
-	// Menu Button
-	RenderButtons();
+	// MainMenu Button
+	RenderMainMenuButtons();
+
+	// GameChoose Button
+	RenderGameChooseButtons();
 
 	// Gameplay UI
 
@@ -132,16 +127,7 @@ void SceneGame::Render()
 	// Others?
 
 	////////// RENDER GAME MODELS HERE //////////
-
-	//Text in environment
-	/*modelStack.PushMatrix();
-	modelStack.Translate(63, 35.f, 50.0f);
-	modelStack.Rotate(-120, 0, 1, 0);
-	modelStack.Scale(2.0f, 2.0f, 2.0f);
-	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
-	modelStack.PopMatrix();*/
-	//Text on Screen
-	/*RenderTextOnScreen(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0), 2, 1, 4);*/
+	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
 }
 
 //Exit Function
@@ -159,6 +145,16 @@ void SceneGame::Exit()
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
 }
+
+bool SceneGame::getExit()
+{
+	return b_exit;
+}
+
+
+
+
+
 ////////// Init Methods //////////
 void SceneGame::InitDefault()
 {
@@ -220,13 +216,6 @@ void SceneGame::InitLights()
 	glUseProgram(m_programID);
 	// Get a handle for our "MVP" uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
-
-	//Variables
-	Movement = 0;
-	Jump = 0;
-	delayTime = 0;
-
-	JumpPressed = false;
 
 	//Initialize Light Parameters
 	//First Light
@@ -299,9 +288,7 @@ void SceneGame::InitMeshes()
 	// Menu backdrop
 
 	// Menu Button
-	meshList[GEO_PLAY] = MeshBuilder::GenerateQuad("PlayButton", Color(0.2f, 0.2f, 0.2f), 1.f);
-	meshList[GEO_SHOP] = MeshBuilder::GenerateQuad("ShopButton", Color(0.2f, 0.2f, 0.2f), 1.f);
-	meshList[GEO_QUIT] = MeshBuilder::GenerateQuad("QuitButton", Color(0.2f, 0.2f, 0.2f), 1.f);
+	meshList[GEO_BUTTON] = MeshBuilder::GenerateQuad("Button", Color(0.2f, 0.2f, 0.2f), 1.f);
 
 	// Menu cursor
 	meshList[GEO_CURSOR] = MeshBuilder::GenerateOBJ("Cursor", "OBJ//Cursor.obj");
@@ -326,7 +313,7 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	0.1	x	10)
-	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 0.1f, 10.f);
+	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Track
 
@@ -342,11 +329,50 @@ void SceneGame::InitProjection()
 	projectionStack.LoadMatrix(projection);
 }
 
-////////// Update Methods //////////
-void SceneGame::UpdatePlayerStrafe(double dt)
+void SceneGame::InitObstacles(unsigned int noOfObstacles)
 {
-	static const float LSPEED = 30.0f;
+	for (int lane = 0; lane < 4; ++lane)
+	{
+		for (int row = 0; row < (int)noOfObstacles; ++row)
+		{
+			if (rand() % 2)
+			{
+				Obstacle temp;
+				temp.setX(((float)lane * 18) - 27);
+				temp.setY(0);
+				temp.setZ(200 * (float)row + 250);
+				temp.setActive(true);
+				obstacleList[lane][row] = temp;
+			}
+		}
+	}
+}
 
+
+
+
+
+
+////////// Update Methods //////////
+void SceneGame::UpdateDelayTime(double dt)
+{
+	//Delay Time
+	if (delayTime <= 5.f)
+	{
+		delayTime += (float)(5.f * dt);
+	}
+}
+
+void SceneGame::UpdateCamMovement()
+{
+	if (Application::IsKeyPressed('Z'))
+		camera.Enable();
+	if (Application::IsKeyPressed('X'))
+		camera.Disable();
+}
+
+void SceneGame::UpdateAppPolygon()
+{
 	if (Application::IsKeyPressed('1'))
 	{
 		glEnable(GL_CULL_FACE);
@@ -363,101 +389,241 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
+}
 
-	//Controls / Interactions / etcs.
+void SceneGame::UpdateMenuIndex()
+{
+	//Sets the current gameState 
+	gameState = menu.getIndex();
+}
 
-	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
-
-	//Player Move Left 1st Column
-	if (Application::IsKeyPressed('J'))
+void SceneGame::UpdatePlayerStrafe(double dt)
+{
+	if (gameState == E_GAME)
 	{
-		if (Jump <= 0)
+		//Player Move Left 1st Column
+		if (Application::IsKeyPressed('J'))
 		{
-			if (Movement < 6)
+			//Lane 1
+			if (Movement >= 6 && delayTime >= 1.0f)
 			{
-				Movement += (float)(50 * dt);
-			}
-			if (Movement > 7)
-			{
-				Movement -= (float)(50 * dt);
-			}
-		}
-	}
-	//Player Move Right 2nd Column
-	if (Application::IsKeyPressed('H'))
-	{
-		if (Jump <= 0)
-		{
-			if (Movement < 12)
-			{
-				Movement += (float)(50 * dt);
+				Lane1 = true;
+				delayTime = 0;
 			}
 
-		}
-	}
-
-	//Player MoveRight 3rd Column
-	if (Application::IsKeyPressed('K'))
-	{
-		if (Jump <= 0)
-		{
-			if (Movement > 0)
+			//Lane 2
+			if (Movement <= 0 && Movement >= -1 && delayTime >= 1.0f)
 			{
-				Movement -= (float)(50 * dt);
+				Lane2 = true;
+				delayTime = 0;
 			}
-			if (Movement < -1)
+
+			//Lane 3a (Right to Left 1 Lane)
+			if (Movement <= -7 && delayTime >= 1.0f)
 			{
-				Movement += (float)(50 * dt);
+				Lane3a = true;
 				delayTime = 0;
 			}
 		}
-	}
-	//Player Move Right 4th Column
-	if (Application::IsKeyPressed('L'))
-	{
-		if (Jump <= 0)
+
+		if (Lane1 == true)
 		{
-			if (Movement > -6)
+			if (Jump <= 0)
 			{
-				Movement -= (float)(50 * dt);
+				if (Movement <= 12)
+				{
+					Movement += (float)(50 * dt);
+				}
+				else
+				{
+					Lane1 = false;
+				}
+			}
+		}
+
+		if (Lane2 == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement <= 6)
+				{
+					Movement += (float)(50 * dt);
+				}
+				else
+				{
+					Lane2 = false;
+				}
+			}
+		}
+
+		if (Lane3a == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement < -1)
+				{
+					Movement += (float)(50 * dt);
+				}
+				else
+				{
+					Lane3a = false;
+				}
+			}
+		}
+
+		//Player Move Right 1st Column
+		if (Application::IsKeyPressed('L'))
+		{
+			//Lane 2a (Right to Left 1 Lane)
+			if (Movement >= 7 && delayTime >= 1.0f)
+			{
+				Lane2a = true;
+				delayTime = 0;
+			}
+
+			//Lane 3
+			if (Movement >= 0.0f && delayTime >= 1.0f)
+			{
+				Lane3 = true;
+				delayTime = 0;
+			}
+
+			//Lane 4
+			if (Movement <= 0.5f && delayTime >= 1.0f)
+			{
+				Lane4 = true;
+				delayTime = 0;
+			}
+		}
+
+		if (Lane2a == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement >= 7)
+				{
+					Movement -= (float)(50 * dt);
+				}
+				else
+				{
+					Lane2a = false;
+				}
+			}
+		}
+
+		if (Lane3 == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement >= -0.5f)
+				{
+					Movement -= (float)(50 * dt);
+				}
+				else
+				{
+					Lane3 = false;
+				}
+			}
+		}
+
+		if (Lane4 == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement >= -7)
+				{
+					Movement -= (float)(50 * dt);
+				}
+				else
+				{
+					Lane4 = false;
+				}
 			}
 		}
 	}
-
-	//Player Jump
-	if (Application::IsKeyPressed('I'))
-	{
-		JumpPressed = true;
-	}
-	else
-	{
-		JumpPressed = false;
-	}
-
-	if (JumpPressed == true)
-	{
-		if (Jump < 5.0f)
-		{
-			Jump += (float)(50 * dt);
-		}
-	}
-	else
-	{
-		if (Jump > 0)
-		{
-			Jump -= (float)(50 * dt);
-		}
-	}
-
-	//Delay Time
-	if (delayTime <= 5.f)
-	{
-		delayTime += (float)(5.f * dt);
-	}
-	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
-
-	//camera.Update(dt);
 }
+
+void SceneGame::UpdatePlayerJump(double dt)
+{
+	if (gameState == E_GAME)
+	{
+		//Player Jump
+		if (Application::IsKeyPressed('I'))
+		{
+			JumpPressed = true;
+		}
+		else
+		{
+			JumpPressed = false;
+		}
+
+		if (JumpPressed == true)
+		{
+			if (Jump < 5.0f)
+			{
+				Jump += (float)(50 * dt);
+			}
+		}
+		else
+		{
+			if (Jump > 0)
+			{
+				Jump -= (float)(50 * dt);
+			}
+		}
+	}
+}
+
+void SceneGame::UpdateMainMenuCursor()
+{
+	if (menu.getIndex() == E_MAINMENU)
+	{
+		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		{
+			mainMenuCursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		{
+			mainMenuCursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			menu.setIndex(mainMenuCursor.getIndex());
+		}
+	}
+}
+
+void SceneGame::UpdateGameChooseCursor()
+{
+	if (gameState == E_GAMECHOOSE)
+	{
+		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		{
+			gameChooseCursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		{
+			gameChooseCursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+		}
+	}
+}
+
+
+
+
 
 
 
@@ -516,6 +682,7 @@ void SceneGame::RenderSkybox()
 {
 	//Left
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
@@ -524,6 +691,7 @@ void SceneGame::RenderSkybox()
 
 	//Right
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(-90, 0, 1, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
@@ -532,6 +700,7 @@ void SceneGame::RenderSkybox()
 
 	//Front
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
 	RenderMesh(meshList[GEO_FRONT], false);
@@ -539,6 +708,7 @@ void SceneGame::RenderSkybox()
 
 	//Back
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(180, 0, 1, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
@@ -547,6 +717,7 @@ void SceneGame::RenderSkybox()
 
 	//Top
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(90, 1, 0, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Rotate(90, 0, 0, 1);
@@ -556,6 +727,7 @@ void SceneGame::RenderSkybox()
 
 	//Bottom
 	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(-90, 1, 0, 0);
 	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
 	modelStack.Rotate(-90, 0, 0, 1);
@@ -581,7 +753,7 @@ void SceneGame::RenderText(Mesh* mesh, std::string text, Color color)
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f, 0, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.7f, 0, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -621,7 +793,7 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f, 0, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.7f, 0, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -638,64 +810,144 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 
 void SceneGame::RenderPlayer()
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(-9, 0, 50.f);
-	modelStack.Rotate(0, 0, 1, 0);
-	modelStack.Scale(3, 3, 3);
-	modelStack.Translate(Movement, 0, 0);
-	modelStack.Translate(0, Jump, 0);
-	RenderMesh(meshList[GEO_PLAYER], true);
-	modelStack.PopMatrix();
+	if (gameState == E_GAME)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Rotate(0, 0, 1, 0);
+		modelStack.Scale(3, 3, 3);
+		modelStack.Translate(Movement, 0, 0);
+		modelStack.Translate(0, Jump, 0);
+		RenderMesh(meshList[GEO_PLAYER], true);
+		modelStack.PopMatrix();
+	}
 }
 
-void SceneGame::RenderButtons()
+void SceneGame::RenderMainMenuButtons()
 {
 	// Render menu buttons
 	if (gameState == E_MAINMENU)
 	{
+		const float textTranslate = -3.f;
+		std::string text;
+
 		//Play
+		text = "Play";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 1.5f, 0.f);
-		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_PLAY], false);
-		modelStack.Scale(0.25f, 0.5f, 0.5f);
-		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Play", Color(0.f, 0.9f, 1.f));
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
 		modelStack.PopMatrix();
 
 		//Shop
+		text = "Shop";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 0.f, 0.f);
-		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Translate(0.f, 0.5f, 0.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_SHOP], false);
-		modelStack.Scale(0.25f, 0.5f, 0.5f);
-		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Shop", Color(0.f, 0.9f, 1.f));
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Leaderboard
+		text = "Leaderboard";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -0.5f, 0.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
 		modelStack.PopMatrix();
 
 		//Quit
+		text = "Quit";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
-		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_QUIT], false);
-		modelStack.Scale(0.25f, 0.5f, 0.5f);
-		modelStack.Translate(-1.2f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], "Quit", Color(0.f, 0.9f, 1.f));
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
 		modelStack.PopMatrix();
 
 		//Cursor
+		float sideMove = 5.f;
 		modelStack.PushMatrix();
-		modelStack.Scale(0.5, 0.5, 0.5);
-		modelStack.Translate(3.f, 0.f, 0.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(sideMove, mainMenuCursor.outputPosition(), 0.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
-		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}
 
+}
+
+void SceneGame::RenderGameChooseButtons()
+{
+	// Render gamechoose buttons
+	if (gameState == E_GAMECHOOSE)
+	{
+		const float textTranslate = -3.f;
+		std::string text;
+
+		//VS Mode
+		text = "VS Mode";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Time Mode
+		text = "Time Mode";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.f, 0.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Back
+		text = "Back";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		modelStack.PopMatrix();
+
+		//Cursor
+		float sideMove = 5.f;
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(sideMove, gameChooseCursor.outputPosition(), 0.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+	}
 }
 
 void SceneGame::RenderObstacles()
@@ -703,84 +955,19 @@ void SceneGame::RenderObstacles()
 	// Render obstacles
 	if (gameState == E_GAME)
 	{
-		for (size_t i = 0; i < Obstacle::getNoObstacle(); ++i)
+		for (size_t lane = 0; lane < 4; ++lane)
 		{
-			modelStack.PushMatrix();
-			//modelStack.Translate(obstacleList[i].getX(), obstacleList[i].getY(), obstacleList[i].getZ(),);
-			modelStack.PopMatrix();
+			for (size_t row = 0; row < numberOfRows; ++row)
+			{
+				if (obstacleList[lane][row].getActive())
+				{
+					modelStack.PushMatrix();
+					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
+					modelStack.Scale(10.f, 10.f, 10.f);
+					RenderMesh(meshList[10 + obstacleList[lane][row].getObstacleType()], false);
+					modelStack.PopMatrix();
+				}
+			}
 		}
 	}
-  
-	//Light 1
-	//modelStack.PushMatrix();
-	//modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-	//RenderMesh(meshList[GEO_LIGHTBALL], false);
-	//modelStack.PopMatrix();
-
-	////////// RENDER GAME MODELS HERE //////////
-
-	// Menu backdrop
-
-	// Menu Button
-
-	// Gameplay UI
-
-	// Player
-	Player();
-
-	// Opponent
-
-	// Coins
-
-	// Items
-
-	// Obstacles
-
-	// Track
-
-	// Others?
-
-	////////// RENDER GAME MODELS HERE //////////
-
-	//Skybox
-	RenderSkybox();
-
-	//Text in environment
-	/*modelStack.PushMatrix();
-	modelStack.Translate(63, 35.f, 50.0f);
-	modelStack.Rotate(-120, 0, 1, 0);
-	modelStack.Scale(2.0f, 2.0f, 2.0f);
-	RenderText(meshList[GEO_TEXT], "A and D to move between Lanes", Color(0, 1, 0));
-	modelStack.PopMatrix();*/
-
-	//Text on Screen
-	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
-}
-
-//Exit Function
-void SceneGame::Exit()
-{
-	//Clean up
-
-	for (int i = 0; i < NUM_GEOMETRY; ++i)
-	{
-		if (meshList[i] != NULL)
-		{
-			delete meshList[i];
-		}
-	}
-	glDeleteVertexArrays(1, &m_vertexArrayID);
-	glDeleteProgram(m_programID);
-}
-
-void SceneGame::Player()
-{
-	modelStack.PushMatrix();
-	modelStack.Translate(-9, 0, 50.f);
-	modelStack.Rotate(0, 0, 1, 0);
-	modelStack.Scale(3, 3, 3);
-	modelStack.Translate(Movement, 0, 0);
-	modelStack.Translate(0, Jump, 0);
-	RenderMesh(meshList[GEO_PLAYER], true);
-	modelStack.PopMatrix();
 }

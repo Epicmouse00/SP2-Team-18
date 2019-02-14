@@ -14,6 +14,7 @@
 
 #include "Obstacle.h"
 #include "Cursor.h"
+#include "Menu.h"
 
 class SceneGame : public Scene
 {
@@ -47,9 +48,7 @@ class SceneGame : public Scene
 		GEO_PLAYER,
     
 		//Menu buttons
-		GEO_PLAY,
-		GEO_SHOP,
-		GEO_QUIT,
+		GEO_BUTTON,
 
 		//Keep this at the back
 		NUM_GEOMETRY
@@ -153,6 +152,7 @@ public:
 	virtual void	Update(double dt);
 	virtual void	Render();
 	virtual void	Exit();
+	virtual bool	getExit();
 
 private:
 	void		InitDefault();
@@ -160,12 +160,20 @@ private:
 	void		InitCamera();
 	void		InitMeshes();
 	void		InitProjection();
+	void		InitObstacles(unsigned int noOfObstacles);
 
+	void		UpdateDelayTime(double dt);
+	void		UpdateCamMovement();
+	void		UpdateAppPolygon();
+	void		UpdateMenuIndex();
 	void		UpdatePlayerStrafe(double dt);
 	void		UpdatePlayerJump(double dt);
+	void		UpdateMainMenuCursor();
+	void		UpdateGameChooseCursor();
 
 	void		RenderPlayer();
-	void		RenderButtons();
+	void		RenderMainMenuButtons();
+	void		RenderGameChooseButtons();
 	void		RenderObstacles();
 	void		RenderSkybox();
 
@@ -176,7 +184,15 @@ private:
 	unsigned	m_parameters[U_TOTAL];
 
 	//Variables
+	bool b_exit = false;
+	const unsigned int numberOfRows = 100;
 	float Movement;
+	bool Lane1;
+	bool Lane2;
+	bool Lane2a;
+	bool Lane3;
+	bool Lane3a;
+	bool Lane4;
 	float Jump;
 	float delayTime;
 
@@ -196,9 +212,12 @@ private:
 
 	Light		light[4];
 
+	//cursor defined in .cpp
+
 	int			gameState = E_MAINMENU;
 	int			gameMode = MODE_VS;
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
+	Obstacle	obstacleList[4][100] = { NULL };
 };
 #endif
