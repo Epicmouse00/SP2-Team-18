@@ -47,6 +47,7 @@ class SceneGame : public Scene
 		GEO_PLANE,
 		GEO_CURSOR,
 		GEO_PLAYER,
+		GEO_OPPONENT,
     
 		//Menu buttons
 		GEO_BUTTON,
@@ -146,6 +147,15 @@ class SceneGame : public Scene
 		MODE_TIME
 	};
 
+	enum carText
+	{
+		CAR_GREY,
+		CAR_CYAN,
+		CAR_ORANGE,
+		CAR_RED,
+		CAR_GREEN
+	};
+
 public:
 					SceneGame();
 					~SceneGame();
@@ -167,10 +177,11 @@ private:
 	void		UpdateCamMovement();
 	void		UpdateAppPolygon();
 	void		UpdateCar(double dt);
+	void		UpdateCarTexture();
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 
-	void		RenderPlayer();
+	void		RenderCar();
 	void		RenderMainMenuButtons();
 	void		RenderGameChooseButtons();
 	void		RenderObstacles();

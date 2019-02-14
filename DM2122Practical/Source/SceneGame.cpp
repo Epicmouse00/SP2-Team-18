@@ -34,6 +34,14 @@ void SceneGame::Init()
 	InitMeshes();
 	InitObstacles(numberOfRows);
 
+
+
+	//Will be in SHOP (Call once, not every frame)
+	Player.setTexture(CAR_GREEN);
+	UpdateCarTexture();
+
+
+
 	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
 
@@ -51,6 +59,8 @@ void SceneGame::Update(double dt)
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
 	//Controls / Interactions / etcs.
+
+
 	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
@@ -94,10 +104,8 @@ void SceneGame::Render()
 
 	// Gameplay UI
 
-	// Player
-	RenderPlayer();
-
-	// Opponent
+	// Player + Opponent
+	RenderCar();
 
 	// Coins
 
@@ -282,9 +290,11 @@ void SceneGame::InitMeshes()
 
 	// Player
 	meshList[GEO_PLAYER] = MeshBuilder::GenerateOBJ("Player Car", "OBJ//gray.obj");
-	meshList[GEO_PLAYER]->textureID = LoadTGA("image//gray.tga");
+	meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Opponent
+	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
+	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Coins
 
@@ -383,6 +393,32 @@ void SceneGame::UpdateCar(double dt)
 		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
 			delayTime = 0.f;
+	}
+}
+
+void SceneGame::UpdateCarTexture()
+{
+	switch (Player.getTexture())
+	{
+	case CAR_GREY:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+	case CAR_CYAN:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_cyan.tga");
+		break;
+	case CAR_ORANGE:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_orange.tga");
+		break;
+	case CAR_RED:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_red.tga");
+		break;
+	case CAR_GREEN:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_green.tga");
+		break;
+	default:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+
 	}
 }
 
@@ -621,7 +657,7 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	modelStack.PopMatrix();
 }
 
-void SceneGame::RenderPlayer()
+void SceneGame::RenderCar()
 {
 	if (menu.getIndex() == E_GAME)
 	{

@@ -9,6 +9,7 @@ Car::Car()
 	JumpPressed = false;
 	isPlayer = true;
 	resetTime = false;
+	texture = 0;
 }
 
 Car::Car(bool isPlayer)
@@ -17,6 +18,7 @@ Car::Car(bool isPlayer)
 	JumpPressed = false;
 	resetTime = false;
 	this->isPlayer = isPlayer;
+	texture = 0;
 	if (isPlayer)
 	{
 		Lane = 1;
@@ -138,4 +140,14 @@ void Car::UpdatePlayerJump(double dt, bool jump)
 		}
 	}
 
+}
+
+void Car::setTexture(int texture)
+{
+	this->texture = texture;
+}
+
+int Car::getTexture()
+{
+	return texture;
 }

@@ -8,6 +8,7 @@ private:
 	bool	JumpPressed;
 	bool	isPlayer;
 	bool	resetTime;
+	int		texture;
 	const float	laneDist	= 7.5f;
 	const float	laneOffset	= -0.75f;
 public:
@@ -19,5 +20,7 @@ public:
 	int		getLane();
 	float	getMovement();
 	float	getJump();
+	void	setTexture(int texture);
+	int		getTexture();
 };
 
