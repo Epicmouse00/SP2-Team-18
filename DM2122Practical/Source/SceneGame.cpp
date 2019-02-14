@@ -249,7 +249,7 @@ void SceneGame::InitLights()
 
 void SceneGame::InitCamera()
 {
-	camera.Init(Vector3(0, 1.5, -10), Vector3(0, 0, 180), Vector3(0, 1, 0));
+	camera.Init(Vector3(0.f, 1.5f, -10.f), Vector3(0.f, 1.5f, 180.f), Vector3(0.f, 1.f, 0.f));
 }
 
 void SceneGame::InitMeshes()
