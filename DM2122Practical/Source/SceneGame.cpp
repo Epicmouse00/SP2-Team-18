@@ -42,6 +42,18 @@ void SceneGame::Init()
 	delayTime = 0;
 	JumpPressed = false;
 
+	//Variables
+	Movement = 0;
+	bool Lane1 = false;
+	bool Lane2 = false;
+	bool Lane2a = false;
+	bool Lane3 = false;
+	bool Lane3a = false;
+	bool Lane4 = false;
+	Jump = 0;
+	delayTime = 0;
+	JumpPressed = false;
+
 	InitProjection();
 }
 
@@ -57,14 +69,13 @@ void SceneGame::Update(double dt)
 	UpdateAppPolygon();
 	UpdateMenuIndex();
 	//Controls / Interactions / etcs.
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+	/////////////MOVEMENT V1.3 (REFINED)/////////////
 	UpdatePlayerStrafe(dt);
 	UpdatePlayerJump(dt);
-	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
+	/////////////MOVEMENT V1.3 (REFINED)/////////////
 
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
-
 	UpdateCamMovement();
 	camera.Update(dt);
 }
@@ -396,60 +407,142 @@ void SceneGame::UpdatePlayerStrafe(double dt)
 {
 	if (gameState == E_GAME)
 	{
-	/////////////MOVEMENT V1.1 (UNREFINED)/////////////
-
-	//Player Move Left 1st Column
+		//Player Move Left 1st Column
 		if (Application::IsKeyPressed('J'))
 		{
-			if (Jump <= 0)
+			//Lane 1
+			if (Movement >= 6 && delayTime >= 1.0f)
 			{
-				if (Movement < 6)
-				{
-					Movement += (float)(50 * dt);
-				}
-				if (Movement > 7)
-				{
-					Movement -= (float)(50 * dt);
-				}
+				Lane1 = true;
+				delayTime = 0;
 			}
-		}
-		//Player Move Right 2nd Column
-		if (Application::IsKeyPressed('H'))
-		{
-			if (Jump <= 0)
-			{
-				if (Movement < 12)
-				{
-					Movement += (float)(50 * dt);
-				}
 
+			//Lane 2
+			if (Movement <= 0 && Movement >= -1 && delayTime >= 1.0f)
+			{
+				Lane2 = true;
+				delayTime = 0;
+			}
+
+			//Lane 3a (Right to Left 1 Lane)
+			if (Movement <= -7 && delayTime >= 1.0f)
+			{
+				Lane3a = true;
+				delayTime = 0;
 			}
 		}
 
-		//Player MoveRight 3rd Column
-		if (Application::IsKeyPressed('K'))
+		if (Lane1 == true)
 		{
 			if (Jump <= 0)
 			{
-				if (Movement > 0)
+				if (Movement <= 12)
 				{
-					Movement -= (float)(50 * dt);
+					Movement += (float)(50 * dt);
 				}
+				else
+				{
+					Lane1 = false;
+				}
+			}
+		}
+
+		if (Lane2 == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement <= 6)
+				{
+					Movement += (float)(50 * dt);
+				}
+				else
+				{
+					Lane2 = false;
+				}
+			}
+		}
+
+		if (Lane3a == true)
+		{
+			if (Jump <= 0)
+			{
 				if (Movement < -1)
 				{
 					Movement += (float)(50 * dt);
-					delayTime = 0;
+				}
+				else
+				{
+					Lane3a = false;
 				}
 			}
 		}
-		//Player Move Right 4th Column
+
+		//Player Move Right 1st Column
 		if (Application::IsKeyPressed('L'))
+		{
+			//Lane 2a (Right to Left 1 Lane)
+			if (Movement >= 7 && delayTime >= 1.0f)
+			{
+				Lane2a = true;
+				delayTime = 0;
+			}
+
+			//Lane 3
+			if (Movement >= 0.0f && delayTime >= 1.0f)
+			{
+				Lane3 = true;
+				delayTime = 0;
+			}
+
+			//Lane 4
+			if (Movement <= 0.5f && delayTime >= 1.0f)
+			{
+				Lane4 = true;
+				delayTime = 0;
+			}
+		}
+
+		if (Lane2a == true)
 		{
 			if (Jump <= 0)
 			{
-				if (Movement > -6)
+				if (Movement >= 7)
 				{
 					Movement -= (float)(50 * dt);
+				}
+				else
+				{
+					Lane2a = false;
+				}
+			}
+		}
+
+		if (Lane3 == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement >= -0.5f)
+				{
+					Movement -= (float)(50 * dt);
+				}
+				else
+				{
+					Lane3 = false;
+				}
+			}
+		}
+
+		if (Lane4 == true)
+		{
+			if (Jump <= 0)
+			{
+				if (Movement >= -7)
+				{
+					Movement -= (float)(50 * dt);
+				}
+				else
+				{
+					Lane4 = false;
 				}
 			}
 		}
@@ -460,7 +553,7 @@ void SceneGame::UpdatePlayerJump(double dt)
 {
 	if (gameState == E_GAME)
 	{
-	//Player Jump
+		//Player Jump
 		if (Application::IsKeyPressed('I'))
 		{
 			JumpPressed = true;
