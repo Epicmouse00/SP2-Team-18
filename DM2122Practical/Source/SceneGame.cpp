@@ -35,6 +35,12 @@ void SceneGame::Init()
 	// Set initial game state
 	gameState = E_MAINMENU;
 
+	//Variables
+	Movement = 0;
+	Jump = 0;
+	delayTime = 0;
+	JumpPressed = false;
+
 	InitProjection();
 }
 
@@ -173,13 +179,6 @@ void SceneGame::InitDefault()
 	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
 	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
 	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
-
-	//Variables
-	Movement = 0;
-	Jump = 0;
-	delayTime = 0;
-
-	JumpPressed = false;
 }
 
 void SceneGame::InitLights()
@@ -308,7 +307,7 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	0.1	x	10)
-	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 0.1f, 10.f);
+	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Track
 
