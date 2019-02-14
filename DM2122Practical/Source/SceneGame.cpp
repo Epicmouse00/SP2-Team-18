@@ -34,6 +34,7 @@ void SceneGame::Init()
 
 	// Set initial game state
 	gameState = E_MAINMENU;
+	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 
 	//Variables
 	Movement = 0;
