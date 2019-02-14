@@ -86,7 +86,7 @@ void SceneGame::Render()
 	RenderSkybox();
 	RenderMesh(meshList[GEO_AXES], false);
 
-	////////// RE	NDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
+	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
 
 	// Menu backdrop
 
@@ -539,140 +539,6 @@ void SceneGame::UpdateGameChooseCursor()
 
 
 
-////////// Render Methods //////////
-
-//Mesh Renderer
-void SceneGame::RenderMesh(Mesh* mesh, bool enableLight)
-{
-	Mtx44 MVP, modelView, modelView_inverse_transpose;
-
-	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
-	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-
-	modelView = viewStack.Top() * modelStack.Top();
-	glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-
-	if (enableLight)
-	{
-		glUniform1i(m_parameters[U_LIGHTENABLED], 1);
-		modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-		glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
-
-		//load material
-		glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
-		glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
-		glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
-		glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
-	}
-	else
-	{
-		glUniform1i(m_parameters[U_LIGHTENABLED], 0);
-	}
-
-	if (mesh->textureID > 0)
-	{
-		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
-		glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
-	}
-	else
-	{
-		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
-	}
-
-	mesh->Render();
-
-	if (mesh->textureID > 0)
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-}
-
-//SkyBox Renderer
-void SceneGame::RenderSkybox()
-{
-	//Left
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(90, 0, 1, 0);
-	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
-	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
-	RenderMesh(meshList[GEO_LEFT], false);
-	modelStack.PopMatrix();
-
-	//Right
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(-90, 0, 1, 0);
-	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
-	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
-	RenderMesh(meshList[GEO_RIGHT], false);
-	modelStack.PopMatrix();
-
-	//Front
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
-	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
-	RenderMesh(meshList[GEO_FRONT], false);
-	modelStack.PopMatrix();
-
-	//Back
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(180, 0, 1, 0);
-	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
-	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
-	RenderMesh(meshList[GEO_BACK], false);
-	modelStack.PopMatrix();
-
-	//Top
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
-	modelStack.Rotate(90, 0, 0, 1);
-	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
-	RenderMesh(meshList[GEO_TOP], false);
-	modelStack.PopMatrix();
-
-	//Bottom
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(-90, 1, 0, 0);
-	modelStack.Translate(0, 0, -SKYBOXSIZE / 2 + 2.f);
-	modelStack.Rotate(-90, 0, 0, 1);
-	modelStack.Scale(SKYBOXSIZE, SKYBOXSIZE, SKYBOXSIZE);
-	RenderMesh(meshList[GEO_BOTTOM], false);
-	modelStack.PopMatrix();
-}
-
-//Text Renderer
-void SceneGame::RenderText(Mesh* mesh, std::string text, Color color)
-{
-	if (!mesh || mesh->textureID <= 0) //Proper error check
-		return;
-
-	glDisable(GL_DEPTH_TEST);
-	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
-	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
-	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
-	glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
-	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
-	for (unsigned i = 0; i < text.length(); ++i)
-	{
-		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f, 0, 0); //1.0f is the spacing of each character, you may change this value
-		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
-		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-
-		mesh->Render((unsigned)text[i] * 6, 6);
-	}
-
-}
 
 ////////// Render Methods //////////
 
