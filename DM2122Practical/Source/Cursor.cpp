@@ -34,7 +34,7 @@ void Cursor::updatePositionIndex(int direction)
 	}
 }
 
-float Cursor::outputPosition()
+float Cursor::outputPosition() const
 {
 	return initialPosition + (positionIndex * spacing);
 }

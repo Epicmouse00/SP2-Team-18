@@ -12,7 +12,7 @@ public:
 	Cursor(float initialPosition, float spacing, int numberOfOptions);
 	~Cursor();
 	void updatePositionIndex(int direction);
-	float outputPosition();
+	float outputPosition() const;
 	int getIndex() const;
 };
 

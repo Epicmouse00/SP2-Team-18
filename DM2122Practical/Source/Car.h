@@ -17,10 +17,10 @@ public:
 			~Car();
 	bool	UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right);
 	void	UpdatePlayerJump(double dt, bool jump);
-	int		getLane();
-	float	getMovement();
-	float	getJump();
+	int		getLane() const;
+	float	getMovement() const;
+	float	getJump() const;
 	void	setTexture(int texture);
-	int		getTexture();
+	int		getTexture() const;
 };
 

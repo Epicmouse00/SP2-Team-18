@@ -36,17 +36,17 @@ Car::~Car()
 {
 }
 
-int Car::getLane()
+int Car::getLane() const
 {
 	return Lane;
 }
 
-float Car::getMovement()
+float Car::getMovement() const
 {
 	return Movement;
 }
 
-float Car::getJump()
+float Car::getJump() const
 {
 	return Jump;
 }
@@ -147,7 +147,7 @@ void Car::setTexture(int texture)
 	this->texture = texture;
 }
 
-int Car::getTexture()
+int Car::getTexture() const
 {
 	return texture;
 }
