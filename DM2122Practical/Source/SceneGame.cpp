@@ -11,6 +11,7 @@
 
 #include "LoadTGA.h"
 
+Menu menu;
 Cursor		mainMenuCursor(3.f, -2.f, 4);
 Cursor		gameChooseCursor(3.f, -3.f, 3);
 
@@ -47,6 +48,7 @@ void SceneGame::Update(double dt)
 {
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
+	UpdateMenuIndex();
 	//Controls / Interactions / etcs.
 	/////////////MOVEMENT V1.0 (UNREFINED)/////////////
 	UpdatePlayerStrafe(dt);
@@ -384,6 +386,12 @@ void SceneGame::UpdateAppPolygon()
 	}
 }
 
+void SceneGame::UpdateMenuIndex()
+{
+	//Sets the current gameState 
+	gameState = menu.getIndex();
+}
+
 void SceneGame::UpdatePlayerStrafe(double dt)
 {
 	if (gameState == E_GAME)
@@ -481,7 +489,7 @@ void SceneGame::UpdatePlayerJump(double dt)
 
 void SceneGame::UpdateMainMenuCursor()
 {
-	if (gameState == E_MAINMENU)
+	if (menu.getIndex() == E_MAINMENU)
 	{
 		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
 		{
@@ -495,30 +503,10 @@ void SceneGame::UpdateMainMenuCursor()
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_SPACE) && delayTime >= 1.f)
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			switch (mainMenuCursor.getIndex())
-			{
-			case 0:
-				//play (go to another menu)
-				gameState = E_GAMECHOOSE;
-				break;
-			case 1:
-				//leaderboard
-				//gameState = E_LEADERBOARD;
-				break;
-			case 2:
-				//shop
-				//gameState = E_SHOP;
-				break;
-			case 3:
-				//exit
-				b_exit = true;
-				break;
-			default:
-				break;
-			}
+			menu.setIndex(mainMenuCursor.getIndex());
 		}
 	}
 }
@@ -539,28 +527,9 @@ void SceneGame::UpdateGameChooseCursor()
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_SPACE) && delayTime >= 1.f)
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			switch (gameChooseCursor.getIndex())
-			{
-			case 0:
-				//vs
-				gameState = E_GAME;
-				gameMode = MODE_VS;
-				break;
-			case 1:
-				//time
-				gameState = E_GAME;
-				gameMode = MODE_TIME;
-				break;
-			case 2:
-				//back
-				gameState = E_MAINMENU;
-				break;
-			default:
-				break;
-			}
 		}
 	}
 }
