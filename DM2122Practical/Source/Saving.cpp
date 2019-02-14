@@ -32,7 +32,7 @@ void Saving::setBalance(int amount)
 	saveData.close();
 }
 
-int Saving::getBalance()
+int Saving::getBalance() const
 {
 	//get balance from .txt
 	return balance;
