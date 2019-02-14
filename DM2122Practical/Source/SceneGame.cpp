@@ -321,8 +321,9 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 		{
 			if (rand() % 2)
 			{
+				const float laneSpacing = 22.5f; // 7.5 x 3
 				Obstacle temp(rand() % 2);
-				temp.setX(((float)lane * 18) - 27);
+				temp.setX(((float)lane * laneSpacing) - (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ(200 * (float)row + 250);
 				temp.setActive(true);

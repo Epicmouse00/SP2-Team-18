@@ -8,6 +8,8 @@ private:
 	bool	JumpPressed;
 	bool	isPlayer;
 	bool	resetTime;
+	const float	laneDist	= 7.5f;
+	const float	laneOffset	= -0.75f;
 public:
 			Car();
 			Car(bool isPlayer);

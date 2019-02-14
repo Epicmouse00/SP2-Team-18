@@ -13,16 +13,20 @@ Car::Car()
 
 Car::Car(bool isPlayer)
 {
-	Movement = -2.f;
-	Lane = 0;
 	Jump = 0.f;
 	JumpPressed = false;
 	resetTime = false;
 	this->isPlayer = isPlayer;
 	if (isPlayer)
+	{
 		Lane = 1;
+		Movement = 1 * laneDist;
+	}
 	else
+	{
 		Lane = 2;
+		Movement = 0 * laneDist;
+	}
 }
 
 
@@ -51,7 +55,7 @@ bool Car::UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right)
 	resetTime = false;
 	if (delayTime >= 1.0f)
 	{
-		if (left)
+		if (right)
 		{
 			if (Lane < 3)
 			{
@@ -59,7 +63,7 @@ bool Car::UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right)
 				resetTime = true;
 			}
 		}
-		if (right)
+		if (left)
 		{
 			if (Lane > 0)
 			{
@@ -70,21 +74,19 @@ bool Car::UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right)
 	}
 
 	float lanePos;
-	const float laneDist = 7.5f;
-	const float laneOffset = -0.75f;
 	switch (Lane)
 	{
 	case 0:
-		lanePos = -laneDist;
+		lanePos = 2 * laneDist;
 		break;
 	case 1:
-		lanePos = 0.0f;
+		lanePos = 1 * laneDist;
 		break;
 	case 2:
-		lanePos = laneDist;
+		lanePos = 0 * laneDist;
 		break;
 	case 3:
-		lanePos = 2 * laneDist;
+		lanePos = -1 * laneDist;
 		break;
 	default:
 		lanePos = 0.f;
