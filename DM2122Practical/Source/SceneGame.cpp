@@ -34,6 +34,13 @@ void SceneGame::Init()
 
 	// Set initial game state
 	gameState = E_MAINMENU;
+	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+
+	//Variables
+	Movement = 0;
+	Jump = 0;
+	delayTime = 0;
+	JumpPressed = false;
 
 	//Variables
 	Movement = 0;
@@ -69,7 +76,6 @@ void SceneGame::Update(double dt)
 
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
-
 	UpdateCamMovement();
 	camera.Update(dt);
 }

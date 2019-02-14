@@ -27,169 +27,85 @@ void Camera3::Update(double dt)
 	Vector3 right = view.Cross(up);
 
 	static const float CAMERA_SPEED = 90.f;
-	//Movement
-	if (Application::IsKeyPressed('A'))
-	{
-		/*
-		if (target.x < 110)
-		{
-			if (target.x > -110)
-			{
-				if (target.y < 80)
-				{
-					if (target.y > 0)
-					{
-						if (target.z < 300)
-						{
-							if (target.z > -240)
-							{
-								position = position - right;
-								target = position + view;
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
-		position = position - right;
-		target = position + view;
-	}
-	if (Application::IsKeyPressed('D'))
-	{
-		/*
-		if (target.x < 110)
-		{
-			if (target.x > -110)
-			{
-				if (target.y < 80)
-				{
-					if (target.y > 0)
-					{
-						if (target.z < 300)
-						{
-							if (target.z > -240)
-							{
-								position = position + right;
-								target = position + view;
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
-		position = position + right;
-		target = position + view;
-	}
-	if (Application::IsKeyPressed('W'))
-	{
-		/*
-		if (target.x < 110)
-		{
-			if (target.x > -110)
-			{
-				if (target.y < 80)
-				{
-					if (target.y > 0)
-					{
-						if (target.z < 300)
-						{
-							if (target.z > -240)
-							{
-								position = position + view.Normalized();
-								target = position + view;
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
-		position = position + view.Normalized();
-		target = position + view;
-	}
-	if (Application::IsKeyPressed('S'))
-	{
-		/*
-		if (target.x < 100)
-		{
-			if (target.x > -110)
-			{
-				if (target.y < 80)
-				{
-					if (target.y > 0)
-					{
-						if (target.z < 300)
-						{
-							if (target.z > -240)
-							{
-								position = position - view.Normalized();
-								target = position + view;
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
-		position = position - view.Normalized();
-		target = position + view;
-	}
-	
 
-	//Camera Movement
-	else if (Application::IsKeyPressed(VK_LEFT))
-    {
-        float yaw = (float)(CAMERA_SPEED * dt);
-        Mtx44 rotation;
-        rotation.SetToRotation(yaw, 0, 1, 0);
-        up = rotation * up;
-        view = rotation * view;
-        target = position + view;
-    }
-    else if (Application::IsKeyPressed(VK_RIGHT))
-    {
-        float yaw = (float)(-CAMERA_SPEED * dt);
-        Mtx44 rotation;
-        rotation.SetToRotation(yaw, 0, 1, 0);
-        up = rotation * up;
-        view = rotation * view;
-        target = position + view;;
-    }
-    else if (Application::IsKeyPressed(VK_UP))
-    {
-        float pitch = (float)(CAMERA_SPEED * dt);
-        view = (target - position).Normalized();
-        right = view.Cross(up);
-        right.y = 0;
-        right.Normalize();
-        up = right.Cross(view).Normalized();
-        Mtx44 rotation;
-        rotation.SetToRotation(pitch, right.x, right.y, right.z);
-
-        right = rotation * right;
-        view = rotation * view;
-        target = position + view;
-    }
-    else if (Application::IsKeyPressed(VK_DOWN))
-    {
-        float pitch = (float)(-CAMERA_SPEED * dt);
-        view = (target - position).Normalized();
-        right = view.Cross(up);
-        right.y = 0;
-        right.Normalize();
-        up = right.Cross(view).Normalized();
-        Mtx44 rotation;
-        rotation.SetToRotation(pitch, right.x, right.y, right.z);
-
-        right = rotation * right;
-        view = rotation * view;
-        target = position + view;
-    }
-	if(Application::IsKeyPressed('R'))
+	if (active)
 	{
-		Reset();
+		//Movement
+		if (Application::IsKeyPressed('A'))
+		{
+			position = position - right;
+			target = position + view;
+		}
+		if (Application::IsKeyPressed('D'))
+		{
+			position = position + right;
+			target = position + view;
+		}
+		if (Application::IsKeyPressed('W'))
+		{
+			position = position + view.Normalized();
+			target = position + view;
+		}
+		if (Application::IsKeyPressed('S'))
+		{
+			position = position - view.Normalized();
+			target = position + view;
+		}
+
+
+		//Camera Movement
+		else if (Application::IsKeyPressed(VK_LEFT))
+		{
+			float yaw = (float)(CAMERA_SPEED * dt);
+			Mtx44 rotation;
+			rotation.SetToRotation(yaw, 0, 1, 0);
+			up = rotation * up;
+			view = rotation * view;
+			target = position + view;
+		}
+		else if (Application::IsKeyPressed(VK_RIGHT))
+		{
+			float yaw = (float)(-CAMERA_SPEED * dt);
+			Mtx44 rotation;
+			rotation.SetToRotation(yaw, 0, 1, 0);
+			up = rotation * up;
+			view = rotation * view;
+			target = position + view;;
+		}
+		else if (Application::IsKeyPressed(VK_UP))
+		{
+			float pitch = (float)(CAMERA_SPEED * dt);
+			view = (target - position).Normalized();
+			right = view.Cross(up);
+			right.y = 0;
+			right.Normalize();
+			up = right.Cross(view).Normalized();
+			Mtx44 rotation;
+			rotation.SetToRotation(pitch, right.x, right.y, right.z);
+
+			right = rotation * right;
+			view = rotation * view;
+			target = position + view;
+		}
+		else if (Application::IsKeyPressed(VK_DOWN))
+		{
+			float pitch = (float)(-CAMERA_SPEED * dt);
+			view = (target - position).Normalized();
+			right = view.Cross(up);
+			right.y = 0;
+			right.Normalize();
+			up = right.Cross(view).Normalized();
+			Mtx44 rotation;
+			rotation.SetToRotation(pitch, right.x, right.y, right.z);
+
+			right = rotation * right;
+			view = rotation * view;
+			target = position + view;
+		}
+		if (Application::IsKeyPressed('R'))
+		{
+			Reset();
+		}
 	}
 }
 
@@ -198,4 +114,14 @@ void Camera3::Reset()
 	position = defaultPosition;
 	target = defaultTarget;
 	up = defaultUp;
+}
+
+void Camera3::Enable()
+{
+	active = true;
+}
+
+void Camera3::Disable()
+{
+	active = false;
 }

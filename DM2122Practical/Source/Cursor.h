@@ -4,12 +4,16 @@
 class Cursor
 {
 	float initialPosition;
-	float positionIndex;
+	float spacing;
+	int positionIndex;
+	int numberOfOptions;
 public:
 	Cursor();
+	Cursor(float initialPosition, float spacing, int numberOfOptions);
 	~Cursor();
 	void updatePositionIndex(int direction);
 	float outputPosition();
+	int getIndex();
 };
 
 #endif
