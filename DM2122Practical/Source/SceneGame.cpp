@@ -340,7 +340,7 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 		{
 			if (rand() % 2)
 			{
-				Obstacle temp;
+				Obstacle temp(rand() % 2);
 				temp.setX(((float)lane * 18) - 27);
 				temp.setY(0);
 				temp.setZ(200 * (float)row + 250);
@@ -961,7 +961,15 @@ void SceneGame::RenderObstacles()
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
-					modelStack.Scale(10.f, 10.f, 10.f);
+					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_DEFAULT)
+					{
+						modelStack.Scale(10.f, 10.f, 10.f);
+					}
+					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
+					{
+						modelStack.Scale(10.f, 40.f, 10.f);
+					}
+					modelStack.Translate(0.f, 0.5f, 0.f);
 					RenderMesh(meshList[10 + obstacleList[lane][row].getObstacleType()], false);
 					modelStack.PopMatrix();
 				}
