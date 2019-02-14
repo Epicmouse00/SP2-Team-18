@@ -15,6 +15,7 @@
 #include "Obstacle.h"
 #include "Cursor.h"
 #include "Menu.h"
+#include "Car.h"
 
 class SceneGame : public Scene
 {
@@ -165,8 +166,7 @@ private:
 	void		UpdateDelayTime(double dt);
 	void		UpdateCamMovement();
 	void		UpdateAppPolygon();
-	void		UpdatePlayerStrafe(double dt);
-	void		UpdatePlayerJump(double dt);
+	void		UpdateCar(double dt);
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 
@@ -185,17 +185,7 @@ private:
 	//Variables
 	bool b_exit = false;
 	const unsigned int numberOfRows = 100;
-	float Movement;
-	bool Lane1;
-	bool Lane2;
-	bool Lane2a;
-	bool Lane3;
-	bool Lane3a;
-	bool Lane4;
-	float Jump;
 	float delayTime;
-
-	bool JumpPressed;
 
 	//Skybox
 

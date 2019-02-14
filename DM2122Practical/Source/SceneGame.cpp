@@ -14,6 +14,8 @@
 Menu menu;
 Cursor		mainMenuCursor(3.f, -2.f, 4);
 Cursor		gameChooseCursor(3.f, -3.f, 3);
+Car			Player(true);
+
 
 SceneGame::SceneGame()
 {
@@ -33,24 +35,7 @@ void SceneGame::Init()
 	InitObstacles(numberOfRows);
 
 	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-
-	//Variables
-	Movement = 0;
-	Jump = 0;
 	delayTime = 0;
-	JumpPressed = false;
-
-	//Variables
-	Movement = 0;
-	bool Lane1 = false;
-	bool Lane2 = false;
-	bool Lane2a = false;
-	bool Lane3 = false;
-	bool Lane3a = false;
-	bool Lane4 = false;
-	Jump = 0;
-	delayTime = 0;
-	JumpPressed = false;
 
 	InitProjection();
 }
@@ -66,11 +51,7 @@ void SceneGame::Update(double dt)
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
 	//Controls / Interactions / etcs.
-	/////////////MOVEMENT V1.3 (REFINED)/////////////
-	UpdatePlayerStrafe(dt);
-	UpdatePlayerJump(dt);
-	/////////////MOVEMENT V1.3 (REFINED)/////////////
-
+	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
 	UpdateCamMovement();
@@ -394,191 +375,13 @@ void SceneGame::UpdateAppPolygon()
 	}
 }
 
-void SceneGame::UpdatePlayerStrafe(double dt)
+void SceneGame::UpdateCar(double dt)
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		//Player Move Left 1st Column
-		if (Application::IsKeyPressed('J'))
-		{
-			//Lane 1
-			if (Movement >= 6 && delayTime >= 1.0f)
-			{
-				Lane1 = true;
-				delayTime = 0;
-			}
-
-			//Lane 2
-			if (Movement <= 0 && Movement >= -1 && delayTime >= 1.0f)
-			{
-				Lane2 = true;
-				delayTime = 0;
-			}
-
-			//Lane 3a (Right to Left 1 Lane)
-			if (Movement <= -7 && delayTime >= 1.0f)
-			{
-				Lane3a = true;
-				delayTime = 0;
-			}
-		}
-
-		if (Lane1 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement <= 12)
-				{
-					Movement += (float)(50 * dt);
-				}
-				else
-				{
-					Lane1 = false;
-				}
-			}
-		}
-
-		if (Lane2 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement <= 6)
-				{
-					Movement += (float)(50 * dt);
-				}
-				else
-				{
-					Lane2 = false;
-				}
-			}
-		}
-
-		if (Lane3a == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement < -1)
-				{
-					Movement += (float)(50 * dt);
-				}
-				else
-				{
-					Lane3a = false;
-				}
-			}
-		}
-
-		//Player Move Right 1st Column
-		if (Application::IsKeyPressed('L'))
-		{
-			//Lane 2a (Right to Left 1 Lane)
-			if (Movement >= 7 && delayTime >= 1.0f)
-			{
-				Lane2a = true;
-				delayTime = 0;
-			}
-
-			//Lane 3
-			if (Movement >= 0.0f && delayTime >= 1.0f)
-			{
-				Lane3 = true;
-				delayTime = 0;
-			}
-
-			//Lane 4
-			if (Movement <= 0.5f && delayTime >= 1.0f)
-			{
-				Lane4 = true;
-				delayTime = 0;
-			}
-		}
-
-		if (Lane2a == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement >= 7)
-				{
-					Movement -= (float)(50 * dt);
-				}
-				else
-				{
-					Lane2a = false;
-				}
-			}
-		}
-
-		if (Lane3 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement >= -0.5f)
-				{
-					Movement -= (float)(50 * dt);
-				}
-				else
-				{
-					Lane3 = false;
-				}
-			}
-		}
-
-		if (Lane4 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement >= -7)
-				{
-					Movement -= (float)(50 * dt);
-				}
-				else
-				{
-					Lane4 = false;
-				}
-			}
-		}
-	}
-}
-
-void SceneGame::UpdatePlayerJump(double dt)
-{
-	if (menu.getIndex() == E_GAME)
-	{
-		//Player Jump
-		if (Application::IsKeyPressed('I') && delayTime > 5.0f)
-		{
-			if (Jump <= 0)
-			{
-				JumpPressed = true;
-				delayTime = 0;
-			}
-		}
-
-		if (JumpPressed == true)
-		{
-			if (Jump < 5.0f)
-			{
-				Jump += (float)(50 * dt);
-			}
-			else
-			{
-				JumpPressed = false;
-			}
-		}
-		else
-		{
-			if (Jump > 0)
-			{
-				if ((Jump -= (float)(50 * dt)) >= 0)
-				{
-					Jump -= (float)(50 * dt);
-				}
-				else
-				{
-					Jump = 0;
-				}
-			}
-		}
+		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
+		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
+			delayTime = 0.f;
 	}
 }
 
@@ -821,12 +624,13 @@ void SceneGame::RenderPlayer()
 {
 	if (menu.getIndex() == E_GAME)
 	{
+		//Player
 		modelStack.PushMatrix();
 		modelStack.Translate(-9, 0, 50.f);
 		modelStack.Rotate(0, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Movement, 0, 0);
-		modelStack.Translate(0, Jump, 0);
+		modelStack.Translate(Player.getMovement(), 0, 0);
+		modelStack.Translate(0, Player.getJump(), 0);
 		RenderMesh(meshList[GEO_PLAYER], true);
 		modelStack.PopMatrix();
 	}
