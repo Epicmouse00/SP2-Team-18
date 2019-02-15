@@ -234,10 +234,8 @@ private:
 	//cursor defined in .cpp
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
-	Obstacle	obstacleList[4][100] = { NULL };
-	PowerUps	*powerupList[4][50];
-	Saving gameSave;
-	Currency gameBalance;
-	Shop gameShop;
+	Saving		gameSave;
+	Currency	gameBalance;
+	Shop		gameShop;
 };
 #endif
