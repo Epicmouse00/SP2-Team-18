@@ -6,17 +6,26 @@ AImovement::AImovement()
 {
 }
 
-AImovement::AImovement(Car car, Obstacle List[4][100])
+AImovement::AImovement(int lane, float forward, Obstacle List[4][100])
 {
 	jump = false;
 	left = false;
 	right = false;
 
+	forward *= 3;
 	for (size_t row = 0; row < 100; row++)
 	{
-		if(List[car.getLane()][row].getZ() < car.getForward())
+		if(List[lane][row].getZ() > forward)
 		{
-			//idk
+			if(List[lane][row].getZ() - forward < 150.f)
+			{
+				if(List[lane][row].getObstacleType() == 0) // Short
+					jump = true;
+				else
+				{
+					//change lanes
+				}
+			}
 		}
 	}
 }

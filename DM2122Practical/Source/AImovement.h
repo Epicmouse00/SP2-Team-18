@@ -10,7 +10,7 @@ private:
 	bool	right;
 public:
 			AImovement();
-			AImovement(Car car, Obstacle List[4][100]);
+			AImovement(int lane, float forward, Obstacle List[4][100]);
 			~AImovement();
 	bool	getJump() const;
 	bool	getLeft() const;

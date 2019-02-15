@@ -336,7 +336,7 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 			if (rand() % 2)
 			{
 				Obstacle temp(rand() % 2);
-				temp.setX(((float)lane * laneSpacing) - (laneSpacing * (float)1.5));
+				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ(400 * (float)row + 1000);
 				temp.setActive(true);
@@ -346,7 +346,7 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 		//At least one obstacle is a Default in a row
 		int randomLane = rand() % 4;
 		Obstacle temp(0);
-		temp.setX(((float)randomLane * laneSpacing) - (laneSpacing * (float)1.5));
+		temp.setX((-(float)randomLane * laneSpacing) + (laneSpacing * (float)1.5));
 		temp.setY(0);
 		temp.setZ(400 * (float)row + 1000);
 		temp.setActive(true);
@@ -443,8 +443,8 @@ void SceneGame::UpdateCar(double dt)
 		//Change with collectibles
 		const float opponentboost = 0.f;
 
-		AImovement AI(Opponent, obstacleList);
 		Opponent.UpdatePlayerForward(dt, opponentboost);
+		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList);
 		Opponent.UpdatePlayerJump(dt, AI.getJump());
 		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
 			delayTime = 0.f;
