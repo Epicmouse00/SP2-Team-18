@@ -320,9 +320,6 @@ void SceneGame::InitMeshes()
 	// Obstacles (1	x	4	x	1)
 	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
-	// Obstacles (1	x	0.1	x	10)
-	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 1.f, 1.f);
-
 	// Track
 	//meshList[GEO_TRACK] = 
 
@@ -428,7 +425,7 @@ void SceneGame::UpdateCamLoc()
 		if (menu.getIndex() == E_GAME)
 		{
 			const float camAgile = 0.6f;
-			camera.setPosition(Vector3(0.f, 30.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
 		{
@@ -473,7 +470,7 @@ void SceneGame::UpdateCar(double dt)
 
 		//Opponent
 		//Change with collectibles
-		const float opponentboost = 0.f;
+		const float opponentboost = 1.f;
 
 		Opponent.UpdatePlayerForward(dt, opponentboost);
 		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);

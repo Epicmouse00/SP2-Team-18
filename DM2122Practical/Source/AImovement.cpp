@@ -1,5 +1,13 @@
 #include "AImovement.h"
-
+/*
+	Check if obstacle is short
+		if yes, jump
+		if not,
+			check next lane if doesnt have tall obstacle
+			if dont have, move there
+			if not,
+				move to next lane to check if there are free lanes
+*/
 
 
 AImovement::AImovement()
@@ -21,9 +29,29 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 			{
 				if(obstacle[lane][row].getObstacleType() == 0) // Short
 					jump = true;
-				else
+			}
+			if (obstacle[lane][row].getZ() - forward < 350.f)
+			{
+				if (obstacle[lane][row].getObstacleType() == 1) // Tall
 				{
-					//change lanes
+					if (lane == 0) //if on edge
+						right = true;
+					else if (lane == 3)
+						left = true;
+					else
+					{
+						if (obstacle[lane - 1][row].getObstacleType() == 0) //if next lane is free
+							left = true;
+						else if (obstacle[lane + 1][row].getObstacleType() == 0)
+							right = true;
+						else
+						{
+							if (lane == 1) //if both lanes aren't free
+								right = true;
+							else if (lane == 2)
+								left = true;
+						}
+					}
 				}
 			}
 		}
