@@ -374,7 +374,7 @@ void SceneGame::InitPowerUps()
 				PowerUps *temp = new PowerUps;
 				temp->setX(((float)lane * 18) - 27);
 				temp->setY(0);
-				temp->setZ(400 * (float)row + 350);
+				temp->setZ(800 * (float)row + 800);
 				powerupList[lane][row] = temp;
 			}
 			else
