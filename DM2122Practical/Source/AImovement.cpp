@@ -19,7 +19,12 @@ AImovement::AImovement(int lane, float forward, Obstacle List[4][100])
 		{
 			if(List[lane][row].getZ() - forward < 150.f)
 			{
-				jump = true;
+				if(List[lane][row].getObstacleType() == 0) // Short
+					jump = true;
+				else
+				{
+					//change lanes
+				}
 			}
 		}
 	}
