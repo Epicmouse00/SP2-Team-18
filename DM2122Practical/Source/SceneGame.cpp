@@ -34,7 +34,7 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitObstacles(numberOfRows);
-	InitPowerUps();
+	InitPowerUps(numberOfRows);
 
 
 
@@ -334,10 +334,10 @@ void SceneGame::InitProjection()
 	projectionStack.LoadMatrix(projection);
 }
 
-void SceneGame::InitObstacles(unsigned int noOfObstacles)
+void SceneGame::InitObstacles(unsigned int noOfRows)
 {
 	const float laneSpacing = 22.5f; // 7.5 x 3
-	for (int row = 0; row < (int)noOfObstacles; ++row)
+	for (int row = 0; row < (int)noOfRows; ++row)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
@@ -363,11 +363,11 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 	}
 }
 
-void SceneGame::InitPowerUps()
+void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
-	for (int lane = 0; lane < 4; lane++)
+	for (int row = 0; row < (int)noOfRows / 2; row++)
 	{
-		for (int row = 0; row < 50; row++)
+		for (int lane = 0; lane < 4; lane++)
 		{
 			if ((rand() % 2) == 0)
 			{

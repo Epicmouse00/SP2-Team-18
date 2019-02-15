@@ -180,8 +180,8 @@ private:
 	void		InitCamera();
 	void		InitMeshes();
 	void		InitProjection();
-	void		InitObstacles(unsigned int noOfObstacles);
-	void		InitPowerUps();
+	void		InitObstacles(unsigned int noOfRows);
+	void		InitPowerUps(unsigned int noOfRows);
 
 	void		UpdateDelayTime(double dt);
 	void		UpdateCam(double dt);
