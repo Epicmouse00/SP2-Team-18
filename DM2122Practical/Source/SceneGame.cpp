@@ -40,7 +40,7 @@ void SceneGame::Init()
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 
-
+	gameBalance.setBalance(gameSave.getBalance());
 
 	//Will be in SHOP (Call once, not every frame)
 	Player.setTexture(CAR_GREEN);
@@ -73,6 +73,7 @@ void SceneGame::Update(double dt)
 	UpdateGameChooseCursor();
 	UpdateLight();
 	UpdateCam(dt);
+	UpdateShop();
 
 	powerupRotation += float(dt) * 90.f;
 }
@@ -117,6 +118,9 @@ void SceneGame::Render()
 	RenderCar();
 
 	// Coins
+
+	// Shop
+	RenderShop();
 
 	// Items
 	RenderPowerUps();
@@ -554,6 +558,31 @@ void SceneGame::UpdateGameChooseCursor()
 	}
 }
 
+void SceneGame::UpdateShop()
+{
+	if (menu.getIndex() == E_SHOP)
+	{
+		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			gameShop.nextIndex();
+		}
+		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			gameShop.previousIndex();
+		}
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			if (gameShop.isOwned() == false)
+			{
+				gameBalance.deductBalance(gameShop.getCost());
+			}
+		}
+	}
+}
+
 void SceneGame::UpdateLight()
 {
 		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
@@ -894,6 +923,55 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderShop()
+{
+	// Render gamechoose buttons
+	if (menu.getIndex() == E_SHOP)
+	{
+		string colour;
+		string cost;
+		string owned;
+		string balance;
+
+		switch (gameShop.getColour())
+		{
+		case 0:
+			colour = "Grey";
+			break;
+		case 1:
+			colour = "Cyan";
+			break;
+		case 2:
+			colour = "Orange";
+			break;
+		case 3:
+			colour = "Red";
+			break;
+		case 4:
+			colour = "Green";
+			break;
+		}
+
+		cost = to_string(gameShop.getCost());
+
+		if (gameShop.isOwned() == true)
+		{
+			owned = "Yes";
+		}
+		else
+		{
+			owned = "No";
+		}
+
+		balance = to_string(gameBalance.getBalance());
+
+		RenderTextOnScreen(meshList[GEO_TEXT], colour, Color(0, 1, 0), 2, 1, 1);
+		RenderTextOnScreen(meshList[GEO_TEXT], cost, Color(0, 1, 0), 2, 1, 2);
+		RenderTextOnScreen(meshList[GEO_TEXT], owned, Color(0, 1, 0), 2, 1, 3);
+		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 10, 1);
 	}
 }
 

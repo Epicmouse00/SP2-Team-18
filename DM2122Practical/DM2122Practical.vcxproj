@@ -167,6 +167,7 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\Shop.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>
@@ -190,6 +191,7 @@
     <ClCompile Include="Source\Saving.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\shader.cpp" />
+    <ClCompile Include="Source\Shop.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>

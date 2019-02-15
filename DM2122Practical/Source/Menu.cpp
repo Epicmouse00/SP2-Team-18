@@ -17,7 +17,7 @@ bool Menu::menuChange(int cursorIndex)
 	{
 		return true;
 	}
-	if (pageIndex == 0 && (cursorIndex == 2 || cursorIndex == 3))
+	if (pageIndex == 0 && cursorIndex == 3)
 	{
 		return false;
 	}
@@ -29,6 +29,10 @@ bool Menu::menuChange(int cursorIndex)
 	{
 		setGameMode(cursorIndex);
 		setIndex(2);
+	}
+	else if (cursorIndex > 1)
+	{
+		setIndex(cursorIndex + 1);
 	}
 	else
 	{
