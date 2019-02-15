@@ -18,6 +18,9 @@
 #include "PowerUps.h"
 #include "Car.h"
 #include "AImovement.h"
+#include "Shop.h"
+#include "Saving.h"
+#include "Currency.h"
 
 class SceneGame : public Scene
 {
@@ -193,6 +196,7 @@ private:
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 	void		UpdateLight();
+	void		UpdateShop();
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
@@ -200,6 +204,7 @@ private:
 	void		RenderObstacles();
 	void		RenderPowerUps();
 	void		RenderSkybox();
+	void		RenderShop();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -232,5 +237,8 @@ private:
 	void		RenderMesh(Mesh *mesh, bool enableLight);
 	Obstacle	obstacleList[4][100] = { NULL };
 	PowerUps	*powerupList[4][50];
+	Saving gameSave;
+	Currency gameBalance;
+	Shop gameShop;
 };
 #endif
