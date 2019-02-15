@@ -4,8 +4,8 @@ Leaderboard::Leaderboard()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		versusScores[i] = 0;
-		timeScores[i] = 0;
+		versusScores[i] = 0.f;
+		timeScores[i] = 0.f;
 	}
 }
 
@@ -14,7 +14,7 @@ Leaderboard::~Leaderboard()
 
 }
 
-void Leaderboard::setVersus(int time)
+void Leaderboard::setVersus(float time)
 {
 	float temp = 0.f;
 	for (int i = 0; i < 5; i++)
@@ -38,7 +38,7 @@ void Leaderboard::setVersus(int time)
 	}
 }
 
-void Leaderboard::setTime(int time)
+void Leaderboard::setTime(float time)
 {
 	for (int i = 0; i < 5; i++)
 	{
