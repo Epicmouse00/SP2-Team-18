@@ -34,7 +34,6 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitObstacles(numberOfRows);
-	InitPowerUps();
 
 
 
@@ -46,8 +45,6 @@ void SceneGame::Init()
 
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
-	JumpPressed = false;
-	powerupRotation = 0;
 
 	InitProjection();
 }
@@ -68,7 +65,6 @@ void SceneGame::Update(double dt)
 	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
-	powerupRotation += 45.f * dt;
 	UpdateLight();
 	UpdateCam(dt);
 }
@@ -114,8 +110,7 @@ void SceneGame::Render()
 
 	// Coins
 
-	// Items (I assume these are power-ups)
-	RenderPowerUps();
+	// Items
 
 	// Obstacles
 	RenderObstacles();
@@ -305,10 +300,6 @@ void SceneGame::InitMeshes()
 	// Coins
 
 	// Items
-	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(0, 0, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
 
 	// Obstacles (1	x	1	x	1)
 	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
@@ -363,27 +354,8 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 	}
 }
 
-void SceneGame::InitPowerUps()
-{
-	for (int lane = 0; lane < 4; lane++)
-	{
-		for (int row = 0; row < 50; row++)
-		{
-			if ((rand() % 2) == 0)
-			{
-				PowerUps *temp = new PowerUps;
-				temp->setX(((float)lane * 18) - 27);
-				temp->setY(0);
-				temp->setZ(400 * (float)row + 350);
-				powerupList[lane][row] = temp;
-			}
-			else
-			{
-				powerupList[lane][row] = nullptr;
-			}
-		}
-	}
-}
+
+
 
 
 
@@ -914,52 +886,6 @@ void SceneGame::RenderObstacles()
 					}
 					modelStack.Translate(0.f, 0.5f, 0.f);
 					RenderMesh(meshList[10 + obstacleList[lane][row].getObstacleType()], false);
-					modelStack.PopMatrix();
-				}
-			}
-		}
-	}
-}
-
-void SceneGame::RenderPowerUps()
-{
-	if (menu.getIndex() == E_GAME)
-	{
-		for (size_t lane = 0; lane < 4; ++lane)
-		{
-			for (size_t row = 0; row < 50; ++row)
-			{
-				if (powerupList[lane][row] != nullptr)
-				{
-					modelStack.PushMatrix();
-					modelStack.Translate(powerupList[lane][row]->getX(), powerupList[lane][row]->getY(), powerupList[lane][row]->getZ());
-					switch (powerupList[lane][row]->getType())
-					{
-					case 0:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
-						RenderMesh(meshList[GEO_SPEED], false);
-						break;
-					case 1:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
-						RenderMesh(meshList[GEO_SHIELD], false);
-						break;
-					case 2:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
-						RenderMesh(meshList[GEO_FLIGHT], false);
-						break;
-					case 3:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
-						RenderMesh(meshList[GEO_DOUBLE], false);
-						break;
-					}
 					modelStack.PopMatrix();
 				}
 			}

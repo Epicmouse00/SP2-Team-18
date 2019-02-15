@@ -162,7 +162,6 @@
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\Obstacle.h" />
-    <ClInclude Include="Source\PowerUps.h" />
     <ClInclude Include="Source\Saving.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneGame.h" />
@@ -186,7 +185,6 @@
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\Obstacle.cpp" />
-    <ClCompile Include="Source\PowerUps.cpp" />
     <ClCompile Include="Source\Saving.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\shader.cpp" />
