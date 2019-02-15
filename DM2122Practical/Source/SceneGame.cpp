@@ -65,6 +65,7 @@ void SceneGame::Update(double dt)
 	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
+	UpdateLight();
 	UpdateCam(dt);
 }
 
@@ -211,8 +212,8 @@ void SceneGame::InitLights()
 
 	//Initialize Light Parameters
 	//First Light
-	light[0].type = Light::LIGHT_SPOT;
-	light[0].position.Set(0, 60, 30);
+	light[0].type = Light::LIGHT_POINT;
+	light[0].position.Set(0, 0, 0);
 	light[0].color.Set(1, 1, 1);
 	light[0].power = 5;
 	light[0].kC = 0.1f;
@@ -389,7 +390,8 @@ void SceneGame::UpdateCamLoc()
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			camera.setPosition(Vector3(0.f, 30.f, -50.f + 3.f * Player.getForward()), Vector3(3.f * (float)Player.getMovement(), 3.f * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			const float camAgile = 0.6f;
+			camera.setPosition(Vector3(0.f, 30.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
 		{
@@ -516,6 +518,11 @@ void SceneGame::UpdateGameChooseCursor()
 			menu.menuChange(gameChooseCursor.getIndex());
 		}
 	}
+}
+
+void SceneGame::UpdateLight()
+{
+		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
 }
 
 

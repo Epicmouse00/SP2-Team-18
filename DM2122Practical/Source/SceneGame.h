@@ -184,6 +184,7 @@ private:
 	void		UpdateCarTexture();
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
+	void		UpdateLight();
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
