@@ -16,9 +16,9 @@ public:
 	void	setY(float y);
 	void	setZ(float z);
 	void	setActive(bool active);
-	float	getX();
-	float	getY();
-	float	getZ();
+	float	getX() const;
+	float	getY() const;
+	float	getZ() const;
 	bool	getActive();
 	int		getObstacleType();
 private:

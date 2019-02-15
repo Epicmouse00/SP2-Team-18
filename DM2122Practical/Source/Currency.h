@@ -8,5 +8,5 @@ public:
 			~Currency();
 	void	addBalance(int amount);
 	void	deductBalance(int amount);
-	int		getBalance();
+	int		getBalance() const;
 };

@@ -34,12 +34,12 @@ void Cursor::updatePositionIndex(int direction)
 	}
 }
 
-float Cursor::outputPosition()
+float Cursor::outputPosition() const
 {
 	return initialPosition + (positionIndex * spacing);
 }
 
-int Cursor::getIndex()
+int Cursor::getIndex() const
 {
 	return positionIndex;
 }

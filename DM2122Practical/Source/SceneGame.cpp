@@ -14,6 +14,9 @@
 Menu menu;
 Cursor		mainMenuCursor(3.f, -2.f, 4);
 Cursor		gameChooseCursor(3.f, -3.f, 3);
+Car			Player(true);
+Car			Opponent(false);
+
 
 SceneGame::SceneGame()
 {
@@ -33,23 +36,15 @@ void SceneGame::Init()
 	InitObstacles(numberOfRows);
 	InitPowerUps();
 
-	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 
-	//Variables
-	Movement = 0;
-	Jump = 0;
-	delayTime = 0;
-	JumpPressed = false;
 
-	//Variables
-	Movement = 0;
-	bool Lane1 = false;
-	bool Lane2 = false;
-	bool Lane2a = false;
-	bool Lane3 = false;
-	bool Lane3a = false;
-	bool Lane4 = false;
-	Jump = 0;
+	//Will be in SHOP (Call once, not every frame)
+	Player.setTexture(CAR_GREEN);
+	UpdateCarTexture();
+
+
+
+	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
 	JumpPressed = false;
 	powerupRotation = 0;
@@ -68,20 +63,17 @@ void SceneGame::Update(double dt)
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
 	//Controls / Interactions / etcs.
-	/////////////MOVEMENT V1.3 (REFINED)/////////////
-	UpdatePlayerStrafe(dt);
-	UpdatePlayerJump(dt);
-	/////////////MOVEMENT V1.3 (REFINED)/////////////
 
+
+	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
-	UpdateCamMovement();
-	camera.Update(dt);
-
 	powerupRotation += 45.f * dt;
+	UpdateLight();
+	UpdateCam(dt);
 }
 
-static const float SKYBOXSIZE = 2000.f;
+static const float SKYBOXSIZE = 10000.f;
 
 //Temp Variables
 Mtx44 MVP, modelView, modelView_inverse_transpose;
@@ -117,10 +109,8 @@ void SceneGame::Render()
 
 	// Gameplay UI
 
-	// Player
-	RenderPlayer();
-
-	// Opponent
+	// Player + Opponent
+	RenderCar();
 
 	// Coins
 
@@ -227,8 +217,8 @@ void SceneGame::InitLights()
 
 	//Initialize Light Parameters
 	//First Light
-	light[0].type = Light::LIGHT_SPOT;
-	light[0].position.Set(0, 60, 30);
+	light[0].type = Light::LIGHT_POINT;
+	light[0].position.Set(0, 0, 0);
 	light[0].color.Set(1, 1, 1);
 	light[0].power = 5;
 	light[0].kC = 0.1f;
@@ -306,9 +296,11 @@ void SceneGame::InitMeshes()
 
 	// Player
 	meshList[GEO_PLAYER] = MeshBuilder::GenerateOBJ("Player Car", "OBJ//gray.obj");
-	meshList[GEO_PLAYER]->textureID = LoadTGA("image//gray.tga");
+	meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Opponent
+	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
+	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Coins
 
@@ -328,6 +320,7 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Track
+	//meshList[GEO_TRACK] = 
 
 	// Others?
 
@@ -343,20 +336,30 @@ void SceneGame::InitProjection()
 
 void SceneGame::InitObstacles(unsigned int noOfObstacles)
 {
-	for (int lane = 0; lane < 4; ++lane)
+	const float laneSpacing = 22.5f; // 7.5 x 3
+	for (int row = 0; row < (int)noOfObstacles; ++row)
 	{
-		for (int row = 0; row < (int)noOfObstacles; ++row)
+		for (int lane = 0; lane < 4; ++lane)
 		{
 			if (rand() % 2)
 			{
 				Obstacle temp(rand() % 2);
-				temp.setX(((float)lane * 18) - 27);
+				temp.setX(((float)lane * laneSpacing) - (laneSpacing * (float)1.5));
 				temp.setY(0);
-				temp.setZ(200 * (float)row + 250);
+				temp.setZ(400 * (float)row + 1000);
 				temp.setActive(true);
 				obstacleList[lane][row] = temp;
 			}
 		}
+		//At least one obstacle is a Default in a row
+		int randomLane = rand() % 4;
+		Obstacle temp(0);
+		temp.setX(((float)randomLane * laneSpacing) - (laneSpacing * (float)1.5));
+		temp.setY(0);
+		temp.setZ(400 * (float)row + 1000);
+		temp.setActive(true);
+		obstacleList[randomLane][row] = temp;
+
 	}
 }
 
@@ -394,12 +397,35 @@ void SceneGame::UpdateDelayTime(double dt)
 	}
 }
 
+void SceneGame::UpdateCam(double dt)
+{
+	UpdateCamMovement();
+	UpdateCamLoc();
+	camera.Update(dt);
+}
+
 void SceneGame::UpdateCamMovement()
 {
 	if (Application::IsKeyPressed('Z'))
 		camera.Enable();
 	if (Application::IsKeyPressed('X'))
 		camera.Disable();
+}
+
+void SceneGame::UpdateCamLoc()
+{
+	if (!camera.getActive())
+	{
+		if (menu.getIndex() == E_GAME)
+		{
+			const float camAgile = 0.6f;
+			camera.setPosition(Vector3(0.f, 30.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+		}
+		else
+		{
+			camera.setPosition(Vector3(0.f, 1.5f, -10.f), Vector3(0.f, 1.5f, 180.f), Vector3(0.f, 1.f, 0.f));
+		}
+	}
 }
 
 void SceneGame::UpdateAppPolygon()
@@ -422,191 +448,55 @@ void SceneGame::UpdateAppPolygon()
 	}
 }
 
-void SceneGame::UpdatePlayerStrafe(double dt)
+void SceneGame::UpdateCar(double dt)
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		//Player Move Left 1st Column
-		if (Application::IsKeyPressed('J'))
-		{
-			//Lane 1
-			if (Movement >= 6 && delayTime >= 1.0f)
-			{
-				Lane1 = true;
-				delayTime = 0;
-			}
+		//Player
+		//Change with collectibles
+		const float playerboost = 0.f;
 
-			//Lane 2
-			if (Movement <= 0 && Movement >= -1 && delayTime >= 1.0f)
-			{
-				Lane2 = true;
-				delayTime = 0;
-			}
+		Player.UpdatePlayerForward(dt, playerboost);
+		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
+		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
+			delayTime = 0.f;
 
-			//Lane 3a (Right to Left 1 Lane)
-			if (Movement <= -7 && delayTime >= 1.0f)
-			{
-				Lane3a = true;
-				delayTime = 0;
-			}
-		}
 
-		if (Lane1 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement <= 12)
-				{
-					Movement += (float)(50 * dt);
-				}
-				else
-				{
-					Lane1 = false;
-				}
-			}
-		}
+		//Opponent
+		//Change with collectibles
+		const float opponentboost = 0.f;
 
-		if (Lane2 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement <= 6)
-				{
-					Movement += (float)(50 * dt);
-				}
-				else
-				{
-					Lane2 = false;
-				}
-			}
-		}
-
-		if (Lane3a == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement < -1)
-				{
-					Movement += (float)(50 * dt);
-				}
-				else
-				{
-					Lane3a = false;
-				}
-			}
-		}
-
-		//Player Move Right 1st Column
-		if (Application::IsKeyPressed('L'))
-		{
-			//Lane 2a (Right to Left 1 Lane)
-			if (Movement >= 7 && delayTime >= 1.0f)
-			{
-				Lane2a = true;
-				delayTime = 0;
-			}
-
-			//Lane 3
-			if (Movement >= 0.0f && delayTime >= 1.0f)
-			{
-				Lane3 = true;
-				delayTime = 0;
-			}
-
-			//Lane 4
-			if (Movement <= 0.5f && delayTime >= 1.0f)
-			{
-				Lane4 = true;
-				delayTime = 0;
-			}
-		}
-
-		if (Lane2a == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement >= 7)
-				{
-					Movement -= (float)(50 * dt);
-				}
-				else
-				{
-					Lane2a = false;
-				}
-			}
-		}
-
-		if (Lane3 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement >= -0.5f)
-				{
-					Movement -= (float)(50 * dt);
-				}
-				else
-				{
-					Lane3 = false;
-				}
-			}
-		}
-
-		if (Lane4 == true)
-		{
-			if (Jump <= 0)
-			{
-				if (Movement >= -7)
-				{
-					Movement -= (float)(50 * dt);
-				}
-				else
-				{
-					Lane4 = false;
-				}
-			}
-		}
+		AImovement AI(Opponent, obstacleList);
+		Opponent.UpdatePlayerForward(dt, opponentboost);
+		Opponent.UpdatePlayerJump(dt, AI.getJump());
+		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
+			delayTime = 0.f;
 	}
 }
 
-void SceneGame::UpdatePlayerJump(double dt)
+void SceneGame::UpdateCarTexture()
 {
-	if (menu.getIndex() == E_GAME)
+	switch (Player.getTexture())
 	{
-		//Player Jump
-		if (Application::IsKeyPressed('I') && delayTime > 5.0f)
-		{
-			if (Jump <= 0)
-			{
-				JumpPressed = true;
-				delayTime = 0;
-			}
-		}
+	case CAR_GREY:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+	case CAR_CYAN:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_cyan.tga");
+		break;
+	case CAR_ORANGE:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_orange.tga");
+		break;
+	case CAR_RED:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_red.tga");
+		break;
+	case CAR_GREEN:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_green.tga");
+		break;
+	default:
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
+		break;
 
-		if (JumpPressed == true)
-		{
-			if (Jump < 5.0f)
-			{
-				Jump += (float)(50 * dt);
-			}
-			else
-			{
-				JumpPressed = false;
-			}
-		}
-		else
-		{
-			if (Jump > 0)
-			{
-				if ((Jump -= (float)(50 * dt)) >= 0)
-				{
-					Jump -= (float)(50 * dt);
-				}
-				else
-				{
-					Jump = 0;
-				}
-			}
-		}
 	}
 }
 
@@ -656,6 +546,11 @@ void SceneGame::UpdateGameChooseCursor()
 			menu.menuChange(gameChooseCursor.getIndex());
 		}
 	}
+}
+
+void SceneGame::UpdateLight()
+{
+		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
 }
 
 
@@ -845,17 +740,26 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	modelStack.PopMatrix();
 }
 
-void SceneGame::RenderPlayer()
+void SceneGame::RenderCar()
 {
 	if (menu.getIndex() == E_GAME)
 	{
+		//Player
 		modelStack.PushMatrix();
 		modelStack.Translate(-9, 0, 50.f);
 		modelStack.Rotate(0, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Movement, 0, 0);
-		modelStack.Translate(0, Jump, 0);
+		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
 		RenderMesh(meshList[GEO_PLAYER], true);
+		modelStack.PopMatrix();
+
+		//Player
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Rotate(0, 0, 1, 0);
+		modelStack.Scale(3, 3, 3);
+		modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+		RenderMesh(meshList[GEO_OPPONENT], true);
 		modelStack.PopMatrix();
 	}
 }

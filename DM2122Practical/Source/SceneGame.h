@@ -16,6 +16,8 @@
 #include "Cursor.h"
 #include "Menu.h"
 #include "PowerUps.h"
+#include "Car.h"
+#include "AImovement.h"
 
 class SceneGame : public Scene
 {
@@ -38,6 +40,9 @@ class SceneGame : public Scene
 		//Text
 		GEO_TEXT,
 
+		//Track
+		//GEO_TRACK,
+
 		//GAME MODELS
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
@@ -53,6 +58,7 @@ class SceneGame : public Scene
 		GEO_PLANE,
 		GEO_CURSOR,
 		GEO_PLAYER,
+		GEO_OPPONENT,
     
 		//Menu buttons
 		GEO_BUTTON,
@@ -152,6 +158,15 @@ class SceneGame : public Scene
 		MODE_TIME
 	};
 
+	enum carText
+	{
+		CAR_GREY,
+		CAR_CYAN,
+		CAR_ORANGE,
+		CAR_RED,
+		CAR_GREEN
+	};
+
 public:
 					SceneGame();
 					~SceneGame();
@@ -171,14 +186,17 @@ private:
 	void		InitPowerUps();
 
 	void		UpdateDelayTime(double dt);
+	void		UpdateCam(double dt);
 	void		UpdateCamMovement();
+	void		UpdateCamLoc();
 	void		UpdateAppPolygon();
-	void		UpdatePlayerStrafe(double dt);
-	void		UpdatePlayerJump(double dt);
+	void		UpdateCar(double dt);
+	void		UpdateCarTexture();
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
+	void		UpdateLight();
 
-	void		RenderPlayer();
+	void		RenderCar();
 	void		RenderMainMenuButtons();
 	void		RenderGameChooseButtons();
 	void		RenderObstacles();
@@ -194,20 +212,9 @@ private:
 	//Variables
 	bool b_exit = false;
 	const unsigned int numberOfRows = 100;
-	float Movement;
-	bool Lane1;
-	bool Lane2;
-	bool Lane2a;
-	bool Lane3;
-	bool Lane3a;
-	bool Lane4;
-	float Jump;
 	float delayTime;
 
 	float powerupRotation;
-
-	bool JumpPressed;
-
 	//Skybox
 
 	//Text

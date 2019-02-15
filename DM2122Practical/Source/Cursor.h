@@ -12,8 +12,8 @@ public:
 	Cursor(float initialPosition, float spacing, int numberOfOptions);
 	~Cursor();
 	void updatePositionIndex(int direction);
-	float outputPosition();
-	int getIndex();
+	float outputPosition() const;
+	int getIndex() const;
 };
 
 #endif

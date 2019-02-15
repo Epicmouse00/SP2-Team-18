@@ -12,7 +12,7 @@ public:
 			Menu();
 			~Menu();
 	bool menuChange(int cursorIndex);
-	int getIndex();
-	int getGameMode();
+	int getIndex() const;
+	int getGameMode() const;
 };
 #endif

@@ -146,10 +146,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\AI.h" />
+    <ClInclude Include="Source\AImovement.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Camera3.h" />
+    <ClInclude Include="Source\Car.h" />
     <ClInclude Include="Source\Currency.h" />
     <ClInclude Include="Source\Cursor.h" />
     <ClInclude Include="Source\Leaderboard.h" />
@@ -170,10 +171,11 @@
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\AI.cpp" />
+    <ClCompile Include="Source\AImovement.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Camera3.cpp" />
+    <ClCompile Include="Source\Car.cpp" />
     <ClCompile Include="Source\Currency.cpp" />
     <ClCompile Include="Source\Cursor.cpp" />
     <ClCompile Include="Source\Leaderboard.cpp" />

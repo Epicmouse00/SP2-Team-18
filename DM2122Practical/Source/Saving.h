@@ -12,5 +12,5 @@ public:
 			Saving();
 			~Saving();
 	void	setBalance(int amount);
-	int		getBalance();
+	int		getBalance() const;
 };
