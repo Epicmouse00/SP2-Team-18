@@ -345,9 +345,9 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (rand() % 2)
+			if (1)//rand() % 2
 			{
-				Obstacle temp(rand() % 2);
+				Obstacle temp(1);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ((float)(400 * row + 1000));
@@ -428,7 +428,7 @@ void SceneGame::UpdateCamLoc()
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			const float camAgile = 0.6f;
+			const float camAgile = 0.4f;
 			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
@@ -474,7 +474,7 @@ void SceneGame::UpdateCar(double dt)
 
 		//Opponent
 		//Change with collectibles
-		const float opponentboost = 1.f;
+		const float opponentboost = 0.f;
 
 		Opponent.UpdatePlayerForward(dt, opponentboost);
 		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
