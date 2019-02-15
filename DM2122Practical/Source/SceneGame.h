@@ -49,6 +49,8 @@ class SceneGame : public Scene
 		GEO_OBSTACLE_LONG,
 		GEO_PLANE,
 		GEO_CURSOR,
+		GEO_WINLOSE,
+		GEO_LEADERBOARD,
 		GEO_PLAYER,
 		GEO_OPPONENT,
 
@@ -192,11 +194,13 @@ private:
 	void		UpdateCarTexture();
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
+	void		UpdateLeaderboardCursor();
 	void		UpdateLight();
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
 	void		RenderGameChooseButtons();
+	void		RenderLeaderboard();
 	void		RenderObstacles();
 	void		RenderPowerUps();
 	void		RenderSkybox();

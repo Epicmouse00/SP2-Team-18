@@ -14,6 +14,7 @@
 Menu menu;
 Cursor		mainMenuCursor(3.f, -2.f, 4);
 Cursor		gameChooseCursor(3.f, -3.f, 3);
+Cursor		leaderboardCursor(-2.5f, 0.f, 3);
 Car			Player(true);
 Car			Opponent(false);
 
@@ -67,6 +68,7 @@ void SceneGame::Update(double dt)
 	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
+	UpdateLeaderboardCursor();
 	UpdateLight();
 	UpdateCam(dt);
 
@@ -106,6 +108,9 @@ void SceneGame::Render()
 
 	// GameChoose Button
 	RenderGameChooseButtons();
+
+	// Leaderboard
+	RenderLeaderboard();
 
 	// Gameplay UI
 
@@ -291,6 +296,14 @@ void SceneGame::InitMeshes()
 	// Menu cursor
 	meshList[GEO_CURSOR] = MeshBuilder::GenerateOBJ("Cursor", "OBJ//Cursor.obj");
 	meshList[GEO_CURSOR]->textureID = LoadTGA("image//Cursor texture.tga");
+
+	//Win/Lose
+	meshList[GEO_WINLOSE] = MeshBuilder::GenerateOBJ("Win/lose", "OBJ//WinLoseBar.obj");
+	meshList[GEO_WINLOSE]->textureID = LoadTGA("image//WinLosePlane.tga");
+
+	// Leaderboard
+	meshList[GEO_LEADERBOARD] = MeshBuilder::GenerateOBJ("Leaderboard", "OBJ//LeaderBoard.obj");
+	meshList[GEO_LEADERBOARD]->textureID = LoadTGA("image//LeaderBoard.tga");
 
 	// Gameplay UI
 
@@ -520,6 +533,7 @@ void SceneGame::UpdateMainMenuCursor()
 		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
+
 			b_exit = menu.menuChange(mainMenuCursor.getIndex());
 		}
 	}
@@ -545,6 +559,30 @@ void SceneGame::UpdateGameChooseCursor()
 		{
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
+		}
+	}
+}
+
+void SceneGame::UpdateLeaderboardCursor()
+{
+	if (menu.getIndex() == E_LEADERBOARD)
+	{
+		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		{
+			leaderboardCursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		{
+			leaderboardCursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		{
+			leaderboardCursor.updatePositionIndex(1);
+			delayTime = 0;
 		}
 	}
 }
@@ -832,7 +870,73 @@ void SceneGame::RenderMainMenuButtons()
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}
+}
 
+void SceneGame::RenderLeaderboard()
+{
+	if (menu.getIndex() == E_LEADERBOARD)
+	{
+		const float textTranslate = -3.f;
+		std::string text;
+
+		// VS Leaderboard button
+		text = "VS Leaderboard";
+		modelStack.PushMatrix();
+		modelStack.Translate(-2.5f, 5.f, 0.f);
+		modelStack.Scale(4.f, 0.64f, 0.8f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.35 / 4), (float)(0.35 / 0.8), 0.35f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		// Time Leaderboard button
+		text = "Time Leaderboard";
+		modelStack.PushMatrix();
+		modelStack.Translate(2.5f, 5.f, 0.f);
+		modelStack.Scale(4.f, 0.64f, 0.8f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.35 / 4), (float)(0.35 / 0.8), 0.35f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.PopMatrix();
+
+		//Back
+		text = "Back";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -2.f, 0.f);
+		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		modelStack.PopMatrix();
+
+		//Cursor
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		if (leaderboardCursor.getIndex() == 0)
+		{
+			modelStack.Translate(10.f, 10.f, 0.f);
+		}
+		else if (leaderboardCursor.getIndex() == 1)
+		{
+			modelStack.Translate(0.f, 10.f, 0.f);
+		}
+		else if (leaderboardCursor.getIndex() == 2)
+		{
+			modelStack.Translate(5.f, -5.f, 0.f);
+		}
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+	}
 }
 
 void SceneGame::RenderGameChooseButtons()
