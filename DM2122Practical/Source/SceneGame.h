@@ -15,7 +15,6 @@
 #include "Obstacle.h"
 #include "Cursor.h"
 #include "Menu.h"
-#include "PowerUps.h"
 #include "Car.h"
 #include "AImovement.h"
 
@@ -47,14 +46,6 @@ class SceneGame : public Scene
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
 		GEO_OBSTACLE_LONG,
-
-		//Power Ups
-		GEO_SPEED,
-		GEO_DOUBLE,
-		GEO_FLIGHT,
-		GEO_SHIELD,
-
-		//OBJ Models
 		GEO_PLANE,
 		GEO_CURSOR,
 		GEO_PLAYER,
@@ -183,7 +174,6 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitObstacles(unsigned int noOfObstacles);
-	void		InitPowerUps();
 
 	void		UpdateDelayTime(double dt);
 	void		UpdateCam(double dt);
@@ -200,7 +190,6 @@ private:
 	void		RenderMainMenuButtons();
 	void		RenderGameChooseButtons();
 	void		RenderObstacles();
-	void		RenderPowerUps();
 	void		RenderSkybox();
 
 	unsigned	m_vertexArrayID;
@@ -214,7 +203,6 @@ private:
 	const unsigned int numberOfRows = 100;
 	float delayTime;
 
-	float powerupRotation;
 	//Skybox
 
 	//Text
@@ -233,6 +221,5 @@ private:
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
 	Obstacle	obstacleList[4][100] = { NULL };
-	PowerUps	*powerupList[4][50];
 };
 #endif
