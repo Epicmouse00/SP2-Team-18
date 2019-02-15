@@ -204,6 +204,8 @@ private:
 	float Jump;
 	float delayTime;
 
+	float powerupRotation;
+
 	bool JumpPressed;
 
 	//Skybox

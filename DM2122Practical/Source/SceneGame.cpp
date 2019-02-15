@@ -31,6 +31,7 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitObstacles(numberOfRows);
+	InitPowerUps();
 
 	PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 
@@ -51,6 +52,7 @@ void SceneGame::Init()
 	Jump = 0;
 	delayTime = 0;
 	JumpPressed = false;
+	powerupRotation = 0;
 
 	InitProjection();
 }
@@ -75,6 +77,8 @@ void SceneGame::Update(double dt)
 	UpdateGameChooseCursor();
 	UpdateCamMovement();
 	camera.Update(dt);
+
+	powerupRotation += 45.f * dt;
 }
 
 static const float SKYBOXSIZE = 2000.f;
@@ -309,7 +313,7 @@ void SceneGame::InitMeshes()
 	// Coins
 
 	// Items
-	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(0, 0, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
@@ -362,9 +366,9 @@ void SceneGame::InitPowerUps()
 	{
 		for (int row = 0; row < 50; row++)
 		{
-			if ((rand() % 8) == 0)
+			if ((rand() % 2) == 0)
 			{
-				PowerUps *temp;
+				PowerUps *temp = new PowerUps;
 				temp->setX(((float)lane * 18) - 27);
 				temp->setY(0);
 				temp->setZ(400 * (float)row + 350);
@@ -1028,19 +1032,30 @@ void SceneGame::RenderPowerUps()
 					switch (powerupList[lane][row]->getType())
 					{
 					case 0:
+						modelStack.Translate(0.f, 7.5f, 0.f);
+						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_SPEED], false);
 						break;
 					case 1:
+						modelStack.Translate(0.f, 7.5f, 0.f);
+						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_SHIELD], false);
 						break;
 					case 2:
+						modelStack.Translate(0.f, 7.5f, 0.f);
+						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_FLIGHT], false);
 						break;
 					case 3:
+						modelStack.Translate(0.f, 7.5f, 0.f);
+						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_DOUBLE], false);
 						break;
 					}
-					//modelStack.Translate(0.f, 0.5f, 0.f);
 					modelStack.PopMatrix();
 				}
 			}
