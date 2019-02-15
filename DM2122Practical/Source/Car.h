@@ -26,5 +26,6 @@ public:
 	float	getForward() const;
 	void	setTexture(int texture);
 	int		getTexture() const;
+	int		getObstaclePass() const;
 };
 
