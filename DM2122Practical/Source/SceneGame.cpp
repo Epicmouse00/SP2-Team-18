@@ -345,9 +345,9 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (1)//rand() % 2
+			if (rand() % 2) //rand() % 2
 			{
-				Obstacle temp(1);
+				Obstacle temp(rand() % 2);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ((float)(400 * row + 1000));
@@ -377,7 +377,7 @@ void SceneGame::InitPowerUps(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; lane++)
 		{
-			if ((rand() % 2) == 0)
+			if ((rand() % 4) == 0)
 			{
 				PowerUps temp;
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));

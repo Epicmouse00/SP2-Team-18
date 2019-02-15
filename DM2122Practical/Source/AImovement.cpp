@@ -28,16 +28,16 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 	jump = false;
 	left = false;
 	right = false;
-
+	float range = 0.f;
 	bool haveObstacle = false;
 	int row = 0;
-	if ((3 * (forward - 600)) / 400 > 0) // Row in front of car
-		row = (3 * (forward - 600)) / 400;
 	forward *= 3;
-	
+	if ((forward - 600) / 400 > 0) // Row in front of car
+		row = (forward - 600) / 400;
 	if(obstacle[lane][row].getActive())
 	{
-		if (obstacle[lane][row].getZ() < 400.f + forward)
+		range = 400.f;
+		if (obstacle[lane][row].getZ() < range + forward)
 		{
 			haveObstacle = true;
 			if (obstacle[lane][row].getObstacleType() == 1) // Tall
@@ -56,24 +56,26 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 					left = true;
 			}
 		}
-		if (obstacle[lane][row].getZ() < 200.f + forward)
+		range = 200.f;
+		if (obstacle[lane][row].getZ() < range + forward)
 		{
 			haveObstacle = true;
 			if (obstacle[lane][row].getObstacleType() == 0) // Short
 				jump = true;
 		}
 	}
-	/*
-	if ((3 * (forward)) / 800 > 0) // Row in front of car
-		row = (3 * (forward)) / 800;
+	
+	if (forward / 800 > 0) // Row in front of car
+		row = (forward / 800);
 	else
 		row = 0;
 
-	if (!haveObstacle && !powerups[lane][row].getActive())// if no powerup in front and no near obstacles
+	range = 200.f;
+	if (!haveObstacle && !powerups[lane][row].getActive() && !powerups[lane][row].getZ() < range + forward)// if no powerup in front and no near obstacles
 	{
-		if (powerups[lane - 1][row].getActive()) // check powerup side
+		if (powerups[lane - 1][row].getActive() && powerups[lane][row - 1].getZ() < range + forward) // check powerup side
 			left = true;
-		else if (powerups[lane + 1][row].getActive())
+		else if (powerups[lane + 1][row].getActive() && powerups[lane][row + 1].getZ() < range + forward)
 			right = true;
 		else // if no surrounding powerups
 		{
@@ -82,8 +84,8 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 			else if (lane == 3)
 				left = true;
 		}
+	}
 	
-	*/
 }
 
 AImovement::~AImovement()
