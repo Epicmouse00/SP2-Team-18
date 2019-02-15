@@ -45,6 +45,7 @@ void SceneGame::Init()
 
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
+	powerupRotation = 0;
 
 	InitProjection();
 }
@@ -353,6 +354,10 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 
 	}
 }
+
+
+
+
 
 
 

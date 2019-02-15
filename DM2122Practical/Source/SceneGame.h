@@ -202,6 +202,7 @@ private:
 	bool b_exit = false;
 	const unsigned int numberOfRows = 100;
 	float delayTime;
+	float powerupRotation;
 
 	//Skybox
 

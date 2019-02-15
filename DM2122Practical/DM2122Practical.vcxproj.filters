@@ -146,6 +146,9 @@
     <ClCompile Include="Source\AImovement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PowerUps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\SimpleVertexShader.vertexshader">
