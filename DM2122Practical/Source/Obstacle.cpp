@@ -48,7 +48,7 @@ float Obstacle::getZ() const
 	return z;
 }
 
-bool Obstacle::getActive()
+bool Obstacle::getActive() const
 {
 	return active;
 }

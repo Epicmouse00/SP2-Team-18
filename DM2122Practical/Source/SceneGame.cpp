@@ -11,11 +11,15 @@
 
 #include "LoadTGA.h"
 
+const unsigned int numberOfRows = 100;
+const float laneSpacing = 22.5f; // 7.5 x 3
 Menu menu;
 Cursor		mainMenuCursor(3.f, -2.f, 4);
 Cursor		gameChooseCursor(3.f, -3.f, 3);
 Car			Player(true);
 Car			Opponent(false);
+Obstacle	obstacleList[4][numberOfRows];
+PowerUps	powerupList[4][numberOfRows / 2];
 
 
 SceneGame::SceneGame()
@@ -70,7 +74,7 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 
-	powerupRotation += 90.f * dt;
+	powerupRotation += float(dt) * 90.f;
 }
 
 static const float SKYBOXSIZE = 10000.f;
@@ -95,7 +99,7 @@ void SceneGame::Render()
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
 	RenderSkybox();
-	RenderMesh(meshList[GEO_AXES], false);
+	//RenderMesh(meshList[GEO_AXES], false);
 
 	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
 
@@ -336,7 +340,6 @@ void SceneGame::InitProjection()
 
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
-	const float laneSpacing = 22.5f; // 7.5 x 3
 	for (int row = 0; row < (int)noOfRows; ++row)
 	{
 		for (int lane = 0; lane < 4; ++lane)
@@ -346,9 +349,13 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 				Obstacle temp(rand() % 2);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
-				temp.setZ(400 * (float)row + 1000);
+				temp.setZ((float)(400 * row + 1000));
 				temp.setActive(true);
 				obstacleList[lane][row] = temp;
+			}
+			else
+			{
+				obstacleList[lane][row].setActive(false);
 			}
 		}
 		//At least one obstacle is a Default in a row
@@ -356,7 +363,7 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 		Obstacle temp(0);
 		temp.setX((-(float)randomLane * laneSpacing) + (laneSpacing * (float)1.5));
 		temp.setY(0);
-		temp.setZ(400 * (float)row + 1000);
+		temp.setZ((float)(400 * row + 1000));
 		temp.setActive(true);
 		obstacleList[randomLane][row] = temp;
 
@@ -371,15 +378,16 @@ void SceneGame::InitPowerUps(unsigned int noOfRows)
 		{
 			if ((rand() % 2) == 0)
 			{
-				PowerUps *temp = new PowerUps;
-				temp->setX(((float)lane * 18) - 27);
-				temp->setY(0);
-				temp->setZ(800 * (float)row + 800);
+				PowerUps temp;
+				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
+				temp.setY(0);
+				temp.setZ((float)(800 * row + 800));
+				temp.setActive(true);
 				powerupList[lane][row] = temp;
 			}
 			else
 			{
-				powerupList[lane][row] = nullptr;
+				powerupList[lane][row].setActive(false);
 			}
 		}
 	}
@@ -468,7 +476,7 @@ void SceneGame::UpdateCar(double dt)
 		const float opponentboost = 0.f;
 
 		Opponent.UpdatePlayerForward(dt, opponentboost);
-		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList);
+		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
 		Opponent.UpdatePlayerJump(dt, AI.getJump());
 		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
 			delayTime = 0.f;
@@ -908,13 +916,15 @@ void SceneGame::RenderObstacles()
 					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_DEFAULT)
 					{
 						modelStack.Scale(10.f, 10.f, 10.f);
+						modelStack.Translate(0.f, 0.5f, 0.f);
+						RenderMesh(meshList[GEO_OBSTACLE_DEFAULT], false);
 					}
-					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
+					else if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
 					{
 						modelStack.Scale(10.f, 40.f, 10.f);
+						modelStack.Translate(0.f, 0.5f, 0.f);
+						RenderMesh(meshList[GEO_OBSTACLE_TALL], false);
 					}
-					modelStack.Translate(0.f, 0.5f, 0.f);
-					RenderMesh(meshList[10 + obstacleList[lane][row].getObstacleType()], false);
 					modelStack.PopMatrix();
 				}
 			}
@@ -928,13 +938,13 @@ void SceneGame::RenderPowerUps()
 	{
 		for (size_t lane = 0; lane < 4; ++lane)
 		{
-			for (size_t row = 0; row < 50; ++row)
+			for (size_t row = 0; row < numberOfRows / 2; ++row)
 			{
-				if (powerupList[lane][row] != nullptr)
+				if (powerupList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(powerupList[lane][row]->getX(), powerupList[lane][row]->getY(), powerupList[lane][row]->getZ());
-					switch (powerupList[lane][row]->getType())
+					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());
+					switch (powerupList[lane][row].getType())
 					{
 					case 0:
 						modelStack.Translate(0.f, 7.5f, 0.f);

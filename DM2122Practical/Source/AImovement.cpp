@@ -6,7 +6,7 @@ AImovement::AImovement()
 {
 }
 
-AImovement::AImovement(int lane, float forward, Obstacle List[4][100])
+AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], PowerUps powerups[4][50])
 {
 	jump = false;
 	left = false;
@@ -15,11 +15,11 @@ AImovement::AImovement(int lane, float forward, Obstacle List[4][100])
 	forward *= 3;
 	for (size_t row = 0; row < 100; row++)
 	{
-		if(List[lane][row].getZ() > forward)
+		if(obstacle[lane][row].getZ() > forward)
 		{
-			if(List[lane][row].getZ() - forward < 150.f)
+			if(obstacle[lane][row].getZ() - forward < 150.f)
 			{
-				if(List[lane][row].getObstacleType() == 0) // Short
+				if(obstacle[lane][row].getObstacleType() == 0) // Short
 					jump = true;
 				else
 				{

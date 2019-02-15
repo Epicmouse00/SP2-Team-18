@@ -19,13 +19,13 @@ public:
 	float	getX() const;
 	float	getY() const;
 	float	getZ() const;
-	bool	getActive();
+	bool	getActive() const;
 	int		getObstacleType();
 private:
-	bool	active			= false;
 	int		obstacleType	= O_DEFAULT;
 	float	x				= 0;
 	float	y				= 0;
 	float	z				= 0;
+	bool	active			= false;
 };
 

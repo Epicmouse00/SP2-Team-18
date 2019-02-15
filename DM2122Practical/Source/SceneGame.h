@@ -47,6 +47,7 @@ class SceneGame : public Scene
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
 		GEO_OBSTACLE_LONG,
+
 		GEO_PLANE,
 		GEO_CURSOR,
 		GEO_PLAYER,
@@ -209,7 +210,6 @@ private:
 
 	//Variables
 	bool b_exit = false;
-	const unsigned int numberOfRows = 100;
 	float delayTime;
 	float powerupRotation;
 
@@ -230,7 +230,5 @@ private:
 	//cursor defined in .cpp
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
-	Obstacle	obstacleList[4][100] = { NULL };
-	PowerUps	*powerupList[4][50];
 };
 #endif
