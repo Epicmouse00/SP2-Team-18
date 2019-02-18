@@ -53,6 +53,10 @@ void SceneGame::Init()
 
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
+	powerupRotation = 0;
+	displayRotation = 0;
+	leftCursor = 0;
+	rightCursor = 0;
 
 	InitProjection();
 }
@@ -75,6 +79,7 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop();
+	displayRotation += float(dt) * 45.f;
 	UpdatePowerUps(dt);
 }
 
@@ -328,6 +333,10 @@ void SceneGame::InitMeshes()
 	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
+
+	// Shop
+	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
+	meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Obstacles (1	x	1	x	1)
 	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
@@ -745,24 +754,98 @@ void SceneGame::UpdateShop()
 {
 	if (menu.getIndex() == E_SHOP)
 	{
-		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		if (gameShop.getColour() != 4)
 		{
-			delayTime = 0;
-			gameShop.nextIndex();
+			rightCursor = 0;
+
+			if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+			{
+				delayTime = 0;
+				gameShop.nextIndex();
+
+				switch (gameShop.getColour())
+				{
+				case 0:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
+					break;
+				case 1:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_cyan.tga");
+					break;
+				case 2:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_orange.tga");
+					break;
+				case 3:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_red.tga");
+					break;
+				case 4:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_green.tga");
+					break;
+				}
+			}
 		}
-		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		else
 		{
-			delayTime = 0;
-			gameShop.previousIndex();
+			rightCursor = 50;
 		}
+	
+		if (gameShop.getColour() != 0)
+		{
+			leftCursor = 0;
+
+			if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+			{
+				delayTime = 0;
+				gameShop.previousIndex();
+
+				switch (gameShop.getColour())
+				{
+				case 0:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
+					break;
+				case 1:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_cyan.tga");
+					break;
+				case 2:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_orange.tga");
+					break;
+				case 3:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_red.tga");
+					break;
+				case 4:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_green.tga");
+					break;
+				}
+			}
+		}
+		else
+		{
+			leftCursor = 50;
+		}
+
 		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (gameShop.isOwned() == false)
+			if (gameShop.isOwned() == false && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
+				gameShop.setOwned();
+
+				for (int i = 0; i < 5; i++)
+				{
+					gameSave.setColour(gameShop.getColour(i), i);
+				}
+
+				gameSave.setCars();
 			}
 		}
+		if (Application::IsKeyPressed(VK_BACK) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			gameShop.resetIndex();
+			menu.menuChange(0);
+		}
+
+		gameSave.setBalance(gameBalance.getBalance());
 	}
 }
 
@@ -1206,10 +1289,38 @@ void SceneGame::RenderShop()
 
 		balance = to_string(gameBalance.getBalance());
 
-		RenderTextOnScreen(meshList[GEO_TEXT], colour, Color(0, 1, 0), 2, 1, 1);
-		RenderTextOnScreen(meshList[GEO_TEXT], cost, Color(0, 1, 0), 2, 1, 2);
-		RenderTextOnScreen(meshList[GEO_TEXT], owned, Color(0, 1, 0), 2, 1, 3);
-		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 10, 1);
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 0, 50.f);
+		modelStack.Rotate(displayRotation, 0, 1, 0);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(meshList[GEO_DISPLAY], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(30 + leftCursor, 0, 50.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(135, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-30 - rightCursor, 0, 50.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+
+		RenderTextOnScreen(meshList[GEO_TEXT], colour, Color(0, 1, 0), 2, 19, 8);
+		RenderTextOnScreen(meshList[GEO_TEXT], "Cost: ", Color(0, 1, 0), 2, 17, 21);
+		RenderTextOnScreen(meshList[GEO_TEXT], cost, Color(0, 1, 0), 2, 22, 21);
+		RenderTextOnScreen(meshList[GEO_TEXT], "Owned: ", Color(0, 1, 0), 2, 17, 7);
+		RenderTextOnScreen(meshList[GEO_TEXT], owned, Color(0, 1, 0), 2, 22, 7);
+		RenderTextOnScreen(meshList[GEO_TEXT], "Balance: $ ", Color(0, 1, 0), 2, 16, 1);
+		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 23, 1);
 	}
 }
 
