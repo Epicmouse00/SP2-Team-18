@@ -62,7 +62,7 @@ float Car::getForward() const
 bool Car::UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right)
 {
 	resetTime = false;
-	if (delayTime >= 1.0f)
+	if (delayTime >= 0.7f)
 	{
 		if (right)
 		{
@@ -103,9 +103,9 @@ bool Car::UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right)
 	}
 
 	if (Movement <= lanePos - 1.5f)
-		Movement += (float)(50 * dt);
+		Movement += (float)(70 * dt);
 	else if (Movement > lanePos + 1.5f)
-		Movement -= (float)(50 * dt);
+		Movement -= (float)(70 * dt);
 	else
 		Movement = lanePos + laneOffset;
 

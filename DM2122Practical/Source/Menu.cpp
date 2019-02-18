@@ -17,10 +17,6 @@ bool Menu::menuChange(int cursorIndex)
 	{
 		return true;
 	}
-	if (pageIndex == 0 && cursorIndex == 1)
-	{
-		return false;
-	}
 	if (pageIndex == 1 && cursorIndex == 2)
 	{
 		setIndex(0);

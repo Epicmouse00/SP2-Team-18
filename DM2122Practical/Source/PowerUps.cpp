@@ -24,6 +24,11 @@ void PowerUps::setZ(float setZ)
 	z = setZ;
 }
 
+void PowerUps::setActive(bool active)
+{
+	active = active;
+}
+
 float PowerUps::getX()
 {
 	return x;
@@ -37,6 +42,11 @@ float PowerUps::getY()
 float PowerUps::getZ()
 {
 	return z;
+}
+
+bool PowerUps::getActive()
+{
+	return active;
 }
 
 int PowerUps::getType()

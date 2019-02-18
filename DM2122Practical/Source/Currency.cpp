@@ -1,8 +1,7 @@
 #include "Currency.h"
 
-Currency::Currency(int amount)
+Currency::Currency()
 {
-	balance = amount;
 }
 
 Currency::~Currency()
@@ -22,4 +21,9 @@ void Currency::deductBalance(int amount)
 int Currency::getBalance() const
 {
 	return balance;
+}
+
+void Currency::setBalance(int amount)
+{
+	balance = amount;
 }

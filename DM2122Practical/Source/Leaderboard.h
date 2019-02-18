@@ -11,9 +11,9 @@ public:
 	Leaderboard();
 	~Leaderboard();
 
-	void setVersus(int time);
+	void setVersus(float time);
 	float getVersus(int index) const;
-	void setTime(int time);
+	void setTime(float time);
 	float getTime(int index) const;
 
 };

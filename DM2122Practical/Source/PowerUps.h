@@ -7,6 +7,7 @@ private:
 	float y;
 	float z;
 	int type;
+	bool active;
 public:
 	PowerUps();
 	~PowerUps();
@@ -14,8 +15,10 @@ public:
 	void setX(float x);
 	void setY(float y);
 	void setZ(float z);
+	void setActive(bool active);
 	float getX();
 	float getY();
 	float getZ();
+	bool getActive();
 	int getType();
 };

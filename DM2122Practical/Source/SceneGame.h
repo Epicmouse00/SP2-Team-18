@@ -18,6 +18,9 @@
 #include "PowerUps.h"
 #include "Car.h"
 #include "AImovement.h"
+#include "Shop.h"
+#include "Saving.h"
+#include "Currency.h"
 
 class SceneGame : public Scene
 {
@@ -46,7 +49,7 @@ class SceneGame : public Scene
 		//GAME MODELS
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
-		GEO_OBSTACLE_LONG,
+
 		GEO_PLANE,
 		GEO_CURSOR,
 		GEO_WINLOSE,
@@ -183,8 +186,8 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
-	void		InitObstacles(unsigned int noOfObstacles);
-	void		InitPowerUps();
+	void		InitObstacles(unsigned int noOfRows);
+	void		InitPowerUps(unsigned int noOfRows);
 
 	void		UpdateDelayTime(double dt);
 	void		UpdateCam(double dt);
@@ -197,6 +200,7 @@ private:
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();
 	void		UpdateLight();
+	void		UpdateShop();
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
@@ -205,6 +209,7 @@ private:
 	void		RenderObstacles();
 	void		RenderPowerUps();
 	void		RenderSkybox();
+	void		RenderShop();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -214,7 +219,6 @@ private:
 
 	//Variables
 	bool b_exit = false;
-	const unsigned int numberOfRows = 100;
 	float delayTime;
 	float powerupRotation;
 
@@ -235,7 +239,8 @@ private:
 	//cursor defined in .cpp
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
-	Obstacle	obstacleList[4][100] = { NULL };
-	PowerUps	*powerupList[4][50];
+	Saving		gameSave;
+	Currency	gameBalance;
+	Shop		gameShop;
 };
 #endif

@@ -11,12 +11,16 @@
 
 #include "LoadTGA.h"
 
+const unsigned int numberOfRows = 100;
+const float laneSpacing = 22.5f; // 7.5 x 3
 Menu menu;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
 Car			Player(true);
 Car			Opponent(false);
+Obstacle	obstacleList[4][numberOfRows];
+PowerUps	powerupList[4][numberOfRows / 2];
 
 
 SceneGame::SceneGame()
@@ -36,9 +40,9 @@ void SceneGame::Init()
 	InitMeshes();
 	InitCursors();
 	InitObstacles(numberOfRows);
-	InitPowerUps();
+	InitPowerUps(numberOfRows);
 
-
+	gameBalance.setBalance(gameSave.getBalance());
 
 	//Will be in SHOP (Call once, not every frame)
 	Player.setTexture(CAR_GREEN);
@@ -72,8 +76,9 @@ void SceneGame::Update(double dt)
 	UpdateLeaderboardCursor();
 	UpdateLight();
 	UpdateCam(dt);
+	UpdateShop();
 
-	powerupRotation += 90.f * dt;
+	powerupRotation += float(dt) * 90.f;
 }
 
 static const float SKYBOXSIZE = 10000.f;
@@ -98,7 +103,7 @@ void SceneGame::Render()
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
 	RenderSkybox();
-	RenderMesh(meshList[GEO_AXES], false);
+	//RenderMesh(meshList[GEO_AXES], false);
 
 	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
 
@@ -119,6 +124,9 @@ void SceneGame::Render()
 	RenderCar();
 
 	// Coins
+
+	// Shop
+	RenderShop();
 
 	// Items
 	RenderPowerUps();
@@ -330,9 +338,6 @@ void SceneGame::InitMeshes()
 	// Obstacles (1	x	4	x	1)
 	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
-	// Obstacles (1	x	0.1	x	10)
-	meshList[GEO_OBSTACLE_LONG] = MeshBuilder::GenerateCube("Obstacle_Long", Color(1, 1, 1), 1.f, 1.f, 1.f);
-
 	// Track
 	//meshList[GEO_TRACK] = 
 
@@ -362,21 +367,24 @@ void SceneGame::InitCursors()
 	leaderboardCursor.addNewPosition(5.f, -4.f, 2);
 }
 
-void SceneGame::InitObstacles(unsigned int noOfObstacles)
+void SceneGame::InitObstacles(unsigned int noOfRows)
 {
-	const float laneSpacing = 22.5f; // 7.5 x 3
-	for (int row = 0; row < (int)noOfObstacles; ++row)
+	for (int row = 0; row < (int)noOfRows; ++row)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (rand() % 2)
+			if (rand() % 2) //rand() % 2
 			{
 				Obstacle temp(rand() % 2);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
-				temp.setZ(400 * (float)row + 1000);
+				temp.setZ((float)(400 * row + 1000));
 				temp.setActive(true);
 				obstacleList[lane][row] = temp;
+			}
+			else
+			{
+				obstacleList[lane][row].setActive(false);
 			}
 		}
 		//At least one obstacle is a Default in a row
@@ -384,30 +392,31 @@ void SceneGame::InitObstacles(unsigned int noOfObstacles)
 		Obstacle temp(0);
 		temp.setX((-(float)randomLane * laneSpacing) + (laneSpacing * (float)1.5));
 		temp.setY(0);
-		temp.setZ(400 * (float)row + 1000);
+		temp.setZ((float)(400 * row + 1000));
 		temp.setActive(true);
 		obstacleList[randomLane][row] = temp;
 
 	}
 }
 
-void SceneGame::InitPowerUps()
+void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
-	for (int lane = 0; lane < 4; lane++)
+	for (int row = 0; row < (int)noOfRows / 2; row++)
 	{
-		for (int row = 0; row < 50; row++)
+		for (int lane = 0; lane < 4; lane++)
 		{
-			if ((rand() % 2) == 0)
+			if ((rand() % 4) == 0)
 			{
-				PowerUps *temp = new PowerUps;
-				temp->setX(((float)lane * 18) - 27);
-				temp->setY(0);
-				temp->setZ(400 * (float)row + 350);
+				PowerUps temp;
+				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
+				temp.setY(0);
+				temp.setZ((float)(800 * row + 800));
+				temp.setActive(true);
 				powerupList[lane][row] = temp;
 			}
 			else
 			{
-				powerupList[lane][row] = nullptr;
+				powerupList[lane][row].setActive(false);
 			}
 		}
 	}
@@ -447,8 +456,8 @@ void SceneGame::UpdateCamLoc()
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			const float camAgile = 0.6f;
-			camera.setPosition(Vector3(0.f, 30.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			const float camAgile = 0.4f;
+			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
 		{
@@ -496,7 +505,7 @@ void SceneGame::UpdateCar(double dt)
 		const float opponentboost = 0.f;
 
 		Opponent.UpdatePlayerForward(dt, opponentboost);
-		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList);
+		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
 		Opponent.UpdatePlayerJump(dt, AI.getJump());
 		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
 			delayTime = 0.f;
@@ -656,6 +665,31 @@ void SceneGame::UpdateLeaderboardCursor()
 			else
 			{
 				delayTime = 0;
+			}
+		}
+	}
+}
+
+void SceneGame::UpdateShop()
+{
+	if (menu.getIndex() == E_SHOP)
+	{
+		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			gameShop.nextIndex();
+		}
+		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			gameShop.previousIndex();
+		}
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			if (gameShop.isOwned() == false)
+			{
+				gameBalance.deductBalance(gameShop.getCost());
 			}
 		}
 	}
@@ -1059,6 +1093,55 @@ void SceneGame::RenderGameChooseButtons()
 	}
 }
 
+void SceneGame::RenderShop()
+{
+	// Render gamechoose buttons
+	if (menu.getIndex() == E_SHOP)
+	{
+		string colour;
+		string cost;
+		string owned;
+		string balance;
+
+		switch (gameShop.getColour())
+		{
+		case 0:
+			colour = "Grey";
+			break;
+		case 1:
+			colour = "Cyan";
+			break;
+		case 2:
+			colour = "Orange";
+			break;
+		case 3:
+			colour = "Red";
+			break;
+		case 4:
+			colour = "Green";
+			break;
+		}
+
+		cost = to_string(gameShop.getCost());
+
+		if (gameShop.isOwned() == true)
+		{
+			owned = "Yes";
+		}
+		else
+		{
+			owned = "No";
+		}
+
+		balance = to_string(gameBalance.getBalance());
+
+		RenderTextOnScreen(meshList[GEO_TEXT], colour, Color(0, 1, 0), 2, 1, 1);
+		RenderTextOnScreen(meshList[GEO_TEXT], cost, Color(0, 1, 0), 2, 1, 2);
+		RenderTextOnScreen(meshList[GEO_TEXT], owned, Color(0, 1, 0), 2, 1, 3);
+		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 10, 1);
+	}
+}
+
 void SceneGame::RenderObstacles()
 {
 	// Render obstacles
@@ -1075,13 +1158,15 @@ void SceneGame::RenderObstacles()
 					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_DEFAULT)
 					{
 						modelStack.Scale(10.f, 10.f, 10.f);
+						modelStack.Translate(0.f, 0.5f, 0.f);
+						RenderMesh(meshList[GEO_OBSTACLE_DEFAULT], false);
 					}
-					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
+					else if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
 					{
 						modelStack.Scale(10.f, 40.f, 10.f);
+						modelStack.Translate(0.f, 0.5f, 0.f);
+						RenderMesh(meshList[GEO_OBSTACLE_TALL], false);
 					}
-					modelStack.Translate(0.f, 0.5f, 0.f);
-					RenderMesh(meshList[10 + obstacleList[lane][row].getObstacleType()], false);
 					modelStack.PopMatrix();
 				}
 			}
@@ -1095,13 +1180,13 @@ void SceneGame::RenderPowerUps()
 	{
 		for (size_t lane = 0; lane < 4; ++lane)
 		{
-			for (size_t row = 0; row < 50; ++row)
+			for (size_t row = 0; row < numberOfRows / 2; ++row)
 			{
-				if (powerupList[lane][row] != nullptr)
+				if (powerupList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(powerupList[lane][row]->getX(), powerupList[lane][row]->getY(), powerupList[lane][row]->getZ());
-					switch (powerupList[lane][row]->getType())
+					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());
+					switch (powerupList[lane][row].getType())
 					{
 					case 0:
 						modelStack.Translate(0.f, 7.5f, 0.f);
