@@ -48,6 +48,7 @@ void SceneGame::Init()
 	Player.setTexture(CAR_GREEN);
 	UpdateCarTexture();
 
+	InitCollision();
 
 
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
@@ -71,8 +72,6 @@ void SceneGame::Update(double dt)
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
 	//Controls / Interactions / etcs.
-
-
 	UpdateCar(dt);
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
@@ -80,9 +79,8 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop();
-
-	powerupRotation += float(dt) * 90.f;
 	displayRotation += float(dt) * 45.f;
+	UpdatePowerUps(dt);
 }
 
 static const float SKYBOXSIZE = 10000.f;
@@ -375,6 +373,12 @@ void SceneGame::InitCursors()
 	leaderboardCursor.addNewPosition(5.f, -4.f, 2);
 }
 
+void SceneGame::InitCollision()
+{
+	playerBoost = 0.f;
+	opponentBoost = 0.f;
+}
+
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
 	for (int row = 0; row < (int)noOfRows; ++row)
@@ -409,6 +413,7 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 
 void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
+	powerupRotation = 0;
 	for (int row = 0; row < (int)noOfRows / 2; row++)
 	{
 		for (int lane = 0; lane < 4; lane++)
@@ -465,6 +470,7 @@ void SceneGame::UpdateCamLoc()
 		if (menu.getIndex() == E_GAME)
 		{
 			const float camAgile = 0.4f;
+			//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
 			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
@@ -500,23 +506,20 @@ void SceneGame::UpdateCar(double dt)
 	{
 		//Player
 		//Change with collectibles
-		const float playerboost = 0.f;
-
-		Player.UpdatePlayerForward(dt, playerboost);
+		Player.UpdatePlayerForward(dt, playerBoost);
 		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
 			delayTime = 0.f;
-
-
+		
 		//Opponent
 		//Change with collectibles
-		const float opponentboost = 0.f;
-
-		Opponent.UpdatePlayerForward(dt, opponentboost);
+		Opponent.UpdatePlayerForward(dt, opponentBoost);
 		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
 		Opponent.UpdatePlayerJump(dt, AI.getJump());
 		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
 			delayTime = 0.f;
+
+		UpdateCarCollision();
 	}
 }
 
@@ -544,6 +547,75 @@ void SceneGame::UpdateCarTexture()
 		break;
 
 	}
+	/*switch (Opponent.getTexture())
+	{
+	case CAR_GREY:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+	case CAR_CYAN:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_cyan.tga");
+		break;
+	case CAR_ORANGE:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_orange.tga");
+		break;
+	case CAR_RED:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_red.tga");
+		break;
+	case CAR_GREEN:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_green.tga");
+		break;
+	default:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+
+	}*/
+}
+
+void SceneGame::UpdateCarCollision()
+{
+	if (Player.collisionObstacle(obstacleList))
+	{
+		playerBoost -= 10.f;
+		if (playerBoost < 0.f)
+			playerBoost = 0.f;
+		Player.setTexture(CAR_ORANGE);
+		UpdateCarTexture();
+	}
+	if (Player.collisionPowerUp(powerupList))
+	{
+		int row = 0;
+		float forward = 3 * Player.getForward();
+		if (forward / 800 > 0) // Row in front of car
+			row = ((int)forward / 800);
+		powerupList[Player.getLane()][row].setActive(false);
+		playerBoost += 5.f;
+		if (playerBoost > 50.f)
+			playerBoost = 50.f;
+		Player.setTexture(CAR_GREEN);
+		UpdateCarTexture();
+	}
+	if (Opponent.collisionObstacle(obstacleList))
+	{
+		opponentBoost -= 10.f;
+		if (opponentBoost < 0.f)
+			opponentBoost = 0.f;
+	}
+	if (Opponent.collisionPowerUp(powerupList))
+	{
+		int row = 0;
+		float forward = 3 * Opponent.getForward();
+		if (forward / 800 > 0) // Row in front of car
+			row = ((int)forward / 800);
+		powerupList[Opponent.getLane()][row].setActive(false);
+		opponentBoost += 5.f;
+		if (opponentBoost > 50.f)
+			opponentBoost = 50.f;
+	}
+}
+
+void SceneGame::UpdatePowerUps(double dt)
+{
+	powerupRotation += float(dt) * 90.f;
 }
 
 void SceneGame::UpdateMainMenuCursor()
