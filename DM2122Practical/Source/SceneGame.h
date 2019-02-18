@@ -186,6 +186,7 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
+	void		InitCollision();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
@@ -196,6 +197,8 @@ private:
 	void		UpdateAppPolygon();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
+	void		UpdateCarCollision();
+	void		UpdatePowerUps(double dt);
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();
@@ -221,6 +224,8 @@ private:
 	bool b_exit = false;
 	float delayTime;
 	float powerupRotation;
+	float playerBoost;
+	float opponentBoost;
 
 	//Skybox
 

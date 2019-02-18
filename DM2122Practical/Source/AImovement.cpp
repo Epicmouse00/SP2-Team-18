@@ -33,7 +33,7 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 	int row = 0;
 	forward *= 3;
 	if ((forward - 600) / 400 > 0) // Row in front of car
-		row = (forward - 600) / 400;
+		row = ((int)forward - 600) / 400;
 	if(obstacle[lane][row].getActive())
 	{
 		range = 300.f;
@@ -66,7 +66,7 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 	}
 	range = 100.f;
 	if (forward / 800 > 0) // Row in front of car
-		row = (forward / 800);
+		row = ((int)forward / 800);
 	else
 		row = 0;
 	if (!haveObstacle && !powerups[lane][row].getActive())// if no powerup in front and no near obstacles
