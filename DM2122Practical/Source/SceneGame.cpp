@@ -1150,7 +1150,7 @@ void SceneGame::RenderLeaderboard()
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((0.3f / 1.f), (0.3f / 0.5f), 0.5f);
+		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.1f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
@@ -1162,7 +1162,7 @@ void SceneGame::RenderLeaderboard()
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((0.3f / 1.f), (0.3f / 0.5f), 0.5f);
+		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.9f, 0.1f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
