@@ -300,6 +300,10 @@ void SceneGame::InitMeshes()
 
 	// Menu backdrop
 
+	//Title Bar
+	meshList[GEO_TITLE] = MeshBuilder::GenerateOBJ("Menu", "OBJ//Title.obj");
+	meshList[GEO_TITLE]->textureID = LoadTGA("image//TitleBar.tga");
+
 	// Menu Button
 	meshList[GEO_BUTTON] = MeshBuilder::GenerateOBJ("Menu", "OBJ//Button3.obj");
 	meshList[GEO_BUTTON]->textureID = LoadTGA("image//ButtonType3.tga");
@@ -1073,6 +1077,14 @@ void SceneGame::RenderMainMenuButtons()
 	{
 		const float textTranslate = -3.f;
 		std::string text;
+
+		//Title
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.2f, 0.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_TITLE], false);
+		modelStack.PopMatrix();
 
 		//Play
 		text = "Play";

@@ -56,6 +56,7 @@ class SceneGame : public Scene
 		GEO_LEADERBOARD,
 		GEO_PLAYER,
 		GEO_OPPONENT,
+		GEO_TITLE,
 
 		//Power Ups
 		GEO_SPEED,

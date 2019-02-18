@@ -216,5 +216,11 @@
     <Image Include="Image\calibri.tga">
       <Filter>Image</Filter>
     </Image>
+    <Image Include="Image\ButtonType3.tga">
+      <Filter>Image</Filter>
+    </Image>
+    <Image Include="Image\TitleBar.tga">
+      <Filter>Image</Filter>
+    </Image>
   </ItemGroup>
 </Project>
