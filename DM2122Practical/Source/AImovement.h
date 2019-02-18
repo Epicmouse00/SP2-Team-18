@@ -1,4 +1,5 @@
-#pragma once
+#ifndef AIMOVEMENT_H 
+#define AIMOVEMENT_H
 #include "Obstacle.h"
 #include "PowerUps.h"
 
@@ -17,3 +18,4 @@ public:
 	bool	getRight() const;
 };
 
+#endif

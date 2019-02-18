@@ -168,3 +168,29 @@ int Car::getTexture() const
 {
 	return texture;
 }
+
+bool Car::collisionPowerUp(PowerUps powerups[4][50]) const
+{
+	const float range = 10.f; // I put 10 first idk what number to put
+	const float height = 5.f; // I put 5 first idk what number to put
+	int row = 0;
+	float forward = 3 * Forward;
+	if (forward / 800 > 0) // Row in front of car
+		row = ((int)forward / 800);
+	if (Jump < height && powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
+		return true;
+	return false;
+}
+
+bool Car::collisionObstacle(Obstacle obstacle[4][100]) const
+{
+	const float range = 10.f;  // I put 10 first idk what number to put
+	const float height = 5.f; // I put 5 first idk what number to put
+	int row = 0;
+	float forward = 3 * Forward;
+	if ((forward - 600) / 400 > 0) // Row in front of car
+		row = ((int)forward - 600) / 400;
+	if (((Jump < height && obstacle[Lane][row].getObstacleType() == 0) || obstacle[Lane][row].getObstacleType() == 1) && obstacle[Lane][row].getZ() > forward - range && obstacle[Lane][row].getZ() < forward + range)
+		return true;
+	return false;
+}
