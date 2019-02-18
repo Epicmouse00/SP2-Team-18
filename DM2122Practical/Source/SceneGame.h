@@ -182,6 +182,7 @@ private:
 	void		InitCamera();
 	void		InitMeshes();
 	void		InitProjection();
+	void		InitCursors();
 	void		InitObstacles(unsigned int noOfObstacles);
 	void		InitPowerUps();
 

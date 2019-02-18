@@ -12,9 +12,9 @@
 #include "LoadTGA.h"
 
 Menu menu;
-Cursor		mainMenuCursor(3.f, -2.f, 4);
-Cursor		gameChooseCursor(3.f, -3.f, 3);
-Cursor		leaderboardCursor(-2.5f, 0.f, 3);
+Cursor		mainMenuCursor(4);
+Cursor		gameChooseCursor(3);
+Cursor		leaderboardCursor(3);
 Car			Player(true);
 Car			Opponent(false);
 
@@ -34,6 +34,7 @@ void SceneGame::Init()
 	InitLights();
 	InitCamera();
 	InitMeshes();
+	InitCursors();
 	InitObstacles(numberOfRows);
 	InitPowerUps();
 
@@ -347,6 +348,20 @@ void SceneGame::InitProjection()
 	projectionStack.LoadMatrix(projection);
 }
 
+void SceneGame::InitCursors()
+{
+	mainMenuCursor.addNewPosition(5.f, 3.f, 0);
+	mainMenuCursor.addNewPosition(5.f, 1.f, 1);
+	mainMenuCursor.addNewPosition(5.f, -1.f, 2);
+	mainMenuCursor.addNewPosition(5.f, -3.f, 3);
+	gameChooseCursor.addNewPosition(5.f, 3.f, 0);
+	gameChooseCursor.addNewPosition(5.f, 0.f, 1);
+	gameChooseCursor.addNewPosition(5.f, -3.f, 2);
+	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
+	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
+	leaderboardCursor.addNewPosition(5.f, -4.f, 2);
+}
+
 void SceneGame::InitObstacles(unsigned int noOfObstacles)
 {
 	const float laneSpacing = 22.5f; // 7.5 x 3
@@ -533,8 +548,11 @@ void SceneGame::UpdateMainMenuCursor()
 		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-
 			b_exit = menu.menuChange(mainMenuCursor.getIndex());
+			for (int i = 0; i < mainMenuCursor.getIndex() + 1; i++)
+			{
+				mainMenuCursor.updatePositionIndex(-1);
+			}
 		}
 	}
 }
@@ -559,6 +577,8 @@ void SceneGame::UpdateGameChooseCursor()
 		{
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
+			gameChooseCursor.updatePositionIndex(-1);
+			gameChooseCursor.updatePositionIndex(-1);
 		}
 	}
 }
@@ -569,20 +589,74 @@ void SceneGame::UpdateLeaderboardCursor()
 	{
 		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
 		{
-			leaderboardCursor.updatePositionIndex(-1);
-			delayTime = 0;
+			if (leaderboardCursor.getIndex() != 2)
+			{
+				leaderboardCursor.updatePositionIndex(-1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
 		}
 
 		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
 		{
-			leaderboardCursor.updatePositionIndex(1);
-			delayTime = 0;
+			if (leaderboardCursor.getIndex() != 1)
+			{
+				leaderboardCursor.updatePositionIndex(1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
 		}
 
 		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
 		{
-			leaderboardCursor.updatePositionIndex(1);
-			delayTime = 0;
+			if (leaderboardCursor.getIndex() == 0)
+			{
+				leaderboardCursor.updatePositionIndex(1);
+				leaderboardCursor.updatePositionIndex(1);
+				delayTime = 0;
+			}
+			else if (leaderboardCursor.getIndex() == 1)
+			{
+				leaderboardCursor.updatePositionIndex(1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
+		}
+		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f)
+		{
+			if (leaderboardCursor.getIndex() == 2)
+			{
+				leaderboardCursor.updatePositionIndex(-1);
+				leaderboardCursor.updatePositionIndex(-1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
+		}
+		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		{
+			if (leaderboardCursor.getIndex() == 2)
+			{
+				menu.menuChange(leaderboardCursor.getIndex());
+				leaderboardCursor.updatePositionIndex(-1);
+				leaderboardCursor.updatePositionIndex(-1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
 		}
 	}
 }
@@ -863,7 +937,7 @@ void SceneGame::RenderMainMenuButtons()
 		float sideMove = 5.f;
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
-		modelStack.Translate(sideMove, mainMenuCursor.outputPosition(), 0.f);
+		modelStack.Translate(mainMenuCursor.getX(), mainMenuCursor.getY(), 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
@@ -918,18 +992,7 @@ void SceneGame::RenderLeaderboard()
 		//Cursor
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
-		if (leaderboardCursor.getIndex() == 0)
-		{
-			modelStack.Translate(10.f, 10.f, 0.f);
-		}
-		else if (leaderboardCursor.getIndex() == 1)
-		{
-			modelStack.Translate(0.f, 10.f, 0.f);
-		}
-		else if (leaderboardCursor.getIndex() == 2)
-		{
-			modelStack.Translate(5.f, -5.f, 0.f);
-		}
+		modelStack.Translate(leaderboardCursor.getX(), leaderboardCursor.getY(), 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
@@ -987,7 +1050,7 @@ void SceneGame::RenderGameChooseButtons()
 		float sideMove = 5.f;
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
-		modelStack.Translate(sideMove, gameChooseCursor.outputPosition(), 0.f);
+		modelStack.Translate(gameChooseCursor.getX(), gameChooseCursor.getY(), 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
