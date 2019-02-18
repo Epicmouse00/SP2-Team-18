@@ -3,6 +3,7 @@
 Menu::Menu()
 {
 	pageIndex = 0;
+	gameMode = 0;
 }
 
 Menu::~Menu()
@@ -12,31 +13,30 @@ Menu::~Menu()
 
 bool Menu::menuChange(int cursorIndex)
 {
-	cursorIndex += 1;
-	if (pageIndex == 0 && cursorIndex == 4)
+	if (pageIndex == 0 && cursorIndex == 3)
 	{
 		return true;
 	}
-	if (pageIndex == 0 && cursorIndex == 3)
-	{
-		return false;
-	}
-	if (pageIndex == 1 && cursorIndex == 3)
+	if (pageIndex == 1 && cursorIndex == 2)
 	{
 		setIndex(0);
 	}
-	else if (pageIndex == 1 && cursorIndex != 3)
+	else if (pageIndex == 1 && cursorIndex != 2)
 	{
 		setGameMode(cursorIndex);
 		setIndex(2);
 	}
-	else if (cursorIndex > 1)
+	else if (pageIndex == 4 && cursorIndex == 2)
 	{
-		setIndex(cursorIndex + 1);
+		setIndex(0);
+	}
+	else if (cursorIndex > 0)
+	{
+		setIndex(cursorIndex + 2);
 	}
 	else
 	{
-		setIndex(cursorIndex);
+		setIndex(cursorIndex + 1);
 	}
 	return false;
 }

@@ -2,23 +2,35 @@
 
 Cursor::Cursor()
 {
-	initialPosition = 0.f;
-	spacing = -1.f;
-	numberOfOptions = 1;
+	for (int i = 0; i < 4; i++)
+	{
+		x[i] = 0;
+		y[i] = 0;
+	}
 	positionIndex = 0;
+	numberOfOptions = 4;
 }
 
-Cursor::Cursor(float initialPosition, float spacing, int numberOfOptions)
+Cursor::Cursor(int numberOfOptions)
 {
-	this->initialPosition = initialPosition;
-	this->spacing = spacing;
-	this->numberOfOptions = numberOfOptions;
+	for (int i = 0; i < 4; i++)
+	{
+		x[i] = 0;
+		y[i] = 0;
+	}
 	positionIndex = 0;
+	this->numberOfOptions = numberOfOptions;
 }
 
 Cursor::~Cursor()
 {
 
+}
+
+void Cursor::addNewPosition(float x, float y, int index)
+{
+	this->x[index] = x;
+	this->y[index] = y;
 }
 
 void Cursor::updatePositionIndex(int direction)
@@ -34,9 +46,14 @@ void Cursor::updatePositionIndex(int direction)
 	}
 }
 
-float Cursor::outputPosition() const
+float Cursor::getX() const
 {
-	return initialPosition + (positionIndex * spacing);
+	return x[positionIndex];
+}
+
+float Cursor::getY() const
+{
+	return y[positionIndex];
 }
 
 int Cursor::getIndex() const
