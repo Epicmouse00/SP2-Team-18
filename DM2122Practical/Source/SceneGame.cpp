@@ -1078,48 +1078,48 @@ void SceneGame::RenderMainMenuButtons()
 		text = "Play";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 1.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(3 / 2), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Shop
 		text = "Shop";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 0.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(3 / 2), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Leaderboard
 		text = "Leaderboard";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -0.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5), (float)(0.7 / 0.8), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Quit
 		text = "Quit";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(3 / 2), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Cursor
@@ -1147,36 +1147,36 @@ void SceneGame::RenderLeaderboard()
 		text = "Time Leaderboard";
 		modelStack.PushMatrix();
 		modelStack.Translate(2.5f, 5.f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.35), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.3f / 1.f), (0.3f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.1f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		// VS Leaderboard button
 		text = "VS Leaderboard";
 		modelStack.PushMatrix();
 		modelStack.Translate(-2.5f, 5.f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.35), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.3f / 1.f), (0.3f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.9f, 0.1f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(3 / 2), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Cursor
@@ -1205,36 +1205,36 @@ void SceneGame::RenderGameChooseButtons()
 		text = "VS Mode";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 1.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.8), (float)(3 / 2), 0.5f);		
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Time Mode
 		text = "Time Mode";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 0.f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.6), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
-		modelStack.Scale(0.9f, 0.5f, 0.4f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(3 / 2), (float)(3 / 2), 0.5f);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Cursor
