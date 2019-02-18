@@ -49,8 +49,6 @@ void SceneGame::Init()
 	UpdateCarTexture();
 
 	InitCollision();
-
-
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
 	powerupRotation = 0;
@@ -71,11 +69,8 @@ void SceneGame::Update(double dt)
 {
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
-	//Controls / Interactions / etcs.
 	UpdateCar(dt);
-	UpdateMainMenuCursor();
-	UpdateGameChooseCursor();
-	UpdateLeaderboardCursor();
+	UpdateCursor();
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop();
@@ -452,21 +447,7 @@ void SceneGame::UpdateDelayTime(double dt)
 
 void SceneGame::UpdateCam(double dt)
 {
-	UpdateCamMovement();
-	UpdateCamLoc();
-	camera.Update(dt);
-}
 
-void SceneGame::UpdateCamMovement()
-{
-	if (Application::IsKeyPressed('Z'))
-		camera.Enable();
-	if (Application::IsKeyPressed('X'))
-		camera.Disable();
-}
-
-void SceneGame::UpdateCamLoc()
-{
 	if (!camera.getActive())
 	{
 		if (menu.getIndex() == E_GAME)
@@ -480,6 +461,7 @@ void SceneGame::UpdateCamLoc()
 			camera.setPosition(Vector3(0.f, 1.5f, -10.f), Vector3(0.f, 1.5f, 180.f), Vector3(0.f, 1.f, 0.f));
 		}
 	}
+	camera.Update(dt);
 }
 
 void SceneGame::UpdateAppPolygon()
@@ -616,6 +598,13 @@ void SceneGame::UpdateCarCollision()
 void SceneGame::UpdatePowerUps(double dt)
 {
 	powerupRotation += float(dt) * 90.f;
+}
+
+void SceneGame::UpdateCursor()
+{
+	UpdateMainMenuCursor();
+	UpdateGameChooseCursor();
+	UpdateLeaderboardCursor();
 }
 
 void SceneGame::UpdateMainMenuCursor()

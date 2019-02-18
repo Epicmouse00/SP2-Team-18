@@ -195,13 +195,12 @@ private:
 
 	void		UpdateDelayTime(double dt);
 	void		UpdateCam(double dt);
-	void		UpdateCamMovement();
-	void		UpdateCamLoc();
 	void		UpdateAppPolygon();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
 	void		UpdateCarCollision();
 	void		UpdatePowerUps(double dt);
+	void		UpdateCursor();
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();

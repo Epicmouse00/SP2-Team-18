@@ -28,6 +28,11 @@ void Camera3::Update(double dt)
 
 	static const float CAMERA_SPEED = 90.f;
 
+	if (Application::IsKeyPressed('Z'))
+		active = true;
+	if (Application::IsKeyPressed('X'))
+		active = false;
+
 	if (active)
 	{
 		//Movement
@@ -114,16 +119,6 @@ void Camera3::Reset()
 	position = defaultPosition;
 	target = defaultTarget;
 	up = defaultUp;
-}
-
-void Camera3::Enable()
-{
-	active = true;
-}
-
-void Camera3::Disable()
-{
-	active = false;
 }
 
 bool Camera3::getActive()
