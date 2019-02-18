@@ -3,16 +3,17 @@
 
 class Cursor
 {
-	float initialPosition;
-	float spacing;
+	float x[4], y[4];
 	int positionIndex;
 	int numberOfOptions;
 public:
 	Cursor();
-	Cursor(float initialPosition, float spacing, int numberOfOptions);
+	Cursor(int numberOfOptions);
 	~Cursor();
+	void addNewPosition(float x, float y, int index);
 	void updatePositionIndex(int direction);
-	float outputPosition() const;
+	float getX() const;
+	float getY() const;
 	int getIndex() const;
 };
 
