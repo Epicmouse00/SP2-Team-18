@@ -66,6 +66,9 @@ class SceneGame : public Scene
 		//Menu buttons
 		GEO_BUTTON,
 
+		//Shop
+		GEO_DISPLAY,
+
 		//Keep this at the back
 		NUM_GEOMETRY
 	};
@@ -221,6 +224,9 @@ private:
 	bool b_exit = false;
 	float delayTime;
 	float powerupRotation;
+	float displayRotation;
+	float leftCursor;
+	float rightCursor;
 
 	//Skybox
 

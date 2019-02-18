@@ -18,5 +18,8 @@ public:
 	int getColour();
 	void nextIndex();
 	void previousIndex();
+	void resetIndex();
 	bool isOwned();
+	void setOwned();
+	bool getColour(int colourIndex);
 };

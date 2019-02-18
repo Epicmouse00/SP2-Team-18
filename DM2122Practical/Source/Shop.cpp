@@ -99,9 +99,93 @@ void Shop::previousIndex()
 	}
 }
 
+void Shop::resetIndex()
+{
+	index = 0;
+}
+
 bool Shop::isOwned()
 {
 	switch (index)
+	{
+	case 0:
+		if (grey == true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case 1:
+		if (cyan == true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case 2:
+		if (orange == true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case 3:
+		if (red == true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case 4:
+		if (green == true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	}
+}
+
+void Shop::setOwned()
+{
+	switch (index)
+	{
+	case 0:
+		grey = true;
+		break;
+	case 1:
+		cyan = true;
+		break;
+	case 2:
+		orange = true;
+		break;
+	case 3:
+		red = true;
+		break;
+	case 4:
+		green = true;
+		break;
+	}
+}
+
+bool Shop::getColour(int colourIndex)
+{
+	switch (colourIndex)
 	{
 	case 0:
 		if (grey == true)
