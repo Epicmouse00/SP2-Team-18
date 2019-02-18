@@ -171,8 +171,8 @@ int Car::getTexture() const
 
 bool Car::collisionPowerUp(PowerUps powerups[4][50]) const
 {
-	const float range = 10.f; // I put 10 first idk what number to put
-	const float height = 5.f; // I put 5 first idk what number to put
+	const float range = 20.f;
+	const float height = 5.f;
 	int row = 0;
 	float forward = 3 * Forward;
 	if (forward / 800 > 0) // Row in front of car
@@ -184,8 +184,8 @@ bool Car::collisionPowerUp(PowerUps powerups[4][50]) const
 
 bool Car::collisionObstacle(Obstacle obstacle[4][100]) const
 {
-	const float range = 10.f;  // I put 10 first idk what number to put
-	const float height = 5.f; // I put 5 first idk what number to put
+	const float range = 20.f;
+	const float height = 5.f;
 	int row = 0;
 	float forward = 3 * Forward;
 	if ((forward - 600) / 400 > 0) // Row in front of car

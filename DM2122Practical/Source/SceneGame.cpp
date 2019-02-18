@@ -136,7 +136,6 @@ void SceneGame::Render()
 	// Others?
 
 	////////// RENDER GAME MODELS HERE //////////
-	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
 }
 
 //Exit Function
@@ -376,9 +375,11 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (rand() % 2) //rand() % 2
+			if (rand() % 2)
+			//if (1)
 			{
 				Obstacle temp(rand() % 2);
+				//Obstacle temp(1);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ((float)(400 * row + 1000));
@@ -496,20 +497,18 @@ void SceneGame::UpdateCar(double dt)
 	if (menu.getIndex() == E_GAME)
 	{
 		//Player
-		//Change with collectibles
 		Player.UpdatePlayerForward(dt, playerBoost);
 		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
 			delayTime = 0.f;
-		
+
 		//Opponent
-		//Change with collectibles
 		Opponent.UpdatePlayerForward(dt, opponentBoost);
 		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
 		Opponent.UpdatePlayerJump(dt, AI.getJump());
 		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
 			delayTime = 0.f;
-
+			
 		UpdateCarCollision();
 	}
 }

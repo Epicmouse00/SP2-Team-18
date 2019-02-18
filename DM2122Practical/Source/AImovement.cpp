@@ -36,7 +36,7 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 		row = ((int)forward - 600) / 400;
 	if(obstacle[lane][row].getActive())
 	{
-		range = 300.f;
+		range = 400.f;
 		if (obstacle[lane][row].getZ() < range + forward)
 		{
 			haveObstacle = true;
