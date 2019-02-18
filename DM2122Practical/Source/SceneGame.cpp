@@ -73,8 +73,7 @@ void SceneGame::Update(double dt)
 	UpdateCursor();
 	UpdateLight();
 	UpdateCam(dt);
-	UpdateShop();
-	displayRotation += float(dt) * 45.f;
+	UpdateShop(dt);
 	UpdatePowerUps(dt);
 }
 
@@ -490,8 +489,8 @@ void SceneGame::UpdateCar(double dt)
 	{
 		//Player
 		Player.UpdatePlayerForward(dt, playerBoost);
-		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
-		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
+		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
+		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
 
 		//Opponent
@@ -569,7 +568,7 @@ void SceneGame::UpdateCarCollision()
 		float forward = 3 * Player.getForward();
 		if (forward / 800 > 0) // Row in front of car
 			row = ((int)forward / 800);
-		powerupList[Player.getLane()][row].setActive(false);
+		powerupList[Player.getLane()][row].setZ(0.f);
 		playerBoost += 5.f;
 		if (playerBoost > 50.f)
 			playerBoost = 50.f;
@@ -588,7 +587,7 @@ void SceneGame::UpdateCarCollision()
 		float forward = 3 * Opponent.getForward();
 		if (forward / 800 > 0) // Row in front of car
 			row = ((int)forward / 800);
-		powerupList[Opponent.getLane()][row].setActive(false);
+		powerupList[Opponent.getLane()][row].setZ(0.f);
 		opponentBoost += 5.f;
 		if (opponentBoost > 50.f)
 			opponentBoost = 50.f;
@@ -611,19 +610,19 @@ void SceneGame::UpdateMainMenuCursor()
 {
 	if (menu.getIndex() == E_MAINMENU)
 	{
-		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f) //Cursor stuff
 		{
 			mainMenuCursor.updatePositionIndex(-1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
 		{
 			mainMenuCursor.updatePositionIndex(1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
 			b_exit = menu.menuChange(mainMenuCursor.getIndex());
@@ -639,19 +638,19 @@ void SceneGame::UpdateGameChooseCursor()
 {
 	if (menu.getIndex() == E_GAMECHOOSE)
 	{
-		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f) //Cursor stuff
 		{
 			gameChooseCursor.updatePositionIndex(-1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
 		{
 			gameChooseCursor.updatePositionIndex(1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
@@ -665,7 +664,7 @@ void SceneGame::UpdateLeaderboardCursor()
 {
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
-		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() != 2)
 			{
@@ -678,7 +677,7 @@ void SceneGame::UpdateLeaderboardCursor()
 			}
 		}
 
-		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() != 1)
 			{
@@ -691,7 +690,7 @@ void SceneGame::UpdateLeaderboardCursor()
 			}
 		}
 
-		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() == 0)
 			{
@@ -709,7 +708,7 @@ void SceneGame::UpdateLeaderboardCursor()
 				delayTime = 0;
 			}
 		}
-		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() == 2)
 			{
@@ -722,7 +721,7 @@ void SceneGame::UpdateLeaderboardCursor()
 				delayTime = 0;
 			}
 		}
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() == 2)
 			{
@@ -739,15 +738,16 @@ void SceneGame::UpdateLeaderboardCursor()
 	}
 }
 
-void SceneGame::UpdateShop()
+void SceneGame::UpdateShop(double dt)
 {
 	if (menu.getIndex() == E_SHOP)
 	{
+		displayRotation += float(dt) * 45.f;
 		if (gameShop.getColour() != 4)
 		{
 			rightCursor = 0;
 
-			if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+			if ((Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D')) && delayTime >= 1.f)
 			{
 				delayTime = 0;
 				gameShop.nextIndex();
@@ -781,7 +781,7 @@ void SceneGame::UpdateShop()
 		{
 			leftCursor = 0;
 
-			if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+			if ((Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')) && delayTime >= 1.f)
 			{
 				delayTime = 0;
 				gameShop.previousIndex();
@@ -811,7 +811,7 @@ void SceneGame::UpdateShop()
 			leftCursor = 50;
 		}
 
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
 			if (gameShop.isOwned() == false && (gameBalance.getBalance() >= gameShop.getCost()))
@@ -1325,7 +1325,7 @@ void SceneGame::RenderObstacles()
 		{
 			for (size_t row = 0; row < numberOfRows; ++row)
 			{
-				if (obstacleList[lane][row].getActive())
+				if (obstacleList[lane][row].getZ() > camera.position.z && obstacleList[lane][row].getZ() < camera.position.z + 5000.f && obstacleList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
@@ -1356,7 +1356,7 @@ void SceneGame::RenderPowerUps()
 		{
 			for (size_t row = 0; row < numberOfRows / 2; ++row)
 			{
-				if (powerupList[lane][row].getActive())
+				if (powerupList[lane][row].getZ() > camera.position.z && powerupList[lane][row].getZ() < camera.position.z + 5000.f && powerupList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());

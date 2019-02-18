@@ -205,7 +205,7 @@ private:
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();
 	void		UpdateLight();
-	void		UpdateShop();
+	void		UpdateShop(double dt);
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
