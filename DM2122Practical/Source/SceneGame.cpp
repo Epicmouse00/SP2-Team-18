@@ -17,6 +17,7 @@ Menu menu;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
+Leaderboard leaderboard;
 Car			Player(true);
 Car			Opponent(false);
 Obstacle	obstacleList[4][numberOfRows];
@@ -39,6 +40,7 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitCursors();
+	LoadSaveData();
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 
@@ -314,6 +316,10 @@ void SceneGame::InitMeshes()
 	meshList[GEO_LEADERBOARD] = MeshBuilder::GenerateOBJ("Leaderboard", "OBJ//LeaderBoard.obj");
 	meshList[GEO_LEADERBOARD]->textureID = LoadTGA("image//LeaderBoard.tga");
 
+	// Leaderboard without poles
+	meshList[GEO_LEADERBOARDSA] = MeshBuilder::GenerateOBJ("LeaderboardSA", "OBJ//LeaderBoardSA.obj");
+	meshList[GEO_LEADERBOARDSA]->textureID = LoadTGA("image//LeaderBoard.tga");
+
 	// Gameplay UI
 
 	// Player
@@ -365,6 +371,21 @@ void SceneGame::InitCursors()
 	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
 	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
 	leaderboardCursor.addNewPosition(5.f, -4.f, 2);
+}
+
+void SceneGame::LoadSaveData()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		if (i < 5)
+		{
+			playerScores[i] = leaderboard.getVersus(i);
+		}
+		else
+		{
+			playerScores[i] = leaderboard.getTime(i);
+		}
+	}
 }
 
 void SceneGame::InitObstacles(unsigned int noOfRows)
@@ -1021,6 +1042,35 @@ void SceneGame::RenderLeaderboard()
 		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		modelStack.PopMatrix();
+
+		//Leaderboard
+		string playerScores[10];
+		float translateY = 0.5f;
+		modelStack.PushMatrix();
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Scale(2.2f, 2.2f, 2.2f);
+		modelStack.Translate(0.f, 0.15f, 0.f);
+		RenderMesh(meshList[GEO_LEADERBOARDSA], false);
+		for (int i = 0; i < 10; i++)
+		{
+			if (i < 5 && leaderboardCursor.getIndex() == 0)
+			{
+				playerScores[i] = leaderboard.getVersus(i);
+				modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+				modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+				modelStack.Translate(0.f, translateY * (float)i, 0.f);
+				RenderText(meshList[GEO_TEXT], playerScores[i], Color(1.f, 0.f, 0.f));
+			}
+			else if (leaderboardCursor.getIndex() == 1)
+			{
+				playerScores[i] = leaderboard.getTime(i);
+				modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+				modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
+				modelStack.Translate(0.f, translateY * ((float)i - 5), 0.f);
+				RenderText(meshList[GEO_TEXT], playerScores[i], Color(1.f, 0.f, 0.f));
+			}
+		}
 		modelStack.PopMatrix();
 
 		//Cursor

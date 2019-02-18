@@ -19,6 +19,7 @@
 #include "Car.h"
 #include "AImovement.h"
 #include "Shop.h"
+#include "Leaderboard.h"
 #include "Saving.h"
 #include "Currency.h"
 
@@ -54,6 +55,7 @@ class SceneGame : public Scene
 		GEO_CURSOR,
 		GEO_WINLOSE,
 		GEO_LEADERBOARD,
+		GEO_LEADERBOARDSA,
 		GEO_PLAYER,
 		GEO_OPPONENT,
 
@@ -186,6 +188,7 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
+	void		LoadSaveData();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
@@ -242,5 +245,6 @@ private:
 	Saving		gameSave;
 	Currency	gameBalance;
 	Shop		gameShop;
+	Leaderboard leaderboard;
 };
 #endif

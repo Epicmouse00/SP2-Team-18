@@ -23,4 +23,6 @@ public:
 	bool getOrange();
 	bool getRed();
 	bool getGreen();
+	void setLeaderboard();
+	void getLeaderboard();
 };

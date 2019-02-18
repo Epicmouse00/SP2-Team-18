@@ -1,20 +1,23 @@
 #ifndef LEADERBOARD_H
 #define LEADERBOARD_H
+#include "Saving.h"
+#include <string>
 
 class Leaderboard
 {
 private:
-	float versusScores[5];
-	float timeScores[5];
+	string versusScores[5];
+	string timeScores[5];
+	Saving save;
 
 public:
 	Leaderboard();
 	~Leaderboard();
 
-	void setVersus(float time);
-	float getVersus(int index) const;
-	void setTime(float time);
-	float getTime(int index) const;
+	void setVersus(string record);
+	string getVersus(int index) const;
+	void setTime(string record);
+	string getTime(int index) const;
 
 };
 
