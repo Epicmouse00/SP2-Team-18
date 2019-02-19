@@ -370,6 +370,7 @@ void SceneGame::InitVariables()
 	displayRotation = 0;
 	leftCursor = 0;
 	rightCursor = 0;
+	Player.setPlayerForward(-150.f);
 }
 
 void SceneGame::InitObstacles(unsigned int noOfRows)
@@ -492,14 +493,17 @@ void SceneGame::UpdateCar(double dt)
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
 
-		//Opponent
-		Opponent.UpdatePlayerForward(dt, opponentBoost);
-		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
-		Opponent.UpdatePlayerJump(dt, AI.getJump());
-		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
-			delayTime = 0.f;
-			
+		if (menu.getGameMode() == MODE_VS)
+		{
+			//Opponent
+			Opponent.UpdatePlayerForward(dt, opponentBoost);
+			AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
+			Opponent.UpdatePlayerJump(dt, AI.getJump());
+			if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
+				delayTime = 0.f;
+		}
 		UpdateCarCollision();
+		UpdateCarSpeed(dt);
 	}
 }
 
@@ -554,11 +558,7 @@ void SceneGame::UpdateCarTexture()
 void SceneGame::UpdateCarCollision()
 {
 	if (Player.collisionObstacle(obstacleList))
-	{
-		playerBoost -= 10.f;
-		if (playerBoost < 0.f)
-			playerBoost = 0.f;
-	}
+		playerBoost -= 30.f;
 	if (Player.collisionPowerUp(powerupList))
 	{
 		int row = 0;
@@ -566,25 +566,37 @@ void SceneGame::UpdateCarCollision()
 		if (forward / 800 > 0) // Row in front of car
 			row = ((int)forward / 800);
 		powerupList[Player.getLane()][row].setActive(false);
-		playerBoost += 5.f;
-		if (playerBoost > 50.f)
-			playerBoost = 50.f;
+		playerBoost += 10.f;
 	}
-	if (Opponent.collisionObstacle(obstacleList))
+	if (menu.getGameMode() == MODE_VS)
 	{
-		opponentBoost -= 10.f;
+		if (Opponent.collisionObstacle(obstacleList))
+			opponentBoost -= 30.f;
+		if (Opponent.collisionPowerUp(powerupList))
+		{
+			int row = 0;
+			float forward = 3 * Opponent.getForward();
+			if (forward / 800 > 0) // Row in front of car
+				row = ((int)forward / 800);
+			powerupList[Opponent.getLane()][row].setActive(false);
+			opponentBoost += 10.f;
+		}
+	}
+}
+
+void SceneGame::UpdateCarSpeed(double dt)
+{
+	playerBoost += (dt * 10.f);
+	if (playerBoost < 0.f)
+		playerBoost = 0.f;
+	else if (playerBoost > 60.f)
+		playerBoost = 60.f;
+	if (menu.getGameMode() == MODE_VS)
+	{
+		opponentBoost += (dt * 10.f);
 		if (opponentBoost < 0.f)
 			opponentBoost = 0.f;
-	}
-	if (Opponent.collisionPowerUp(powerupList))
-	{
-		int row = 0;
-		float forward = 3 * Opponent.getForward();
-		if (forward / 800 > 0) // Row in front of car
-			row = ((int)forward / 800);
-		powerupList[Opponent.getLane()][row].setActive(false);
-		opponentBoost += 5.f;
-		if (opponentBoost > 50.f)
+		else if (opponentBoost > 50.f)
 			opponentBoost = 50.f;
 	}
 }
@@ -1040,14 +1052,17 @@ void SceneGame::RenderCar()
 		RenderMesh(meshList[GEO_PLAYER], true);
 		modelStack.PopMatrix();
 
-		//Player
-		modelStack.PushMatrix();
-		modelStack.Translate(-9, 0, 50.f);
-		modelStack.Rotate(0, 0, 1, 0);
-		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
-		RenderMesh(meshList[GEO_OPPONENT], true);
-		modelStack.PopMatrix();
+		if (menu.getGameMode() == MODE_VS)
+		{
+			//Opponent
+			modelStack.PushMatrix();
+			modelStack.Translate(-9, 0, 50.f);
+			modelStack.Rotate(0, 0, 1, 0);
+			modelStack.Scale(3, 3, 3);
+			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+			RenderMesh(meshList[GEO_OPPONENT], true);
+			modelStack.PopMatrix();
+		}
 	}
 }
 

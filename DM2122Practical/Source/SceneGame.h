@@ -200,6 +200,7 @@ private:
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
 	void		UpdateCarCollision();
+	void		UpdateCarSpeed(double dt);
 	void		UpdatePowerUps(double dt);
 	void		UpdateCursor();
 	void		UpdateMainMenuCursor();

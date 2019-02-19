@@ -194,3 +194,8 @@ bool Car::collisionObstacle(Obstacle obstacle[4][100]) const
 		return true;
 	return false;
 }
+
+void Car::setPlayerForward(float dist)
+{
+	Forward = dist;
+}

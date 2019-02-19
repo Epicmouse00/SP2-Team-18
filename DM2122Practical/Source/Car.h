@@ -31,6 +31,7 @@ public:
 	int		getTexture() const;
 	bool	collisionPowerUp(PowerUps powerups[4][50]) const;
 	bool	collisionObstacle(Obstacle obstacle[4][100]) const;
+	void	setPlayerForward(float dist);
 };
 
 #endif
