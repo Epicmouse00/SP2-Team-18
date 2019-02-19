@@ -494,7 +494,7 @@ void SceneGame::UpdateCar(double dt)
 		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
-
+		
 		if (menu.getGameMode() == MODE_VS)
 		{
 			//Opponent
@@ -1369,16 +1369,21 @@ void SceneGame::RenderTrack()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		for (int i = 0; i < 100; i++)
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(0.f, -8.f, 35150.f);
-			modelStack.Scale(10.f, 10.f, 3000.f);
-			RenderMesh(meshList[GEO_TRACK], false);
-			modelStack.PopMatrix();
-		}
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -8.f, 35150.f);
+		modelStack.Scale(10.f, 10.f, 3000.f);
+		RenderMesh(meshList[GEO_TRACK], false);
+		modelStack.PopMatrix();
 	}
-
+	else
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -8.f, 0.f);
+		modelStack.Scale(10.f, 10.f, 10.f);
+		modelStack.Rotate(90.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_TRACK], false);
+		modelStack.PopMatrix();
+	}
 }
 
 void SceneGame::RenderObstacles()

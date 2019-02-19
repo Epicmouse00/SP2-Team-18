@@ -57,7 +57,7 @@ int Menu::getIndex() const
 
 void Menu::setGameMode(int index)
 {
-	pageIndex = index;
+	gameMode = index;
 }
 
 int Menu::getGameMode() const
