@@ -43,12 +43,12 @@ class SceneGame : public Scene
 		//Text
 		GEO_TEXT,
 
-		//Track
-		//GEO_TRACK,
-
 		//GAME MODELS
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
+
+		//Track
+		GEO_TRACK,
 
 		GEO_PLANE,
 		GEO_CURSOR,
@@ -217,6 +217,7 @@ private:
 	void		RenderPowerUps();
 	void		RenderSkybox();
 	void		RenderShop();
+	void		RenderTrack();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];

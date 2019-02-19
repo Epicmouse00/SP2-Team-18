@@ -137,6 +137,7 @@ void SceneGame::Render()
 	RenderObstacles();
 
 	// Track
+	RenderTrack();
 
 	// Others?
 
@@ -349,7 +350,8 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Track
-	//meshList[GEO_TRACK] = 
+	meshList[GEO_TRACK] = MeshBuilder::GenerateOBJ("Tunnel", "OBJ//tunnelProto.obj");
+	meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel.tga");
 
 	// Others?
 
@@ -1337,6 +1339,25 @@ void SceneGame::RenderShop()
 		RenderTextOnScreen(meshList[GEO_TEXT], "Balance: $ ", Color(0, 1, 0), 2, 16, 1);
 		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 23, 1);
 	}
+}
+
+void SceneGame::RenderTrack()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		//int temp = 0;
+	
+		for (int i = 0; i < 100; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(0.f, -8.f, 35500.f);
+			//modelStack.Rotate(temp, 0, 1, 0);
+			modelStack.Scale(10.f, 10.f, 3000.f);
+			RenderMesh(meshList[GEO_TRACK], false);
+			modelStack.PopMatrix();
+		}
+	}
+
 }
 
 void SceneGame::RenderObstacles()
