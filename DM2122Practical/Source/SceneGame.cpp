@@ -312,7 +312,7 @@ void SceneGame::InitMeshes()
 
 	// Opponent
 	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
-	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
+	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_ai.tga");
 
 	// Coins
 
@@ -1060,7 +1060,7 @@ void SceneGame::RenderCar()
 			modelStack.Rotate(0, 0, 1, 0);
 			modelStack.Scale(3, 3, 3);
 			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
-			RenderMesh(meshList[GEO_OPPONENT], true);
+			RenderMesh(meshList[GEO_OPPONENT], false);
 			modelStack.PopMatrix();
 		}
 	}
