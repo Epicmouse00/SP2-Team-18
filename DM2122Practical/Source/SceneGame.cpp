@@ -588,14 +588,14 @@ void SceneGame::UpdateCarCollision()
 
 void SceneGame::UpdateCarSpeed(double dt)
 {
-	playerBoost += (dt * 10.f);
+	playerBoost += (float)(dt * 10.f);
 	if (playerBoost < 0.f)
 		playerBoost = 0.f;
 	else if (playerBoost > 60.f)
 		playerBoost = 60.f;
 	if (menu.getGameMode() == MODE_VS)
 	{
-		opponentBoost += (dt * 10.f);
+		opponentBoost += (float)(dt * 10.f);
 		if (opponentBoost < 0.f)
 			opponentBoost = 0.f;
 		else if (opponentBoost > 50.f)
@@ -1369,13 +1369,10 @@ void SceneGame::RenderTrack()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		//int temp = 0;
-	
 		for (int i = 0; i < 100; i++)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(0.f, -8.f, 35500.f);
-			//modelStack.Rotate(temp, 0, 1, 0);
+			modelStack.Translate(0.f, -8.f, 35150.f);
 			modelStack.Scale(10.f, 10.f, 3000.f);
 			RenderMesh(meshList[GEO_TRACK], false);
 			modelStack.PopMatrix();
