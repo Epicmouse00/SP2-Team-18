@@ -41,13 +41,7 @@ void SceneGame::Init()
 	InitCursors();
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
-
 	gameBalance.setBalance(gameSave.getBalance());
-
-	//Will be in SHOP (Call once, not every frame)
-	Player.setTexture(CAR_GREEN);
-	UpdateCarTexture();
-
 	InitCollision();
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	delayTime = 0;
@@ -55,6 +49,8 @@ void SceneGame::Init()
 	displayRotation = 0;
 	leftCursor = 0;
 	rightCursor = 0;
+	Player.setTexture(gameShop.getEquip());
+	UpdateCarTexture();
 
 	InitProjection();
 }
@@ -563,8 +559,6 @@ void SceneGame::UpdateCarCollision()
 		playerBoost -= 10.f;
 		if (playerBoost < 0.f)
 			playerBoost = 0.f;
-		Player.setTexture(CAR_ORANGE);
-		UpdateCarTexture();
 	}
 	if (Player.collisionPowerUp(powerupList))
 	{
@@ -576,8 +570,6 @@ void SceneGame::UpdateCarCollision()
 		playerBoost += 5.f;
 		if (playerBoost > 50.f)
 			playerBoost = 50.f;
-		Player.setTexture(CAR_GREEN);
-		UpdateCarTexture();
 	}
 	if (Opponent.collisionObstacle(obstacleList))
 	{
@@ -830,6 +822,8 @@ void SceneGame::UpdateShop(double dt)
 			{
 				gameShop.setEquip();
 				gameSave.setEquip(gameShop.getEquip());
+				Player.setTexture(gameShop.getEquip());
+				UpdateCarTexture();
 			}
 			gameSave.save();
 		}
