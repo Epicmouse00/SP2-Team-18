@@ -5,21 +5,21 @@ class Shop
 {
 private:
 	int index;
-	bool grey;
-	bool cyan;
-	bool orange;
-	bool red;
-	bool green;
+	int equip;
+	bool car[5];
 public:
 	Shop();
 	~Shop();
 
-	int getCost();
-	int getColour();
+	int getCost() const;
+	int getIndex() const;
 	void nextIndex();
 	void previousIndex();
 	void resetIndex();
-	bool isOwned();
+	bool isOwned() const;
 	void setOwned();
-	bool getColour(int colourIndex);
+	bool getColour(int colourIndex) const;
+	void setEquip();
+	bool isEquip() const;
+	int	getEquip() const;
 };

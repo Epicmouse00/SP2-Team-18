@@ -747,7 +747,7 @@ void SceneGame::UpdateShop(double dt)
 	if (menu.getIndex() == E_SHOP)
 	{
 		displayRotation += float(dt) * 45.f;
-		if (gameShop.getColour() != 4)
+		if (gameShop.getIndex() != 4)
 		{
 			rightCursor = 0;
 
@@ -756,7 +756,7 @@ void SceneGame::UpdateShop(double dt)
 				delayTime = 0;
 				gameShop.nextIndex();
 
-				switch (gameShop.getColour())
+				switch (gameShop.getIndex())
 				{
 				case 0:
 					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
@@ -781,7 +781,7 @@ void SceneGame::UpdateShop(double dt)
 			rightCursor = 50;
 		}
 	
-		if (gameShop.getColour() != 0)
+		if (gameShop.getIndex() != 0)
 		{
 			leftCursor = 0;
 
@@ -790,7 +790,7 @@ void SceneGame::UpdateShop(double dt)
 				delayTime = 0;
 				gameShop.previousIndex();
 
-				switch (gameShop.getColour())
+				switch (gameShop.getIndex())
 				{
 				case 0:
 					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
@@ -818,18 +818,20 @@ void SceneGame::UpdateShop(double dt)
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (gameShop.isOwned() == false && (gameBalance.getBalance() >= gameShop.getCost()))
+			if (!gameShop.isOwned() && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
 				gameShop.setOwned();
 
-				for (int i = 0; i < 5; i++)
-				{
-					gameSave.setColour(gameShop.getColour(i), i);
-				}
-
-				gameSave.setCars();
+				gameSave.setBalance(gameBalance.getBalance());
+				gameSave.setColour(gameShop.getIndex());
 			}
+			else if (gameShop.isOwned())
+			{
+				gameShop.setEquip();
+				gameSave.setEquip(gameShop.getEquip());
+			}
+			gameSave.save();
 		}
 		if (Application::IsKeyPressed(VK_BACK) && delayTime >= 1.f)
 		{
@@ -837,8 +839,6 @@ void SceneGame::UpdateShop(double dt)
 			gameShop.resetIndex();
 			menu.menuChange(0);
 		}
-
-		gameSave.setBalance(gameBalance.getBalance());
 	}
 }
 
@@ -1260,7 +1260,7 @@ void SceneGame::RenderShop()
 		string cost = "$";
 		string balance = to_string(gameBalance.getBalance());
 
-		switch (gameShop.getColour())
+		switch (gameShop.getIndex())
 		{
 		case 0:
 			colour = "Grey";
@@ -1279,9 +1279,12 @@ void SceneGame::RenderShop()
 			break;
 		}
 
-		if (gameShop.isOwned() == true)
+		if (gameShop.isOwned())
 		{
-			cost = "Owned";
+			if (gameShop.isEquip())
+				cost = "Equipped";
+			else
+				cost = "Owned";
 		}
 		else
 		{
@@ -1313,9 +1316,10 @@ void SceneGame::RenderShop()
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 
-
 		const float textTranslate = -3.f;
-		std::string text = colour;
+		std::string text = "Hello, world!";
+
+		text = colour;
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 3.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);

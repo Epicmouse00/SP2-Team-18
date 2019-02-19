@@ -218,6 +218,9 @@
     <Image Include="Image\TitleBar.tga" />
     <Image Include="Image\top.tga" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Save\Save.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
