@@ -26,7 +26,7 @@ void PowerUps::setZ(float setZ)
 
 void PowerUps::setActive(bool active)
 {
-	active = active;
+	this->active = active;
 }
 
 float PowerUps::getX()

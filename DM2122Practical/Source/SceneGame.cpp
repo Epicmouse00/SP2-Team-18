@@ -565,7 +565,7 @@ void SceneGame::UpdateCarCollision()
 		float forward = 3 * Player.getForward();
 		if (forward / 800 > 0) // Row in front of car
 			row = ((int)forward / 800);
-		powerupList[Player.getLane()][row].setZ(0.f);
+		powerupList[Player.getLane()][row].setActive(false);
 		playerBoost += 5.f;
 		if (playerBoost > 50.f)
 			playerBoost = 50.f;
@@ -582,7 +582,7 @@ void SceneGame::UpdateCarCollision()
 		float forward = 3 * Opponent.getForward();
 		if (forward / 800 > 0) // Row in front of car
 			row = ((int)forward / 800);
-		powerupList[Opponent.getLane()][row].setZ(0.f);
+		powerupList[Opponent.getLane()][row].setActive(false);
 		opponentBoost += 5.f;
 		if (opponentBoost > 50.f)
 			opponentBoost = 50.f;
