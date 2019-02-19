@@ -190,7 +190,7 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
-	void		InitCollision();
+	void		InitVariables();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 

@@ -176,11 +176,9 @@ bool Car::collisionPowerUp(PowerUps powerups[4][50]) const
 	int row = 0;
 	float forward = 3 * Forward;
 	if (forward / 800 > 0) // Row in front of car
-	{
 		row = ((int)forward / 800);
-		if (Jump < height && powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
-			return true;
-	}
+	if (Jump < height && powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
+		return true;
 	return false;
 }
 

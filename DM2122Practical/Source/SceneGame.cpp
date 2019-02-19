@@ -42,16 +42,10 @@ void SceneGame::Init()
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
-	InitCollision();
+	InitVariables();
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-	delayTime = 0;
-	powerupRotation = 0;
-	displayRotation = 0;
-	leftCursor = 0;
-	rightCursor = 0;
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
-
 	InitProjection();
 }
 
@@ -367,10 +361,15 @@ void SceneGame::InitCursors()
 	leaderboardCursor.addNewPosition(5.f, -3.f, 2);
 }
 
-void SceneGame::InitCollision()
+void SceneGame::InitVariables()
 {
 	playerBoost = 0.f;
 	opponentBoost = 0.f;
+	delayTime = 0;
+	powerupRotation = 0;
+	displayRotation = 0;
+	leftCursor = 0;
+	rightCursor = 0;
 }
 
 void SceneGame::InitObstacles(unsigned int noOfRows)
@@ -410,7 +409,7 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
 	powerupRotation = 0;
-	for (int row = 0; row < (int)noOfRows / 2; row++)
+	for (int row = 0; row < (int)(noOfRows / 2); row++)
 	{
 		for (int lane = 0; lane < 4; lane++)
 		{
