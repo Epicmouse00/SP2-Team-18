@@ -1257,9 +1257,8 @@ void SceneGame::RenderShop()
 	if (menu.getIndex() == E_SHOP)
 	{
 		string colour;
-		string cost;
-		string owned;
-		string balance;
+		string cost = "$";
+		string balance = to_string(gameBalance.getBalance());
 
 		switch (gameShop.getColour())
 		{
@@ -1280,18 +1279,14 @@ void SceneGame::RenderShop()
 			break;
 		}
 
-		cost = to_string(gameShop.getCost());
-
 		if (gameShop.isOwned() == true)
 		{
-			owned = "Yes";
+			cost = "Owned";
 		}
 		else
 		{
-			owned = "No";
+			cost += to_string(gameShop.getCost());
 		}
-
-		balance = to_string(gameBalance.getBalance());
 
 		modelStack.PushMatrix();
 		modelStack.Translate(0, 0, 50.f);
@@ -1318,13 +1313,41 @@ void SceneGame::RenderShop()
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 
-		RenderTextOnScreen(meshList[GEO_TEXT], colour, Color(0, 1, 0), 2, 19, 8);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Cost: ", Color(0, 1, 0), 2, 17, 21);
-		RenderTextOnScreen(meshList[GEO_TEXT], cost, Color(0, 1, 0), 2, 22, 21);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Owned: ", Color(0, 1, 0), 2, 17, 7);
-		RenderTextOnScreen(meshList[GEO_TEXT], owned, Color(0, 1, 0), 2, 22, 7);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Balance: $ ", Color(0, 1, 0), 2, 16, 1);
-		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 23, 1);
+
+		const float textTranslate = -3.f;
+		std::string text = colour;
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 3.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = cost; //Outputs Owned if owned, else output price
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = "Balance: $";
+		text += balance;
+		modelStack.PushMatrix();
+		modelStack.Translate(-3.f, 5.f, 0.f);
+		modelStack.Scale(0.8f, 0.4f, 0.4f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.3f / 0.8f), (0.3f / 0.4f), 0.3f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
 	}
 }
 
