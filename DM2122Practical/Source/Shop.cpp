@@ -76,6 +76,7 @@ int Shop::getCost()
 		return 50;
 		break;
 	}
+	return 0;
 }
 
 int Shop::getColour()
@@ -159,6 +160,7 @@ bool Shop::isOwned()
 		}
 		break;
 	}
+	return false;
 }
 
 void Shop::setOwned()
@@ -238,4 +240,5 @@ bool Shop::getColour(int colourIndex)
 		}
 		break;
 	}
+	return false;
 }

@@ -12,8 +12,8 @@
 #include "LoadTGA.h"
 
 const unsigned int numberOfRows = 100;
-const float laneSpacing = 22.5f; // 7.5 x 3
-Menu menu;
+const float	laneSpacing = 22.5f; // 7.5 x 3
+Menu		menu;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
@@ -1275,7 +1275,7 @@ void SceneGame::RenderShop()
 			colour = "Red";
 			break;
 		case 4:
-			colour = "Green";
+			colour = "Monster";
 			break;
 		}
 
