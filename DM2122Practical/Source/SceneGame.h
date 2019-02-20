@@ -211,6 +211,7 @@ private:
 	void		UpdateLeaderboardCursor();
 	void		UpdateLight();
 	void		UpdateShop(double dt);
+	void		UpdateUI();
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
@@ -220,6 +221,7 @@ private:
 	void		RenderPowerUps();
 	void		RenderSkybox();
 	void		RenderShop();
+	void		RenderUI();
 	void		RenderTrack();
 
 	unsigned	m_vertexArrayID;
