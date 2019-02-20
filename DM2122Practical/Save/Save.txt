@@ -1,7 +1,7 @@
-90>Money
-4>Equipped
+140>Money
+0>Equipped
 1>Grey
 0>Cyan
 0>Orange
 0>Red
-1>Monster
+0>Monster

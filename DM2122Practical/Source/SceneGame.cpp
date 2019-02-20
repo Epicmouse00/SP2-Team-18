@@ -329,6 +329,10 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
 	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_ai.tga");
 
+	// Wheel
+	meshList[GEO_WHEEL] = MeshBuilder::GenerateOBJ("Wheel", "OBJ//wheel.obj");
+	meshList[GEO_WHEEL]->textureID = LoadTGA("image//wheel_grey.tga");
+
 	// Coins
 
 	// Items
@@ -1205,6 +1209,15 @@ void SceneGame::RenderCar()
 		modelStack.Scale(3, 3, 3);
 		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
 		RenderMesh(meshList[GEO_PLAYER], true);
+		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.PopMatrix();
 
 		if (menu.getGameMode() == MODE_VS)
@@ -1216,6 +1229,15 @@ void SceneGame::RenderCar()
 			modelStack.Scale(3, 3, 3);
 			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
 			RenderMesh(meshList[GEO_OPPONENT], false);
+			modelStack.Translate(-2.5f, -0.5f, 4.f);
+			RenderMesh(meshList[GEO_WHEEL], false);
+			modelStack.Translate(0.f, 0.f, -8.5f);
+			RenderMesh(meshList[GEO_WHEEL], false);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			modelStack.Translate(-5.f, 0.f, 0.f);
+			RenderMesh(meshList[GEO_WHEEL], false);
+			modelStack.Translate(0.f, 0.f, -8.5f);
+			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.PopMatrix();
 		}
 	}
@@ -1236,6 +1258,15 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.PopMatrix();
 
 		//Title
@@ -1407,6 +1438,15 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.PopMatrix();
 
 		//Title
@@ -1522,6 +1562,15 @@ void SceneGame::RenderShop()
 		modelStack.Rotate(displayRotation, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
 		RenderMesh(meshList[GEO_DISPLAY], false);
+		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
