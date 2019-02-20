@@ -1273,6 +1273,7 @@ void SceneGame::RenderCar()
 		modelStack.Scale(3, 3, 3);
 		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
 		RenderMesh(meshList[GEO_PLAYER], true);
+		RenderBoost();
 		modelStack.Translate(-2.5f, -0.5f, 4.f);
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
@@ -1282,12 +1283,6 @@ void SceneGame::RenderCar()
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
 		RenderMesh(meshList[GEO_WHEEL], false);
-
-			modelStack.PushMatrix();
-			RenderMesh(meshList[GEO_PLAYER], true);
-			modelStack.PopMatrix();
-
-			RenderBoost();
 
 		modelStack.PopMatrix();
 
@@ -1300,6 +1295,7 @@ void SceneGame::RenderCar()
 			modelStack.Scale(3, 3, 3);
 			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
 			RenderMesh(meshList[GEO_OPPONENT], false);
+			RenderAIBoost();
 			modelStack.Translate(-2.5f, -0.5f, 4.f);
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.Translate(0.f, 0.f, -8.5f);
@@ -1309,12 +1305,6 @@ void SceneGame::RenderCar()
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.Translate(0.f, 0.f, -8.5f);
 			RenderMesh(meshList[GEO_WHEEL], false);
-
-				modelStack.PushMatrix();
-				RenderMesh(meshList[GEO_OPPONENT], false);
-				modelStack.PopMatrix();
-
-				RenderAIBoost();
 
 			modelStack.PopMatrix();
 		}
