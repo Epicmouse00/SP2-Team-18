@@ -671,31 +671,31 @@ void SceneGame::UpdateCarStats()
 	switch (Player.getTexture())
 	{
 	case CAR_GREY:
-		Player.setMaxSpeed(120.f);
+		Player.setMaxSpeed(121.f);
 		Player.setAcceleration(5.f);
 		break;
 	case CAR_CYAN:
-		Player.setMaxSpeed(120.f);
+		Player.setMaxSpeed(126.f);
 		Player.setAcceleration(5.f);
 		break;
 	case CAR_ORANGE:
-		Player.setMaxSpeed(120.f);
-		Player.setAcceleration(5.f);
+		Player.setMaxSpeed(131.f);
+		Player.setAcceleration(4.f);
 		break;
 	case CAR_RED:
-		Player.setMaxSpeed(120.f);
-		Player.setAcceleration(5.f);
+		Player.setMaxSpeed(136.f);
+		Player.setAcceleration(4.f);
 		break;
 	case CAR_GREEN:
-		Player.setMaxSpeed(120.f);
-		Player.setAcceleration(5.f);
+		Player.setMaxSpeed(141.f);
+		Player.setAcceleration(3.f);
 		break;
 	default:
 		Player.setMaxSpeed(120.f);
 		Player.setAcceleration(5.f);
 		break;
 	}
-	Opponent.setMaxSpeed(Player.getMaxSpeed() - 10.f);
+	Opponent.setMaxSpeed(Player.getMaxSpeed() - 15.f);
 	Opponent.setAcceleration(Player.getAcceleration() + 5.f);
 }
 
@@ -927,21 +927,21 @@ void SceneGame::UpdateShop(double dt)
 				gameSave.setBalance(gameBalance.getBalance());
 				gameSave.setColour(gameShop.getIndex());
 			}
-			else if (gameShop.isOwned())
+			else if (gameShop.isOwned() && gameShop.getEquip() != gameShop.getIndex())
 			{
 				gameShop.setEquip();
 				gameSave.setEquip(gameShop.getEquip());
 				Player.setTexture(gameShop.getEquip());
 				UpdateCarTexture();
 				UpdateCarStats();
+			} 
+			else
+			{
+				delayTime = 0;
+				gameShop.resetIndex();
+				menu.menuChange(0);
 			}
 			gameSave.save();
-		}
-		if (Application::IsKeyPressed(VK_BACK) && delayTime >= 1.f)
-		{
-			delayTime = 0;
-			gameShop.resetIndex();
-			menu.menuChange(0);
 		}
 	}
 }
@@ -1408,23 +1408,35 @@ void SceneGame::RenderShop()
 		string colour;
 		string cost = "$";
 		string balance = to_string(gameBalance.getBalance());
+		string maxSpeed = "Speed: ";
+		string acceleration = "Accel: ";
 
 		switch (gameShop.getIndex())
 		{
 		case 0:
 			colour = "Grey";
+			maxSpeed += "*";
+			acceleration += "*****";
 			break;
 		case 1:
 			colour = "Cyan";
+			maxSpeed += "**";
+			acceleration += "*****";
 			break;
 		case 2:
 			colour = "Orange";
+			maxSpeed += "***";
+			acceleration += "****";
 			break;
 		case 3:
 			colour = "Red";
+			maxSpeed += "****";
+			acceleration += "****";
 			break;
 		case 4:
 			colour = "Monster";
+			maxSpeed += "*****";
+			acceleration += "***";
 			break;
 		}
 
@@ -1481,11 +1493,33 @@ void SceneGame::RenderShop()
 
 		text = cost; //Outputs Owned if owned, else output price
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Translate(3.f, -1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
 		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = maxSpeed; //Max Speed
+		modelStack.PushMatrix();
+		modelStack.Translate(-2.1f, -1.f, 0.f);
+		modelStack.Scale(1.2f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.2f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = acceleration; //Acceleration
+		modelStack.PushMatrix();
+		modelStack.Translate(-2.1f, -2.f, 0.f);
+		modelStack.Scale(1.2f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.2f), (0.5f / 0.5f), 0.5f);
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
@@ -1508,7 +1542,7 @@ void SceneGame::RenderUI()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		std::string text = to_string((int)((playerBoost + 100) / 2));
+		std::string text = to_string((int)((playerBoost + 100) / 1));
 		text += " km/h";
 		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
