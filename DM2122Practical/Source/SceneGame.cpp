@@ -1542,7 +1542,7 @@ void SceneGame::RenderUI()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		std::string text = to_string((int)((playerBoost + 100) / 1));
+		std::string text = to_string((int)((playerBoost + 100) / 2));
 		text += " km/h";
 		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
