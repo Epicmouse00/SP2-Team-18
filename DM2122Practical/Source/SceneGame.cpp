@@ -50,6 +50,10 @@ void SceneGame::Init()
 	UpdateCarTexture();
 	UpdateCarStats();
 	InitProjection();
+
+	seconds = 0;
+	minutes = 0;
+	miliseconds = 0;
 }
 
 //static float ROT_LIMIT = 45.0f;
@@ -69,6 +73,7 @@ void SceneGame::Update(double dt)
 	UpdateShop(dt);
 	UpdateUI(dt);
 	UpdatePowerUps(dt);
+	UpdateTimer(dt);
 }
 
 static const float SKYBOXSIZE = 10000.f;
@@ -129,7 +134,7 @@ void SceneGame::Render()
 	RenderUI();
 
 	// Others?
-
+	RenderTimer();
 	////////// RENDER GAME MODELS HERE //////////
 }
 
@@ -950,6 +955,26 @@ void SceneGame::UpdateUI(double dt)
 	fps = to_string((int)(1 / dt)) + " fps";
 }
 
+void SceneGame::UpdateTimer(double dt)
+{
+	if (miliseconds < 60)
+	{
+		miliseconds++;
+	}
+
+	if (miliseconds == 60)
+	{
+		seconds++;
+		miliseconds = 0;
+	}
+
+	if (seconds == 60)
+	{
+		minutes++;
+		seconds = 0;
+	}
+}
+
 void SceneGame::UpdateLight()
 {
 		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
@@ -1559,6 +1584,18 @@ void SceneGame::RenderTrack()
 		modelStack.Rotate(90.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_TRACK], false);
 		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderTimer()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(minutes), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 13.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(seconds), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 15.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(miliseconds), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
 	}
 }
 
