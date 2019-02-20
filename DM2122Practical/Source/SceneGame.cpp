@@ -45,10 +45,10 @@ void SceneGame::Init()
 	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
-	InitSong();
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
 	UpdateCarStats();
+	UpdateSong();
 	InitProjection();
 }
 
@@ -383,27 +383,42 @@ void SceneGame::InitVariables()
 	rightCursor = 0;
 }
 
-void SceneGame::InitSong()
+void SceneGame::UpdateSong()
 {
-	switch (rand() % 5)
+	if (menu.getIndex() == E_LEADERBOARD)
 	{
-	case 0:
-		PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 1:
-		PlaySound(TEXT("Music\\FistBump.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 2:
-		PlaySound(TEXT("Music\\GasGasGas.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 3:
-		PlaySound(TEXT("Music\\RunningInThe90s.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 4:
-		PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	default:
-		break;
+		PlaySound(TEXT("Music\\Leaderboard.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+	}
+	else if (menu.getIndex() == E_SHOP)
+	{
+		PlaySound(TEXT("Music\\Shop.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+	}
+	else if (menu.getIndex() == E_GAME)
+	{
+		switch (Player.getTexture())
+		{
+		case CAR_GREY:
+			PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_CYAN:
+			PlaySound(TEXT("Music\\FistBump.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_ORANGE:
+			PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_RED:
+			PlaySound(TEXT("Music\\GasGasGas.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_GREEN:
+			PlaySound(TEXT("Music\\Infinite.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		default:
+			break;
+		}
+	}
+	else if (menu.getIndex() == E_MAINMENU)
+	{
+		PlaySound(TEXT("Music\\Menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	}
 }
 /*
@@ -541,7 +556,13 @@ void SceneGame::UpdateCar(double dt)
 		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
-		
+		if (Application::IsKeyPressed('H')) //Cheat
+		{
+			Player.setTexture(-1);
+			UpdateCarTexture();
+			UpdateCarStats();
+		}
+
 		if (menu.getGameMode() == MODE_VS)
 		{
 			//Opponent
@@ -576,7 +597,7 @@ void SceneGame::UpdateCarTexture()
 		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_green.tga");
 		break;
 	default:
-		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_ai.tga");
 		break;
 
 	}
@@ -691,12 +712,12 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(3.f);
 		break;
 	default:
-		Player.setMaxSpeed(120.f);
-		Player.setAcceleration(5.f);
+		Player.setMaxSpeed(151.f);
+		Player.setAcceleration(100.f);
 		break;
 	}
-	Opponent.setMaxSpeed(Player.getMaxSpeed() - 15.f);
-	Opponent.setAcceleration(Player.getAcceleration() + 5.f);
+	Opponent.setMaxSpeed(116.f);
+	Opponent.setAcceleration(6.f);
 }
 
 void SceneGame::UpdatePowerUps(double dt)
@@ -735,6 +756,7 @@ void SceneGame::UpdateMainMenuCursor()
 			{
 				mainMenuCursor.updatePositionIndex(-1);
 			}
+			UpdateSong();
 		}
 	}
 }
@@ -759,6 +781,8 @@ void SceneGame::UpdateGameChooseCursor()
 		{
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
+			if (gameChooseCursor.getIndex() != 2)
+				UpdateSong();
 			gameChooseCursor.updatePositionIndex(-1);
 			gameChooseCursor.updatePositionIndex(-1);
 		}
@@ -833,6 +857,7 @@ void SceneGame::UpdateLeaderboardCursor()
 				menu.menuChange(leaderboardCursor.getIndex());
 				leaderboardCursor.updatePositionIndex(-1);
 				leaderboardCursor.updatePositionIndex(-1);
+				UpdateSong();
 				delayTime = 0;
 			}
 			else
@@ -939,6 +964,7 @@ void SceneGame::UpdateShop(double dt)
 			{
 				delayTime = 0;
 				menu.menuChange(0);
+				UpdateSong();
 			}
 			gameSave.save();
 		}
@@ -952,7 +978,7 @@ void SceneGame::UpdateUI(double dt)
 
 void SceneGame::UpdateLight()
 {
-		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
+	light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
 }
 
 

@@ -194,11 +194,11 @@ private:
 	void		InitCursors();
 //	void		LoadSaveData();
 	void		InitVariables();
-	void		InitSong();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
 	void		UpdateDelayTime(double dt);
+	void		UpdateSong();
 	void		UpdateCam(double dt);
 	void		UpdateAppPolygon();
 	void		UpdateCar(double dt);
