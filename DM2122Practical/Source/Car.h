@@ -14,6 +14,8 @@ private:
 	bool	isPlayer;
 	bool	resetTime;
 	int		texture;
+	float	maxSpeed;
+	float	acceleration;
 	const float	laneDist	= 7.5f;
 	const float	laneOffset	= -0.75f;
 public:
@@ -32,6 +34,10 @@ public:
 	bool	collisionPowerUp(PowerUps powerups[4][50]) const;
 	bool	collisionObstacle(Obstacle obstacle[4][100]) const;
 	void	setPlayerForward(float dist);
+	void	setMaxSpeed(float maxSpeed);
+	void	setAcceleration(float acceleration);
+	float	getMaxSpeed() const;
+	float	getAcceleration() const;
 };
 
 #endif

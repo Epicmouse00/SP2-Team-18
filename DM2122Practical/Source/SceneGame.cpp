@@ -40,14 +40,15 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitCursors();
-	LoadSaveData();
+//	LoadSaveData();
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
-	PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+	InitSong();
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
+	UpdateCarStats();
 	InitProjection();
 }
 
@@ -107,9 +108,6 @@ void SceneGame::Render()
 	// Leaderboard
 	RenderLeaderboard();
 
-	// Gameplay UI
-	RenderUI();
-
 	// Player + Opponent
 	RenderCar();
 
@@ -126,6 +124,9 @@ void SceneGame::Render()
 
 	// Track
 	RenderTrack();
+
+	// Gameplay UI
+	RenderUI();
 
 	// Others?
 
@@ -380,9 +381,32 @@ void SceneGame::InitVariables()
 	displayRotation = 0;
 	leftCursor = 0;
 	rightCursor = 0;
-	Player.setPlayerForward(-150.f);
 }
 
+void SceneGame::InitSong()
+{
+	switch (rand() % 5)
+	{
+	case 0:
+		PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+		break;
+	case 1:
+		PlaySound(TEXT("Music\\FistBump.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+		break;
+	case 2:
+		PlaySound(TEXT("Music\\GasGasGas.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+		break;
+	case 3:
+		PlaySound(TEXT("Music\\RunningInThe90s.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+		break;
+	case 4:
+		PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+		break;
+	default:
+		break;
+	}
+}
+/*
 void SceneGame::LoadSaveData()
 {
 	for (int i = 0; i < 10; i++)
@@ -397,7 +421,7 @@ void SceneGame::LoadSaveData()
 		}
 	}
 }
-
+*/
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
 	for (int row = 0; row < (int)noOfRows; ++row)
@@ -583,7 +607,14 @@ void SceneGame::UpdateCarTexture()
 void SceneGame::UpdateCarCollision()
 {
 	if (Player.collisionObstacle(obstacleList))
+	{
+		int row = 0;
+		float forward = 3 * Player.getForward();
+		if ((forward - 600) / 400 > 0) // Row in front of car
+			row = ((int)forward - 600) / 400;
+		obstacleList[Player.getLane()][row].setActive(false);
 		playerBoost -= 30.f;
+	}
 	if (Player.collisionPowerUp(powerupList))
 	{
 		int row = 0;
@@ -596,7 +627,14 @@ void SceneGame::UpdateCarCollision()
 	if (menu.getGameMode() == MODE_VS)
 	{
 		if (Opponent.collisionObstacle(obstacleList))
+		{
+			int row = 0;
+			float forward = 3 * Opponent.getForward();
+			if ((forward - 600) / 400 > 0) // Row in front of car
+				row = ((int)forward - 600) / 400;
+			obstacleList[Opponent.getLane()][row].setActive(false);
 			opponentBoost -= 30.f;
+		}
 		if (Opponent.collisionPowerUp(powerupList))
 		{
 			int row = 0;
@@ -611,19 +649,54 @@ void SceneGame::UpdateCarCollision()
 
 void SceneGame::UpdateCarSpeed(double dt)
 {
-	playerBoost += (float)(dt * 10.f);
-	if (playerBoost < 0.f)
+	if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed())
+		playerBoost -= 0.3f;
+	else if (playerBoost < 0.f)
 		playerBoost = 0.f;
-	else if (playerBoost > 60.f)
-		playerBoost = 60.f;
+	else
+		playerBoost += (float)(dt * Player.getAcceleration());
 	if (menu.getGameMode() == MODE_VS)
 	{
-		opponentBoost += (float)(dt * 10.f);
-		if (opponentBoost < 0.f)
+		if (opponentBoost >= Opponent.getMaxSpeed())
+			opponentBoost -= 0.3f;
+		else if (opponentBoost < 0.f)
 			opponentBoost = 0.f;
-		else if (opponentBoost > 50.f)
-			opponentBoost = 50.f;
+		else
+			opponentBoost += (float)(dt * Opponent.getAcceleration());
 	}
+}
+
+void SceneGame::UpdateCarStats()
+{
+	switch (Player.getTexture())
+	{
+	case CAR_GREY:
+		Player.setMaxSpeed(120.f);
+		Player.setAcceleration(5.f);
+		break;
+	case CAR_CYAN:
+		Player.setMaxSpeed(120.f);
+		Player.setAcceleration(5.f);
+		break;
+	case CAR_ORANGE:
+		Player.setMaxSpeed(120.f);
+		Player.setAcceleration(5.f);
+		break;
+	case CAR_RED:
+		Player.setMaxSpeed(120.f);
+		Player.setAcceleration(5.f);
+		break;
+	case CAR_GREEN:
+		Player.setMaxSpeed(120.f);
+		Player.setAcceleration(5.f);
+		break;
+	default:
+		Player.setMaxSpeed(120.f);
+		Player.setAcceleration(5.f);
+		break;
+	}
+	Opponent.setMaxSpeed(Player.getMaxSpeed() - 10.f);
+	Opponent.setAcceleration(Player.getAcceleration() + 5.f);
 }
 
 void SceneGame::UpdatePowerUps(double dt)
@@ -860,6 +933,7 @@ void SceneGame::UpdateShop(double dt)
 				gameSave.setEquip(gameShop.getEquip());
 				Player.setTexture(gameShop.getEquip());
 				UpdateCarTexture();
+				UpdateCarStats();
 			}
 			gameSave.save();
 		}
@@ -1040,7 +1114,16 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	viewStack.LoadIdentity(); //No need camera for ortho mode
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity(); //Reset modelStack
-	modelStack.Scale(size, size, size);
+
+	
+	modelStack.Translate(0.f, -1.5f, 0.f);
+	modelStack.Scale(1.f, 0.5f, 0.5f);
+	modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+	RenderMesh(meshList[GEO_BUTTON], false);
+	modelStack.Rotate(-180.f, 0.f, 1.f, 0.f);
+	
+
+	modelStack.Scale(size/1.f, size/0.5f, size/0.5f);
 	modelStack.Translate(x, y, 0);
 
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
@@ -1425,7 +1508,9 @@ void SceneGame::RenderUI()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT], "Dab", Color(0.f, 1.f, 1.f), 1.f, 1.f, 1.f);
+		std::string text = to_string((int)((playerBoost + 100) / 2));
+		text += " km/h";
+		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
 }
 

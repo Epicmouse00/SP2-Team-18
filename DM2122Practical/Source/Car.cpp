@@ -156,7 +156,7 @@ void Car::UpdatePlayerJump(double dt, bool jump)
 
 void Car::UpdatePlayerForward(double dt, float boost)
 {
-	Forward += (float)((150 + boost) * dt);
+	Forward += (float)((100 + boost) * dt);
 }
 
 void Car::setTexture(int texture)
@@ -177,7 +177,7 @@ bool Car::collisionPowerUp(PowerUps powerups[4][50]) const
 	float forward = 3 * Forward;
 	if (forward / 800 > 0) // Row in front of car
 		row = ((int)forward / 800);
-	if (Jump < height && powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
+	if (powerups[Lane][row].getActive() && Jump < height && powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
 		return true;
 	return false;
 }
@@ -190,7 +190,7 @@ bool Car::collisionObstacle(Obstacle obstacle[4][100]) const
 	float forward = 3 * Forward;
 	if ((forward - 600) / 400 > 0) // Row in front of car
 		row = ((int)forward - 600) / 400;
-	if (((Jump < height && obstacle[Lane][row].getObstacleType() == 0) || obstacle[Lane][row].getObstacleType() == 1) && obstacle[Lane][row].getZ() > forward - range && obstacle[Lane][row].getZ() < forward + range)
+	if (obstacle[Lane][row].getActive() && ((Jump < height && obstacle[Lane][row].getObstacleType() == 0) || obstacle[Lane][row].getObstacleType() == 1) && obstacle[Lane][row].getZ() > forward - range && obstacle[Lane][row].getZ() < forward + range)
 		return true;
 	return false;
 }
@@ -198,4 +198,24 @@ bool Car::collisionObstacle(Obstacle obstacle[4][100]) const
 void Car::setPlayerForward(float dist)
 {
 	Forward = dist;
+}
+
+void Car::setMaxSpeed(float maxSpeed)
+{
+	this->maxSpeed = maxSpeed;
+}
+
+void Car::setAcceleration(float acceleration)
+{
+	this->acceleration = acceleration;
+}
+
+float Car::getMaxSpeed() const
+{
+	return maxSpeed;
+}
+
+float Car::getAcceleration() const
+{
+	return acceleration;
 }

@@ -192,8 +192,9 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
-	void		LoadSaveData();
+//	void		LoadSaveData();
 	void		InitVariables();
+	void		InitSong();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
@@ -204,6 +205,7 @@ private:
 	void		UpdateCarTexture();
 	void		UpdateCarCollision();
 	void		UpdateCarSpeed(double dt);
+	void		UpdateCarStats();
 	void		UpdatePowerUps(double dt);
 	void		UpdateCursor();
 	void		UpdateMainMenuCursor();
