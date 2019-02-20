@@ -30,7 +30,7 @@ void Status::setTimer(float time, int index)
 
 void Status::updateTimer(double dt, int index)
 {
-	statusTimers[index] += dt;
+	statusTimers[index] += (float)dt;
 }
 
 float Status::getTimer(int index)

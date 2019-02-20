@@ -345,7 +345,7 @@ void SceneGame::InitMeshes()
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
 
 	// Boost
-	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99, 0.37, 0), 1.f, 1.f, 1.f);
+	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99f, 0.37f, 0.f), 1.f, 1.f, 1.f);
 
 	// Shop
 	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
@@ -721,7 +721,7 @@ void SceneGame::UpdateCarCollision()
 
 void SceneGame::UpdateCarSpeed(double dt)
 {
-	if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed() && playerStatus.getActive(0) == true)
+	if (playerStatus.getActive(0) == true)
 		playerBoost = 240.f;
 	else if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed() && playerStatus.getActive(0) == false)
 		playerBoost -= 0.3f;
@@ -731,7 +731,7 @@ void SceneGame::UpdateCarSpeed(double dt)
 		playerBoost += (float)(dt * Player.getAcceleration());
 	if (menu.getGameMode() == MODE_VS)
 	{
-		if (opponentBoost >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == true)
+		if (aiStatus.getActive(0) == true)
 			opponentBoost = 240.f;
 		else if(opponentBoost >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == false)
 			opponentBoost -= 0.3f;
@@ -780,21 +780,23 @@ void SceneGame::UpdatePowerUps(double dt)
 	powerupRotation += float(dt) * 90.f;
 
 	// Speed
-	if (playerStatus.getActive(0) == true && playerStatus.getTimer(0) <= 2.f)
+	if (playerStatus.getActive(0))
 	{
-		playerStatus.updateTimer(dt, 0);
+		if (playerStatus.getTimer(0) <= 1.f)
+			playerStatus.updateTimer(dt, 0);	
+		else
+			playerStatus.setActive(false, 0);
 	}
-	else
+
+	if (menu.getGameMode() == MODE_VS)
 	{
-		playerStatus.setActive(false, 0);
-	}
-	if (aiStatus.getActive(0) == true && aiStatus.getTimer(0) <= 2.f)
-	{
-		aiStatus.updateTimer(dt, 0);
-	}
-	else
-	{
-		aiStatus.setActive(false, 0);
+		if (aiStatus.getActive(0))
+		{
+			if (aiStatus.getTimer(0) <= 1.f)
+				aiStatus.updateTimer(dt, 0);
+			else
+				aiStatus.setActive(false, 0);
+		}
 	}
 }
 
