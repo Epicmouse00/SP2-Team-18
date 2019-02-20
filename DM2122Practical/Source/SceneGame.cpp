@@ -1029,20 +1029,24 @@ void SceneGame::UpdateShop(double dt)
 				gameSave.setBalance(gameBalance.getBalance());
 				gameSave.setColour(gameShop.getIndex());
 			}
-			else if (gameShop.isOwned() && gameShop.getEquip() != gameShop.getIndex())
+			else if (gameShop.isOwned())
 			{
-				gameShop.setEquip();
-				gameSave.setEquip(gameShop.getEquip());
-				Player.setTexture(gameShop.getEquip());
-				UpdateCarTexture();
-				UpdateCarStats();
+				if (gameShop.getEquip() != gameShop.getIndex())
+				{
+					gameShop.setEquip();
+					gameSave.setEquip(gameShop.getEquip());
+					Player.setTexture(gameShop.getEquip());
+					UpdateCarTexture();
+					UpdateCarStats();
+				}
+				else
+				{
+					delayTime = 0;
+					menu.menuChange(0);
+					UpdateSong();
+				}
+
 			} 
-			else
-			{
-				delayTime = 0;
-				menu.menuChange(0);
-				UpdateSong();
-			}
 			gameSave.save();
 		}
 	}
