@@ -16,6 +16,7 @@
 #include "Cursor.h"
 #include "Menu.h"
 #include "PowerUps.h"
+#include "Status.h"
 #include "Car.h"
 #include "AImovement.h"
 #include "Shop.h"
@@ -65,6 +66,9 @@ class SceneGame : public Scene
 		GEO_DOUBLE,
 		GEO_FLIGHT,
 		GEO_SHIELD,
+
+		//Power Up Effects
+		GEO_BOOST,
     
 		//Menu buttons
 		GEO_BUTTON,
@@ -225,6 +229,8 @@ private:
 	void		RenderShop();
 	void		RenderUI();
 	void		RenderTrack();
+	void		RenderBoost();
+	void		RenderAIBoost();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -263,5 +269,8 @@ private:
 	Currency	gameBalance;
 	Shop		gameShop;
 	Leaderboard leaderboard;
+
+	Status playerStatus;
+	Status aiStatus;
 };
 #endif

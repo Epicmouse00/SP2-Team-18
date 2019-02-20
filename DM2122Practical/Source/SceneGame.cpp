@@ -116,8 +116,11 @@ void SceneGame::Render()
 	// Shop
 	RenderShop();
 
-	// Items
+	// Power Ups
 	RenderPowerUps();
+
+	// Boost
+	RenderBoost();
 
 	// Obstacles
 	RenderObstacles();
@@ -326,11 +329,14 @@ void SceneGame::InitMeshes()
 
 	// Coins
 
-	// Items
+	// Power-Ups
 	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(0, 0, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
+
+	// Boost
+	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99, 0.37, 0), 1.f, 1.f, 1.f);
 
 	// Shop
 	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
@@ -622,7 +628,25 @@ void SceneGame::UpdateCarCollision()
 		if (forward / 800 > 0) // Row in front of car
 			row = ((int)forward / 800);
 		powerupList[Player.getLane()][row].setActive(false);
-		playerBoost += 10.f;
+
+		switch (powerupList[Player.getLane()][row].getType())
+		{
+		case 0:
+			//Speed (Black)
+			playerStatus.setActive(true, 0);
+			playerStatus.setTimer(0.f, 0);
+			playerBoost += 240.f;
+			break;
+		case 1:
+			//Shield (Red)
+			break;
+		case 2:
+			//Flight (Blue)
+			break;
+		case 3:
+			//Double Collectibles (Green)
+			break;
+		}
 	}
 	if (menu.getGameMode() == MODE_VS)
 	{
@@ -642,14 +666,34 @@ void SceneGame::UpdateCarCollision()
 			if (forward / 800 > 0) // Row in front of car
 				row = ((int)forward / 800);
 			powerupList[Opponent.getLane()][row].setActive(false);
-			opponentBoost += 10.f;
+			
+			switch (powerupList[Opponent.getLane()][row].getType())
+			{
+			case 0:
+				//Speed (Black)
+				aiStatus.setActive(true, 0);
+				aiStatus.setTimer(0.f, 0);
+				opponentBoost += 240.f;
+				break;
+			case 1:
+				//Shield (Red)
+				break;
+			case 2:
+				//Flight (Blue)
+				break;
+			case 3:
+				//Double Collectibles (Green)
+				break;
+			}
 		}
 	}
 }
 
 void SceneGame::UpdateCarSpeed(double dt)
 {
-	if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed())
+	if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed() && playerStatus.getActive(0) == true)
+		playerBoost = 240.f;
+	else if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed() && playerStatus.getActive(0) == false)
 		playerBoost -= 0.3f;
 	else if (playerBoost < 0.f)
 		playerBoost = 0.f;
@@ -657,7 +701,9 @@ void SceneGame::UpdateCarSpeed(double dt)
 		playerBoost += (float)(dt * Player.getAcceleration());
 	if (menu.getGameMode() == MODE_VS)
 	{
-		if (opponentBoost >= Opponent.getMaxSpeed())
+		if (opponentBoost >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == true)
+			opponentBoost = 240.f;
+		else if(opponentBoost >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == false)
 			opponentBoost -= 0.3f;
 		else if (opponentBoost < 0.f)
 			opponentBoost = 0.f;
@@ -702,6 +748,24 @@ void SceneGame::UpdateCarStats()
 void SceneGame::UpdatePowerUps(double dt)
 {
 	powerupRotation += float(dt) * 90.f;
+
+	// Speed
+	if (playerStatus.getActive(0) == true && playerStatus.getTimer(0) <= 2.f)
+	{
+		playerStatus.updateTimer(dt, 0);
+	}
+	else
+	{
+		playerStatus.setActive(false, 0);
+	}
+	if (aiStatus.getActive(0) == true && aiStatus.getTimer(0) <= 2.f)
+	{
+		aiStatus.updateTimer(dt, 0);
+	}
+	else
+	{
+		aiStatus.setActive(false, 0);
+	}
 }
 
 void SceneGame::UpdateCursor()
@@ -1161,7 +1225,13 @@ void SceneGame::RenderCar()
 		modelStack.Rotate(0, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
 		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
-		RenderMesh(meshList[GEO_PLAYER], true);
+
+			modelStack.PushMatrix();
+			RenderMesh(meshList[GEO_PLAYER], true);
+			modelStack.PopMatrix();
+
+			RenderBoost();
+
 		modelStack.PopMatrix();
 
 		if (menu.getGameMode() == MODE_VS)
@@ -1172,7 +1242,13 @@ void SceneGame::RenderCar()
 			modelStack.Rotate(0, 0, 1, 0);
 			modelStack.Scale(3, 3, 3);
 			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
-			RenderMesh(meshList[GEO_OPPONENT], false);
+
+				modelStack.PushMatrix();
+				RenderMesh(meshList[GEO_OPPONENT], false);
+				modelStack.PopMatrix();
+
+				RenderAIBoost();
+
 			modelStack.PopMatrix();
 		}
 	}
@@ -1644,5 +1720,41 @@ void SceneGame::RenderPowerUps()
 				}
 			}
 		}
+	}
+}
+
+void SceneGame::RenderBoost()
+{
+	if (playerStatus.getActive(0) == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderAIBoost()
+{
+	if (aiStatus.getActive(0) == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
 	}
 }
