@@ -213,7 +213,7 @@ private:
 	void		UpdateLeaderboardCursor();
 	void		UpdateLight();
 	void		UpdateShop(double dt);
-	void		UpdateUI();
+	void		UpdateUI(double dt);
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
@@ -241,6 +241,7 @@ private:
 	float rightCursor;
 	float playerBoost;
 	float opponentBoost;
+	std::string fps;
 
 	//Skybox
 

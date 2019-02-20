@@ -67,7 +67,7 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop(dt);
-	UpdateUI();
+	UpdateUI(dt);
 	UpdatePowerUps(dt);
 }
 
@@ -938,7 +938,6 @@ void SceneGame::UpdateShop(double dt)
 			else
 			{
 				delayTime = 0;
-				gameShop.resetIndex();
 				menu.menuChange(0);
 			}
 			gameSave.save();
@@ -946,8 +945,9 @@ void SceneGame::UpdateShop(double dt)
 	}
 }
 
-void SceneGame::UpdateUI()
+void SceneGame::UpdateUI(double dt)
 {
+	fps = to_string((int)(1 / dt)) + " fps";
 }
 
 void SceneGame::UpdateLight()
@@ -1115,15 +1115,7 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity(); //Reset modelStack
 
-	
-	modelStack.Translate(0.f, -1.5f, 0.f);
-	modelStack.Scale(1.f, 0.5f, 0.5f);
-	modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-	RenderMesh(meshList[GEO_BUTTON], false);
-	modelStack.Rotate(-180.f, 0.f, 1.f, 0.f);
-	
-
-	modelStack.Scale(size/1.f, size/0.5f, size/0.5f);
+	modelStack.Scale(size, size, size);
 	modelStack.Translate(x, y, 0);
 
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
@@ -1540,6 +1532,7 @@ void SceneGame::RenderShop()
 
 void SceneGame::RenderUI()
 {
+	RenderTextOnScreen(meshList[GEO_TEXT], fps, Color(1.f, 1.f, 1.f), 2.f, 1.f, 29.5f);
 	if (menu.getIndex() == E_GAME)
 	{
 		std::string text = to_string((int)((playerBoost + 100) / 2));
