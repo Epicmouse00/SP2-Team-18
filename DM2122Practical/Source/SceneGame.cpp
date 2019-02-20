@@ -490,23 +490,26 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 
 void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
-	powerupRotation = 0;
-	for (int row = 0; row < (int)(noOfRows / 2); row++)
+	if (menu.getGameMode() == MODE_VS)
 	{
-		for (int lane = 0; lane < 4; lane++)
+		powerupRotation = 0;
+		for (int row = 0; row < (int)(noOfRows / 2); row++)
 		{
-			if ((rand() % 4) == 0)
+			for (int lane = 0; lane < 4; lane++)
 			{
-				PowerUps temp;
-				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
-				temp.setY(0);
-				temp.setZ((float)(800 * row + 800));
-				temp.setActive(true);
-				powerupList[lane][row] = temp;
-			}
-			else
-			{
-				powerupList[lane][row].setActive(false);
+				if ((rand() % 4) == 0)
+				{
+					PowerUps temp;
+					temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
+					temp.setY(0);
+					temp.setZ((float)(800 * row + 800));
+					temp.setActive(true);
+					powerupList[lane][row] = temp;
+				}
+				else
+				{
+					powerupList[lane][row].setActive(false);
+				}
 			}
 		}
 	}
@@ -653,35 +656,35 @@ void SceneGame::UpdateCarCollision()
 		obstacleList[Player.getLane()][row].setActive(false);
 		playerBoost -= 100.f;
 	}
-	if (Player.collisionPowerUp(powerupList))
-	{
-		int row = 0;
-		float forward = 3 * Player.getForward();
-		if (forward / 800 > 0) // Row in front of car
-			row = ((int)forward / 800);
-		powerupList[Player.getLane()][row].setActive(false);
-
-		switch (powerupList[Player.getLane()][row].getType())
-		{
-		case 0:
-			//Speed (Black)
-			playerStatus.setActive(true, 0);
-			playerStatus.setTimer(0.f, 0);
-			playerBoost += 240.f;
-			break;
-		case 1:
-			//Shield (Red)
-			break;
-		case 2:
-			//Flight (Blue)
-			break;
-		case 3:
-			//Double Collectibles (Green)
-			break;
-		}
-	}
 	if (menu.getGameMode() == MODE_VS)
 	{
+		if (Player.collisionPowerUp(powerupList))
+		{
+			int row = 0;
+			float forward = 3 * Player.getForward();
+			if (forward / 800 > 0) // Row in front of car
+				row = ((int)forward / 800);
+			powerupList[Player.getLane()][row].setActive(false);
+
+			switch (powerupList[Player.getLane()][row].getType())
+			{
+			case 0:
+				//Speed (Black)
+				playerStatus.setActive(true, 0);
+				playerStatus.setTimer(0.f, 0);
+				playerBoost += 240.f;
+				break;
+			case 1:
+				//Shield (Red)
+				break;
+			case 2:
+				//Flight (Blue)
+				break;
+			case 3:
+				//Double Collectibles (Green)
+				break;
+			}
+		}
 		if (Opponent.collisionObstacle(obstacleList))
 		{
 			int row = 0;
@@ -779,25 +782,28 @@ void SceneGame::UpdateCarStats()
 
 void SceneGame::UpdatePowerUps(double dt)
 {
-	powerupRotation += float(dt) * 90.f;
-
-	// Speed
-	if (playerStatus.getActive(0))
-	{
-		if (playerStatus.getTimer(0) <= 0.5f || Player.getForward() < Opponent.getForward()) //Boost till catch up with opponent
-			playerStatus.updateTimer(dt, 0);	
-		else
-			playerStatus.setActive(false, 0);
-	}
-
 	if (menu.getGameMode() == MODE_VS)
 	{
-		if (aiStatus.getActive(0))
+		powerupRotation += float(dt) * 90.f;
+
+		// Speed
+		if (playerStatus.getActive(0))
 		{
-			if (aiStatus.getTimer(0) <= 0.5f || Player.getForward() > Opponent.getForward())
-				aiStatus.updateTimer(dt, 0);
+			if (playerStatus.getTimer(0) <= 0.5f || Player.getForward() < Opponent.getForward()) //Boost till catch up with opponent
+				playerStatus.updateTimer(dt, 0);
 			else
-				aiStatus.setActive(false, 0);
+				playerStatus.setActive(false, 0);
+		}
+
+		if (menu.getGameMode() == MODE_VS)
+		{
+			if (aiStatus.getActive(0))
+			{
+				if (aiStatus.getTimer(0) <= 0.5f || Player.getForward() > Opponent.getForward())
+					aiStatus.updateTimer(dt, 0);
+				else
+					aiStatus.setActive(false, 0);
+			}
 		}
 	}
 }
@@ -1807,7 +1813,7 @@ void SceneGame::RenderObstacles()
 
 void SceneGame::RenderPowerUps()
 {
-	if (menu.getIndex() == E_GAME)
+	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_VS)
 	{
 		for (size_t lane = 0; lane < 4; ++lane)
 		{
