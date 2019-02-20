@@ -352,10 +352,12 @@ void SceneGame::InitMeshes()
 	meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Obstacles (1	x	1	x	1)
-	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateOBJ("Obstacle_Default", "OBJ//CubeObstacle.obj");
+	meshList[GEO_OBSTACLE_DEFAULT]->textureID = LoadTGA("image//CubeTexture.tga");
 
 	// Obstacles (1	x	4	x	1)
-	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateOBJ("Obstacle_Tall", "OBJ//CubeObstacle.obj");
+	meshList[GEO_OBSTACLE_TALL]->textureID = LoadTGA("image//CubeTexture.tga");
 
 	// Track
 	meshList[GEO_TRACK] = MeshBuilder::GenerateOBJ("Tunnel", "OBJ//tunnelProto.obj");
@@ -649,7 +651,7 @@ void SceneGame::UpdateCarCollision()
 		if ((forward - 600) / 400 > 0) // Row in front of car
 			row = ((int)forward - 600) / 400;
 		obstacleList[Player.getLane()][row].setActive(false);
-		playerBoost -= 30.f;
+		playerBoost -= 100.f;
 	}
 	if (Player.collisionPowerUp(powerupList))
 	{
@@ -687,7 +689,7 @@ void SceneGame::UpdateCarCollision()
 			if ((forward - 600) / 400 > 0) // Row in front of car
 				row = ((int)forward - 600) / 400;
 			obstacleList[Opponent.getLane()][row].setActive(false);
-			opponentBoost -= 30.f;
+			opponentBoost -= 100.f;
 		}
 		if (Opponent.collisionPowerUp(powerupList))
 		{
@@ -748,23 +750,23 @@ void SceneGame::UpdateCarStats()
 	{
 	case CAR_GREY:
 		Player.setMaxSpeed(121.f);
-		Player.setAcceleration(5.f);
+		Player.setAcceleration(25.f);
 		break;
 	case CAR_CYAN:
 		Player.setMaxSpeed(126.f);
-		Player.setAcceleration(5.f);
+		Player.setAcceleration(25.f);
 		break;
 	case CAR_ORANGE:
 		Player.setMaxSpeed(131.f);
-		Player.setAcceleration(4.f);
+		Player.setAcceleration(20.f);
 		break;
 	case CAR_RED:
 		Player.setMaxSpeed(136.f);
-		Player.setAcceleration(4.f);
+		Player.setAcceleration(20.f);
 		break;
 	case CAR_GREEN:
 		Player.setMaxSpeed(141.f);
-		Player.setAcceleration(3.f);
+		Player.setAcceleration(15.f);
 		break;
 	default:
 		Player.setMaxSpeed(151.f);
@@ -772,7 +774,7 @@ void SceneGame::UpdateCarStats()
 		break;
 	}
 	Opponent.setMaxSpeed(116.f);
-	Opponent.setAcceleration(6.f);
+	Opponent.setAcceleration(30.f);
 }
 
 void SceneGame::UpdatePowerUps(double dt)
@@ -782,7 +784,7 @@ void SceneGame::UpdatePowerUps(double dt)
 	// Speed
 	if (playerStatus.getActive(0))
 	{
-		if (playerStatus.getTimer(0) <= 1.f)
+		if (playerStatus.getTimer(0) <= 0.5f || Player.getForward() < Opponent.getForward()) //Boost till catch up with opponent
 			playerStatus.updateTimer(dt, 0);	
 		else
 			playerStatus.setActive(false, 0);
@@ -792,7 +794,7 @@ void SceneGame::UpdatePowerUps(double dt)
 	{
 		if (aiStatus.getActive(0))
 		{
-			if (aiStatus.getTimer(0) <= 1.f)
+			if (aiStatus.getTimer(0) <= 0.5f || Player.getForward() > Opponent.getForward())
 				aiStatus.updateTimer(dt, 0);
 			else
 				aiStatus.setActive(false, 0);
@@ -1782,14 +1784,14 @@ void SceneGame::RenderObstacles()
 					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
 					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_DEFAULT)
 					{
-						modelStack.Scale(10.f, 10.f, 10.f);
-						modelStack.Translate(0.f, 0.5f, 0.f);
+						modelStack.Scale(3.f, 3.f, 3.f);
+						modelStack.Translate(0.f, 1.5f, 0.f);
 						RenderMesh(meshList[GEO_OBSTACLE_DEFAULT], false);
 					}
 					else if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
 					{
-						modelStack.Scale(10.f, 40.f, 10.f);
-						modelStack.Translate(0.f, 0.5f, 0.f);
+						modelStack.Scale(3.f, 12.f, 3.f);
+						modelStack.Translate(0.f, 1.75f, 0.f);
 						RenderMesh(meshList[GEO_OBSTACLE_TALL], false);
 					}
 					modelStack.PopMatrix();
