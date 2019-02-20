@@ -8,21 +8,19 @@ class Saving
 {
 private:
 	int		balance;
-	bool grey;
-	bool cyan;
-	bool orange;
-	bool red;
-	bool green;
+	int		equip;
+	bool	car[5];
 public:
 			Saving();
 			~Saving();
-	void	setBalance(int amount);
+	bool	getCar(int carIndex) const;
 	int		getBalance() const;
-	bool getGrey();
-	bool getCyan();
-	bool getOrange();
-	bool getRed();
-	bool getGreen();
+
 	void setLeaderboard();
 	void getLeaderboard();
+	void	setBalance(int amount);
+	int		getEquip() const;
+	void	setEquip(int equip);
+	void	setColour(int carIndex);
+	void	save();
 };

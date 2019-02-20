@@ -12,8 +12,8 @@
 #include "LoadTGA.h"
 
 const unsigned int numberOfRows = 100;
-const float laneSpacing = 22.5f; // 7.5 x 3
-Menu menu;
+const float	laneSpacing = 22.5f; // 7.5 x 3
+Menu		menu;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
@@ -43,19 +43,11 @@ void SceneGame::Init()
 	LoadSaveData();
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
-
 	gameBalance.setBalance(gameSave.getBalance());
-
-	//Will be in SHOP (Call once, not every frame)
-	Player.setTexture(CAR_GREEN);
-	UpdateCarTexture();
-
-
-
+	InitVariables();
 	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-	delayTime = 0;
-	powerupRotation = 0;
-
+	Player.setTexture(gameShop.getEquip());
+	UpdateCarTexture();
 	InitProjection();
 }
 
@@ -69,18 +61,12 @@ void SceneGame::Update(double dt)
 {
 	UpdateDelayTime(dt);
 	UpdateAppPolygon();
-	//Controls / Interactions / etcs.
-
-
 	UpdateCar(dt);
-	UpdateMainMenuCursor();
-	UpdateGameChooseCursor();
-	UpdateLeaderboardCursor();
+	UpdateCursor();
 	UpdateLight();
 	UpdateCam(dt);
-	UpdateShop();
-
-	powerupRotation += float(dt) * 90.f;
+	UpdateShop(dt);
+	UpdatePowerUps(dt);
 }
 
 static const float SKYBOXSIZE = 10000.f;
@@ -137,11 +123,11 @@ void SceneGame::Render()
 	RenderObstacles();
 
 	// Track
+	RenderTrack();
 
 	// Others?
 
 	////////// RENDER GAME MODELS HERE //////////
-	RenderTextOnScreen(meshList[GEO_TEXT], "J and L to move between Lanes", Color(0, 1, 0), 2, 1, 4);
 }
 
 //Exit Function
@@ -301,8 +287,13 @@ void SceneGame::InitMeshes()
 
 	// Menu backdrop
 
+	//Title Bar
+	meshList[GEO_TITLE] = MeshBuilder::GenerateOBJ("Menu", "OBJ//Title.obj");
+	meshList[GEO_TITLE]->textureID = LoadTGA("image//TitleBar.tga");
+
 	// Menu Button
-	meshList[GEO_BUTTON] = MeshBuilder::GenerateQuad("Button", Color(0.2f, 0.2f, 0.2f), 1.f);
+	meshList[GEO_BUTTON] = MeshBuilder::GenerateOBJ("Menu", "OBJ//Button3.obj");
+	meshList[GEO_BUTTON]->textureID = LoadTGA("image//ButtonType3.tga");
 
 	// Menu cursor
 	meshList[GEO_CURSOR] = MeshBuilder::GenerateOBJ("Cursor", "OBJ//Cursor.obj");
@@ -328,7 +319,7 @@ void SceneGame::InitMeshes()
 
 	// Opponent
 	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
-	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
+	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_ai.tga");
 
 	// Coins
 
@@ -338,6 +329,10 @@ void SceneGame::InitMeshes()
 	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
 
+	// Shop
+	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
+	meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
+
 	// Obstacles (1	x	1	x	1)
 	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
@@ -345,7 +340,8 @@ void SceneGame::InitMeshes()
 	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
 
 	// Track
-	//meshList[GEO_TRACK] = 
+	meshList[GEO_TRACK] = MeshBuilder::GenerateOBJ("Tunnel", "OBJ//tunnelProto.obj");
+	meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel.tga");
 
 	// Others?
 
@@ -370,7 +366,19 @@ void SceneGame::InitCursors()
 	gameChooseCursor.addNewPosition(5.f, -3.f, 2);
 	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
 	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
-	leaderboardCursor.addNewPosition(5.f, -4.f, 2);
+	leaderboardCursor.addNewPosition(5.f, -3.f, 2);
+}
+
+void SceneGame::InitVariables()
+{
+	playerBoost = 0.f;
+	opponentBoost = 0.f;
+	delayTime = 0;
+	powerupRotation = 0;
+	displayRotation = 0;
+	leftCursor = 0;
+	rightCursor = 0;
+	Player.setPlayerForward(-150.f);
 }
 
 void SceneGame::LoadSaveData()
@@ -394,9 +402,11 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (rand() % 2) //rand() % 2
+			if (rand() % 2)
+			//if (1)
 			{
 				Obstacle temp(rand() % 2);
+				//Obstacle temp(1);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ((float)(400 * row + 1000));
@@ -422,7 +432,8 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 
 void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
-	for (int row = 0; row < (int)noOfRows / 2; row++)
+	powerupRotation = 0;
+	for (int row = 0; row < (int)(noOfRows / 2); row++)
 	{
 		for (int lane = 0; lane < 4; lane++)
 		{
@@ -458,26 +469,13 @@ void SceneGame::UpdateDelayTime(double dt)
 
 void SceneGame::UpdateCam(double dt)
 {
-	UpdateCamMovement();
-	UpdateCamLoc();
-	camera.Update(dt);
-}
 
-void SceneGame::UpdateCamMovement()
-{
-	if (Application::IsKeyPressed('Z'))
-		camera.Enable();
-	if (Application::IsKeyPressed('X'))
-		camera.Disable();
-}
-
-void SceneGame::UpdateCamLoc()
-{
 	if (!camera.getActive())
 	{
 		if (menu.getIndex() == E_GAME)
 		{
 			const float camAgile = 0.4f;
+			//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
 			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 		}
 		else
@@ -485,6 +483,7 @@ void SceneGame::UpdateCamLoc()
 			camera.setPosition(Vector3(0.f, 1.5f, -10.f), Vector3(0.f, 1.5f, 180.f), Vector3(0.f, 1.f, 0.f));
 		}
 	}
+	camera.Update(dt);
 }
 
 void SceneGame::UpdateAppPolygon()
@@ -512,24 +511,22 @@ void SceneGame::UpdateCar(double dt)
 	if (menu.getIndex() == E_GAME)
 	{
 		//Player
-		//Change with collectibles
-		const float playerboost = 0.f;
-
-		Player.UpdatePlayerForward(dt, playerboost);
-		Player.UpdatePlayerJump(dt, Application::IsKeyPressed(VK_UP));
-		if (Player.UpdatePlayerStrafe(dt, delayTime, Application::IsKeyPressed(VK_LEFT), Application::IsKeyPressed(VK_RIGHT)))
+		Player.UpdatePlayerForward(dt, playerBoost);
+		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
+		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
-
-
-		//Opponent
-		//Change with collectibles
-		const float opponentboost = 0.f;
-
-		Opponent.UpdatePlayerForward(dt, opponentboost);
-		AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
-		Opponent.UpdatePlayerJump(dt, AI.getJump());
-		if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
-			delayTime = 0.f;
+		
+		if (menu.getGameMode() == MODE_VS)
+		{
+			//Opponent
+			Opponent.UpdatePlayerForward(dt, opponentBoost);
+			AImovement AI(Opponent.getLane(), Opponent.getForward(), obstacleList, powerupList);
+			Opponent.UpdatePlayerJump(dt, AI.getJump());
+			if (Opponent.UpdatePlayerStrafe(dt, delayTime, AI.getLeft(), AI.getRight()))
+				delayTime = 0.f;
+		}
+		UpdateCarCollision();
+		UpdateCarSpeed(dt);
 	}
 }
 
@@ -557,25 +554,105 @@ void SceneGame::UpdateCarTexture()
 		break;
 
 	}
+	/*switch (Opponent.getTexture())
+	{
+	case CAR_GREY:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+	case CAR_CYAN:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_cyan.tga");
+		break;
+	case CAR_ORANGE:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_orange.tga");
+		break;
+	case CAR_RED:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_red.tga");
+		break;
+	case CAR_GREEN:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_green.tga");
+		break;
+	default:
+		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
+		break;
+
+	}*/
+}
+
+void SceneGame::UpdateCarCollision()
+{
+	if (Player.collisionObstacle(obstacleList))
+		playerBoost -= 30.f;
+	if (Player.collisionPowerUp(powerupList))
+	{
+		int row = 0;
+		float forward = 3 * Player.getForward();
+		if (forward / 800 > 0) // Row in front of car
+			row = ((int)forward / 800);
+		powerupList[Player.getLane()][row].setActive(false);
+		playerBoost += 10.f;
+	}
+	if (menu.getGameMode() == MODE_VS)
+	{
+		if (Opponent.collisionObstacle(obstacleList))
+			opponentBoost -= 30.f;
+		if (Opponent.collisionPowerUp(powerupList))
+		{
+			int row = 0;
+			float forward = 3 * Opponent.getForward();
+			if (forward / 800 > 0) // Row in front of car
+				row = ((int)forward / 800);
+			powerupList[Opponent.getLane()][row].setActive(false);
+			opponentBoost += 10.f;
+		}
+	}
+}
+
+void SceneGame::UpdateCarSpeed(double dt)
+{
+	playerBoost += (float)(dt * 10.f);
+	if (playerBoost < 0.f)
+		playerBoost = 0.f;
+	else if (playerBoost > 60.f)
+		playerBoost = 60.f;
+	if (menu.getGameMode() == MODE_VS)
+	{
+		opponentBoost += (float)(dt * 10.f);
+		if (opponentBoost < 0.f)
+			opponentBoost = 0.f;
+		else if (opponentBoost > 50.f)
+			opponentBoost = 50.f;
+	}
+}
+
+void SceneGame::UpdatePowerUps(double dt)
+{
+	powerupRotation += float(dt) * 90.f;
+}
+
+void SceneGame::UpdateCursor()
+{
+	UpdateMainMenuCursor();
+	UpdateGameChooseCursor();
+	UpdateLeaderboardCursor();
 }
 
 void SceneGame::UpdateMainMenuCursor()
 {
 	if (menu.getIndex() == E_MAINMENU)
 	{
-		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f) //Cursor stuff
 		{
 			mainMenuCursor.updatePositionIndex(-1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
 		{
 			mainMenuCursor.updatePositionIndex(1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
 			b_exit = menu.menuChange(mainMenuCursor.getIndex());
@@ -591,19 +668,19 @@ void SceneGame::UpdateGameChooseCursor()
 {
 	if (menu.getIndex() == E_GAMECHOOSE)
 	{
-		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f) //Cursor stuff
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f) //Cursor stuff
 		{
 			gameChooseCursor.updatePositionIndex(-1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
 		{
 			gameChooseCursor.updatePositionIndex(1);
 			delayTime = 0;
 		}
 
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
@@ -617,7 +694,7 @@ void SceneGame::UpdateLeaderboardCursor()
 {
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
-		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() != 2)
 			{
@@ -630,7 +707,7 @@ void SceneGame::UpdateLeaderboardCursor()
 			}
 		}
 
-		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() != 1)
 			{
@@ -643,7 +720,7 @@ void SceneGame::UpdateLeaderboardCursor()
 			}
 		}
 
-		if (Application::IsKeyPressed(VK_DOWN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() == 0)
 			{
@@ -661,7 +738,7 @@ void SceneGame::UpdateLeaderboardCursor()
 				delayTime = 0;
 			}
 		}
-		if (Application::IsKeyPressed(VK_UP) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() == 2)
 			{
@@ -674,7 +751,7 @@ void SceneGame::UpdateLeaderboardCursor()
 				delayTime = 0;
 			}
 		}
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			if (leaderboardCursor.getIndex() == 2)
 			{
@@ -691,27 +768,104 @@ void SceneGame::UpdateLeaderboardCursor()
 	}
 }
 
-void SceneGame::UpdateShop()
+void SceneGame::UpdateShop(double dt)
 {
 	if (menu.getIndex() == E_SHOP)
 	{
-		if (Application::IsKeyPressed(VK_RIGHT) && delayTime >= 1.f)
+		displayRotation += float(dt) * 45.f;
+		if (gameShop.getIndex() != 4)
 		{
-			delayTime = 0;
-			gameShop.nextIndex();
+			rightCursor = 0;
+
+			if ((Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D')) && delayTime >= 1.f)
+			{
+				delayTime = 0;
+				gameShop.nextIndex();
+
+				switch (gameShop.getIndex())
+				{
+				case 0:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
+					break;
+				case 1:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_cyan.tga");
+					break;
+				case 2:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_orange.tga");
+					break;
+				case 3:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_red.tga");
+					break;
+				case 4:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_green.tga");
+					break;
+				}
+			}
 		}
-		if (Application::IsKeyPressed(VK_LEFT) && delayTime >= 1.f)
+		else
 		{
-			delayTime = 0;
-			gameShop.previousIndex();
+			rightCursor = 50;
 		}
-		if (Application::IsKeyPressed(VK_RETURN) && delayTime >= 1.f)
+	
+		if (gameShop.getIndex() != 0)
+		{
+			leftCursor = 0;
+
+			if ((Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')) && delayTime >= 1.f)
+			{
+				delayTime = 0;
+				gameShop.previousIndex();
+
+				switch (gameShop.getIndex())
+				{
+				case 0:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
+					break;
+				case 1:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_cyan.tga");
+					break;
+				case 2:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_orange.tga");
+					break;
+				case 3:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_red.tga");
+					break;
+				case 4:
+					meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_green.tga");
+					break;
+				}
+			}
+		}
+		else
+		{
+			leftCursor = 50;
+		}
+
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (gameShop.isOwned() == false)
+			if (!gameShop.isOwned() && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
+				gameShop.setOwned();
+
+				gameSave.setBalance(gameBalance.getBalance());
+				gameSave.setColour(gameShop.getIndex());
 			}
+			else if (gameShop.isOwned())
+			{
+				gameShop.setEquip();
+				gameSave.setEquip(gameShop.getEquip());
+				Player.setTexture(gameShop.getEquip());
+				UpdateCarTexture();
+			}
+			gameSave.save();
+		}
+		if (Application::IsKeyPressed(VK_BACK) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			gameShop.resetIndex();
+			menu.menuChange(0);
 		}
 	}
 }
@@ -921,17 +1075,21 @@ void SceneGame::RenderCar()
 		RenderMesh(meshList[GEO_PLAYER], true);
 		modelStack.PopMatrix();
 
-		//Player
-		modelStack.PushMatrix();
-		modelStack.Translate(-9, 0, 50.f);
-		modelStack.Rotate(0, 0, 1, 0);
-		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
-		RenderMesh(meshList[GEO_OPPONENT], true);
-		modelStack.PopMatrix();
+		if (menu.getGameMode() == MODE_VS)
+		{
+			//Opponent
+			modelStack.PushMatrix();
+			modelStack.Translate(-9, 0, 50.f);
+			modelStack.Rotate(0, 0, 1, 0);
+			modelStack.Scale(3, 3, 3);
+			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+			RenderMesh(meshList[GEO_OPPONENT], false);
+			modelStack.PopMatrix();
+		}
 	}
 }
 
+//Launch Screen Selection
 void SceneGame::RenderMainMenuButtons()
 {
 	// Render menu buttons
@@ -940,52 +1098,60 @@ void SceneGame::RenderMainMenuButtons()
 		const float textTranslate = -3.f;
 		std::string text;
 
+		//Title
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.2f, 0.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_TITLE], false);
+		modelStack.PopMatrix();
+
 		//Play
 		text = "Play";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 1.5f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Shop
 		text = "Shop";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 0.5f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Leaderboard
 		text = "Leaderboard";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -0.5f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Quit
 		text = "Quit";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Cursor
@@ -1001,6 +1167,7 @@ void SceneGame::RenderMainMenuButtons()
 	}
 }
 
+//LeaderBoard Selection
 void SceneGame::RenderLeaderboard()
 {
 	if (menu.getIndex() == E_LEADERBOARD)
@@ -1008,40 +1175,40 @@ void SceneGame::RenderLeaderboard()
 		const float textTranslate = -3.f;
 		std::string text;
 
-		// VS Leaderboard button
-		text = "VS Leaderboard";
-		modelStack.PushMatrix();
-		modelStack.Translate(-2.5f, 5.f, 0.f);
-		modelStack.Scale(4.f, 0.64f, 0.8f);
-		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.35 / 4), (float)(0.35 / 0.8), 0.35f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
-		modelStack.PopMatrix();
-
 		// Time Leaderboard button
 		text = "Time Leaderboard";
 		modelStack.PushMatrix();
 		modelStack.Translate(2.5f, 5.f, 0.f);
-		modelStack.Scale(4.f, 0.64f, 0.8f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.35 / 4), (float)(0.35 / 0.8), 0.35f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.1f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		// VS Leaderboard button
+		text = "VS Leaderboard";
+		modelStack.PushMatrix();
+		modelStack.Translate(-2.5f, 5.f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.9f, 0.1f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -2.f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Leaderboard
@@ -1086,6 +1253,7 @@ void SceneGame::RenderLeaderboard()
 	}
 }
 
+// Game Mode Seleciton
 void SceneGame::RenderGameChooseButtons()
 {
 	// Render gamechoose buttons
@@ -1098,36 +1266,36 @@ void SceneGame::RenderGameChooseButtons()
 		text = "VS Mode";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 1.5f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Time Mode
 		text = "Time Mode";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 0.f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 0.9f, 1.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, -1.5f, 0.f);
-		modelStack.Scale(4.f, 0.8f, 1.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(1.f, 0.f, 0.f));
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
 		//Cursor
@@ -1149,11 +1317,10 @@ void SceneGame::RenderShop()
 	if (menu.getIndex() == E_SHOP)
 	{
 		string colour;
-		string cost;
-		string owned;
-		string balance;
+		string cost = "$";
+		string balance = to_string(gameBalance.getBalance());
 
-		switch (gameShop.getColour())
+		switch (gameShop.getIndex())
 		{
 		case 0:
 			colour = "Grey";
@@ -1168,27 +1335,104 @@ void SceneGame::RenderShop()
 			colour = "Red";
 			break;
 		case 4:
-			colour = "Green";
+			colour = "Monster";
 			break;
 		}
 
-		cost = to_string(gameShop.getCost());
-
-		if (gameShop.isOwned() == true)
+		if (gameShop.isOwned())
 		{
-			owned = "Yes";
+			if (gameShop.isEquip())
+				cost = "Equipped";
+			else
+				cost = "Owned";
 		}
 		else
 		{
-			owned = "No";
+			cost += to_string(gameShop.getCost());
 		}
 
-		balance = to_string(gameBalance.getBalance());
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 0, 50.f);
+		modelStack.Rotate(displayRotation, 0, 1, 0);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(meshList[GEO_DISPLAY], false);
+		modelStack.PopMatrix();
 
-		RenderTextOnScreen(meshList[GEO_TEXT], colour, Color(0, 1, 0), 2, 1, 1);
-		RenderTextOnScreen(meshList[GEO_TEXT], cost, Color(0, 1, 0), 2, 1, 2);
-		RenderTextOnScreen(meshList[GEO_TEXT], owned, Color(0, 1, 0), 2, 1, 3);
-		RenderTextOnScreen(meshList[GEO_TEXT], balance, Color(0, 1, 0), 2, 10, 1);
+		modelStack.PushMatrix();
+		modelStack.Translate(30 + leftCursor, 0, 50.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(135, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-30 - rightCursor, 0, 50.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3, 3, 3);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+
+		const float textTranslate = -3.f;
+		std::string text = "Hello, world!";
+
+		text = colour;
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 3.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = cost; //Outputs Owned if owned, else output price
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = "Balance: $";
+		text += balance;
+		modelStack.PushMatrix();
+		modelStack.Translate(-3.f, 5.f, 0.f);
+		modelStack.Scale(0.8f, 0.4f, 0.4f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.3f / 0.8f), (0.3f / 0.4f), 0.3f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderTrack()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -8.f, 35150.f);
+		modelStack.Scale(10.f, 10.f, 3000.f);
+		RenderMesh(meshList[GEO_TRACK], false);
+		modelStack.PopMatrix();
+	}
+	else
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -8.f, 0.f);
+		modelStack.Scale(10.f, 10.f, 10.f);
+		modelStack.Rotate(90.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_TRACK], false);
+		modelStack.PopMatrix();
 	}
 }
 
@@ -1201,7 +1445,7 @@ void SceneGame::RenderObstacles()
 		{
 			for (size_t row = 0; row < numberOfRows; ++row)
 			{
-				if (obstacleList[lane][row].getActive())
+				if (obstacleList[lane][row].getZ() > camera.position.z && obstacleList[lane][row].getZ() < camera.position.z + 5000.f && obstacleList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
@@ -1232,7 +1476,7 @@ void SceneGame::RenderPowerUps()
 		{
 			for (size_t row = 0; row < numberOfRows / 2; ++row)
 			{
-				if (powerupList[lane][row].getActive())
+				if (powerupList[lane][row].getZ() > camera.position.z && powerupList[lane][row].getZ() < camera.position.z + 5000.f && powerupList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());

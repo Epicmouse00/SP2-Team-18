@@ -26,6 +26,10 @@ bool Menu::menuChange(int cursorIndex)
 		setGameMode(cursorIndex);
 		setIndex(2);
 	}
+	else if (pageIndex == 3 && cursorIndex == 0)
+	{
+		setIndex(0);
+	}
 	else if (pageIndex == 4 && cursorIndex == 2)
 	{
 		setIndex(0);
@@ -53,7 +57,7 @@ int Menu::getIndex() const
 
 void Menu::setGameMode(int index)
 {
-	pageIndex = index;
+	gameMode = index;
 }
 
 int Menu::getGameMode() const

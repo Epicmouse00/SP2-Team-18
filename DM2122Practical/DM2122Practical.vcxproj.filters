@@ -19,6 +19,9 @@
     <Filter Include="Image">
       <UniqueIdentifier>{2397eb00-ea87-469e-9cd1-f1a4c46f8698}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Save">
+      <UniqueIdentifier>{2474ae55-abfa-411c-a8b4-eefd400e6735}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -216,5 +219,16 @@
     <Image Include="Image\calibri.tga">
       <Filter>Image</Filter>
     </Image>
+    <Image Include="Image\ButtonType3.tga">
+      <Filter>Image</Filter>
+    </Image>
+    <Image Include="Image\TitleBar.tga">
+      <Filter>Image</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Save\Save.txt">
+      <Filter>Save</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -3,74 +3,27 @@
 Saving::Saving()
 {
 	//open savedata and set balance from .txt
-	fstream saveData("Save/Balance.txt");
+	fstream saveData("Save/Save.txt");
 
 	if (saveData.is_open())
 	{
 		string line;
-
-		while (getline(saveData, line))
+		getline(saveData, line, '>');
+		balance = stoi(line);
+		getline(saveData, line);
+		getline(saveData, line, '>');
+		equip = stoi(line);
+		getline(saveData, line);
+		for (int i = 0; i < 5; ++i)
 		{
-			balance = stoi(line);
+			getline(saveData, line, '>');
+			if (line == "1")
+				car[i] = true;
+			else
+				car[i] = false;
+			getline(saveData, line);
 		}
 		saveData.close();
-	}
-	else cout << "Unable to open file";
-
-	fstream carData("Save/Cars.txt");
-
-	if (carData.is_open())
-	{
-		string line;
-		int i = 0;
-		
-		while (getline(carData, line))
-		{
-			if (line[0] == '0')
-			{
-				switch (i)
-				{
-				case 0:
-					grey = false;
-					break;
-				case 1:
-					cyan = false;
-					break;
-				case 2:
-					orange = false;
-					break;
-				case 3:
-					red = false;
-					break;
-				case 4:
-					green = false;
-					break;
-				}
-			}
-			else if (line[0] == '1')
-			{
-				switch (i)
-				{
-				case 0:
-					grey = true;
-					break;
-				case 1:
-					cyan = true;
-					break;
-				case 2:
-					orange = true;
-					break;
-				case 3:
-					red = true;
-					break;
-				case 4:
-					green = true;
-					break;
-				}
-			}
-			i++;
-		}
-		carData.close();
 	}
 	else cout << "Unable to open file";
 }
@@ -79,78 +32,72 @@ Saving::~Saving()
 {
 }
 
-void Saving::setBalance(int amount) 
+bool Saving::getCar(int carIndex) const
 {
-	//save balance in .txt
-	fstream saveData;
+	return car[carIndex];
+}
 
-	saveData.open("Save/Balance.txt", fstream::in | fstream::out | fstream::trunc);
-	saveData << to_string(balance);
-	saveData.close();
+void Saving::setBalance(int amount)
+{
+	balance = amount;
 }
 
 int Saving::getBalance() const
 {
-	//get balance from .txt
 	return balance;
 }
 
-bool Saving::getGrey()
+int Saving::getEquip() const
 {
-	if (grey == true)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return equip;
 }
 
-bool Saving::getCyan()
+void Saving::setEquip(int equip)
 {
-	if (cyan == true)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	this->equip = equip;
 }
 
-bool Saving::getOrange()
+void Saving::setColour(int carIndex)
 {
-	if (orange == true)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	car[carIndex] = true;
 }
 
-bool Saving::getRed()
+void Saving::save()
 {
-	if (red == true)
+	fstream saveData;
+	int cars[5];
+	for (int i = 0; i < 5; ++i)
 	{
-		return true;
+		if (car[i] == true)
+			cars[i] = 1;
+		else
+			cars[i] = 0;
 	}
-	else
+	saveData.open("Save/Save.txt", fstream::in | fstream::out | fstream::trunc);
+	saveData << balance << ">Money" << '\n';
+	saveData << equip << ">Equipped" << '\n';
+	for (int i = 0; i < 5; ++i)
 	{
-		return false;
+		std::string colour = ">";
+		switch (i)
+		{
+		case 0:
+			colour += "Grey";
+			break;
+		case 1:
+			colour += "Cyan";
+			break;
+		case 2:
+			colour += "Orange";
+			break;
+		case 3:
+			colour += "Red";
+			break;
+		case 4:
+			colour += "Monster";
+			break;
+		}
+		saveData << cars[i] << colour << '\n';
 	}
-}
-
-bool Saving::getGreen()
-{
-	if (green == true)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	saveData.close();
 }

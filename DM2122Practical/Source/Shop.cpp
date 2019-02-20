@@ -5,58 +5,18 @@ Shop::Shop()
 	index = 0;
 
 	Saving save;
-
-	if (save.getGrey() == true)
+	for (int i = 0; i < 5; ++i)
 	{
-		grey = true;
+		car[i] = save.getCar(i);
 	}
-	else
-	{
-		grey = false;
-	}
-
-	if (save.getCyan() == true)
-	{
-		cyan = true;
-	}
-	else
-	{
-		cyan = false;
-	}
-
-	if (save.getOrange() == true)
-	{
-		orange = true;
-	}
-	else
-	{
-		orange = false;
-	}
-
-	if (save.getRed() == true)
-	{
-		red = true;
-	}
-	else
-	{
-		red = false;
-	}
-
-	if (save.getGreen() == true)
-	{
-		green = true;
-	}
-	else
-	{
-		green = false;
-	}
+	equip = save.getEquip();
 }
 
 Shop::~Shop()
 {
 }
 
-int Shop::getCost()
+int Shop::getCost() const
 {
 	switch (index)
 	{
@@ -76,9 +36,10 @@ int Shop::getCost()
 		return 50;
 		break;
 	}
+	return 0;
 }
 
-int Shop::getColour()
+int Shop::getIndex() const
 {
 	return index;
 }
@@ -99,59 +60,37 @@ void Shop::previousIndex()
 	}
 }
 
-bool Shop::isOwned()
+void Shop::resetIndex()
 {
-	switch (index)
-	{
-	case 0:
-		if (grey == true)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case 1:
-		if (cyan == true)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case 2:
-		if (orange == true)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case 3:
-		if (red == true)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	case 4:
-		if (green == true)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		break;
-	}
+	index = 0;
+}
+
+bool Shop::isOwned() const
+{
+	return car[index];
+}
+
+void Shop::setOwned()
+{
+	car[index] = true;
+}
+
+bool Shop::getColour(int colourIndex) const
+{
+	return car[colourIndex];
+}
+
+void Shop::setEquip()
+{
+	equip = index;
+}
+
+bool Shop::isEquip() const
+{
+	return (equip == index);
+}
+
+int Shop::getEquip() const
+{
+	return equip;
 }

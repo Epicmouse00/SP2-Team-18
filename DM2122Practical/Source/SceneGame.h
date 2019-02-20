@@ -44,12 +44,12 @@ class SceneGame : public Scene
 		//Text
 		GEO_TEXT,
 
-		//Track
-		//GEO_TRACK,
-
 		//GAME MODELS
 		GEO_OBSTACLE_DEFAULT,
 		GEO_OBSTACLE_TALL,
+
+		//Track
+		GEO_TRACK,
 
 		GEO_PLANE,
 		GEO_CURSOR,
@@ -58,6 +58,7 @@ class SceneGame : public Scene
 		GEO_LEADERBOARDSA,
 		GEO_PLAYER,
 		GEO_OPPONENT,
+		GEO_TITLE,
 
 		//Power Ups
 		GEO_SPEED,
@@ -67,6 +68,9 @@ class SceneGame : public Scene
     
 		//Menu buttons
 		GEO_BUTTON,
+
+		//Shop
+		GEO_DISPLAY,
 
 		//Keep this at the back
 		NUM_GEOMETRY
@@ -189,21 +193,24 @@ private:
 	void		InitProjection();
 	void		InitCursors();
 	void		LoadSaveData();
+	void		InitVariables();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
 	void		UpdateDelayTime(double dt);
 	void		UpdateCam(double dt);
-	void		UpdateCamMovement();
-	void		UpdateCamLoc();
 	void		UpdateAppPolygon();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
+	void		UpdateCarCollision();
+	void		UpdateCarSpeed(double dt);
+	void		UpdatePowerUps(double dt);
+	void		UpdateCursor();
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();
 	void		UpdateLight();
-	void		UpdateShop();
+	void		UpdateShop(double dt);
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
@@ -213,6 +220,7 @@ private:
 	void		RenderPowerUps();
 	void		RenderSkybox();
 	void		RenderShop();
+	void		RenderTrack();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -224,6 +232,11 @@ private:
 	bool b_exit = false;
 	float delayTime;
 	float powerupRotation;
+	float displayRotation;
+	float leftCursor;
+	float rightCursor;
+	float playerBoost;
+	float opponentBoost;
 
 	//Skybox
 

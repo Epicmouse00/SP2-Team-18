@@ -209,12 +209,17 @@
   <ItemGroup>
     <Image Include="Image\back.tga" />
     <Image Include="Image\bottom.tga" />
+    <Image Include="Image\ButtonType3.tga" />
     <Image Include="Image\calibri.tga" />
     <Image Include="Image\front.tga" />
     <Image Include="Image\gray.tga" />
     <Image Include="Image\left.tga" />
     <Image Include="Image\right.tga" />
+    <Image Include="Image\TitleBar.tga" />
     <Image Include="Image\top.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Save\Save.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,5 +9,5 @@ public:
 	void	addBalance(int amount);
 	void	deductBalance(int amount);
 	int		getBalance() const;
-	void setBalance(int amount);
+	void	setBalance(int amount);
 };

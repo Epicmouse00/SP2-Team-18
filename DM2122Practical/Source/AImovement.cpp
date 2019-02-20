@@ -33,7 +33,7 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 	int row = 0;
 	forward *= 3;
 	if ((forward - 600) / 400 > 0) // Row in front of car
-		row = (forward - 600) / 400;
+		row = ((int)forward - 600) / 400;
 	if(obstacle[lane][row].getActive())
 	{
 		range = 400.f;
@@ -64,18 +64,16 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 				jump = true;
 		}
 	}
-
-	if ((forward - 200) / 800 > 0) // Row in front of car
-		row = ((forward - 200) / 800);
+	range = 100.f;
+	if (forward / 800 > 0) // Row in front of car
+		row = ((int)forward / 800);
 	else
 		row = 0;
-
-	if (!haveObstacle && !powerups[lane][row].getActive() && !powerups[lane][row].getZ() < range)// if no powerup in front and no near obstacles
+	if (!haveObstacle && !powerups[lane][row].getActive())// if no powerup in front and no near obstacles
 	{
-		range = 150.f;
-		if (powerups[lane - 1][row].getActive() && powerups[lane][row - 1].getZ() < range + forward) // check powerup side
+		if (lane > 0 && powerups[lane - 1][row].getActive() && powerups[lane - 1][row].getZ() < range + forward) // check powerup side
 			left = true;
-		else if (powerups[lane + 1][row].getActive() && powerups[lane][row + 1].getZ() < range + forward)
+		else if (lane < 3 && powerups[lane + 1][row].getActive() && powerups[lane + 1][row].getZ() < range + forward)
 			right = true;
 	}
 	

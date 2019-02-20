@@ -1,4 +1,7 @@
-#pragma once
+#ifndef CAR_H 
+#define CAR_H
+#include "PowerUps.h"
+#include "obstacle.h"
 
 class Car
 {
@@ -26,6 +29,9 @@ public:
 	float	getForward() const;
 	void	setTexture(int texture);
 	int		getTexture() const;
-	int		getObstaclePass() const;
+	bool	collisionPowerUp(PowerUps powerups[4][50]) const;
+	bool	collisionObstacle(Obstacle obstacle[4][100]) const;
+	void	setPlayerForward(float dist);
 };
 
+#endif
