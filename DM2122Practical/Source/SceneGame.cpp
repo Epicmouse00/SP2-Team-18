@@ -43,7 +43,7 @@ void SceneGame::Init()
 	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
-	//PlaySound(TEXT("Music\\SUICIDESILENCEYouOnlyLiveOnce.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+	PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
 	InitProjection();
@@ -64,6 +64,7 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop(dt);
+	UpdateUI();
 	UpdatePowerUps(dt);
 }
 
@@ -105,6 +106,7 @@ void SceneGame::Render()
 	RenderLeaderboard();
 
 	// Gameplay UI
+	RenderUI();
 
 	// Player + Opponent
 	RenderCar();
@@ -849,6 +851,10 @@ void SceneGame::UpdateShop(double dt)
 	}
 }
 
+void SceneGame::UpdateUI()
+{
+}
+
 void SceneGame::UpdateLight()
 {
 		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
@@ -1362,6 +1368,14 @@ void SceneGame::RenderShop()
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderUI()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT], "Dab", Color(0.f, 1.f, 1.f), 1.f, 1.f, 1.f);
 	}
 }
 
