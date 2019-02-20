@@ -4,8 +4,8 @@ Leaderboard::Leaderboard()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		versusScores[i] = 0.f;
-		timeScores[i] = 0.f;
+		versusScores[i] = "Player:                              0";
+		timeScores[i] = "Player:                              0";
 	}
 }
 
@@ -14,16 +14,16 @@ Leaderboard::~Leaderboard()
 
 }
 
-void Leaderboard::setVersus(float time)
+void Leaderboard::setVersus(string record)
 {
 	float temp = 0.f;
 	for (int i = 0; i < 5; i++)
 	{
-		if (time > versusScores[i])
+		if (record > versusScores[i])
 		{
 			if (i == 4)
 			{
-				versusScores[i] = time;
+				versusScores[i] = record;
 				break;
 			}
 			else
@@ -32,21 +32,21 @@ void Leaderboard::setVersus(float time)
 				{
 					versusScores[t + 1] = versusScores[t];
 				}
-				versusScores[i] = time;
+				versusScores[i] = record;
 			}
 		}
 	}
 }
 
-void Leaderboard::setTime(float time)
+void Leaderboard::setTime(string record)
 {
 	for (int i = 0; i < 5; i++)
 	{
-		if (time > timeScores[i])
+		if (record > timeScores[i])
 		{
 			if (i == 4)
 			{
-				timeScores[i] = time;
+				timeScores[i] = record;
 				break;
 			}
 			else
@@ -55,18 +55,18 @@ void Leaderboard::setTime(float time)
 				{
 					timeScores[t + 1] = timeScores[t];
 				}
-				timeScores[i] = time;
+				timeScores[i] = record;
 			}
 		}
 	}
 }
 
-float Leaderboard::getVersus(int index) const
+string Leaderboard::getVersus(int index) const
 {
 	return versusScores[index];
 }
 
-float Leaderboard::getTime(int index) const
+string Leaderboard::getTime(int index) const
 {
 	return timeScores[index];
 }

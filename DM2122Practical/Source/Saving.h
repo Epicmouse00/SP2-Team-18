@@ -15,6 +15,9 @@ public:
 			~Saving();
 	bool	getCar(int carIndex) const;
 	int		getBalance() const;
+
+	void setLeaderboard();
+	void getLeaderboard();
 	void	setBalance(int amount);
 	int		getEquip() const;
 	void	setEquip(int equip);
