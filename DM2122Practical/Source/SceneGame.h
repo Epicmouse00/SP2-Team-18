@@ -214,6 +214,7 @@ private:
 	void		UpdateLight();
 	void		UpdateShop(double dt);
 	void		UpdateUI(double dt);
+	void		UpdateTimer(double dt);
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
@@ -225,6 +226,7 @@ private:
 	void		RenderShop();
 	void		RenderUI();
 	void		RenderTrack();
+	void		RenderTimer();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -242,6 +244,10 @@ private:
 	float playerBoost;
 	float opponentBoost;
 	std::string fps;
+
+	int minutes;
+	int seconds;
+	int miliseconds;
 
 	//Skybox
 
