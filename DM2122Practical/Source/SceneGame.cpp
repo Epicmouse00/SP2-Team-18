@@ -360,13 +360,13 @@ void SceneGame::InitProjection()
 
 void SceneGame::InitCursors()
 {
-	mainMenuCursor.addNewPosition(5.f, 3.f, 0);
-	mainMenuCursor.addNewPosition(5.f, 1.f, 1);
-	mainMenuCursor.addNewPosition(5.f, -1.f, 2);
-	mainMenuCursor.addNewPosition(5.f, -3.f, 3);
-	gameChooseCursor.addNewPosition(5.f, 3.f, 0);
-	gameChooseCursor.addNewPosition(5.f, 0.f, 1);
-	gameChooseCursor.addNewPosition(5.f, -3.f, 2);
+	mainMenuCursor.addNewPosition(0.f, 3.f, 0);
+	mainMenuCursor.addNewPosition(0.f, 1.f, 1);
+	mainMenuCursor.addNewPosition(0.f, -1.f, 2);
+	mainMenuCursor.addNewPosition(0.f, -3.f, 3);
+	gameChooseCursor.addNewPosition(0.f, 3.f, 0);
+	gameChooseCursor.addNewPosition(0.f, 0.f, 1);
+	gameChooseCursor.addNewPosition(0.f, -3.f, 2);
 	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
 	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
 	leaderboardCursor.addNewPosition(5.f, -3.f, 2);
@@ -556,7 +556,7 @@ void SceneGame::UpdateCar(double dt)
 		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
-		if (Application::IsKeyPressed('H')) //Cheat
+		if (Application::IsKeyPressed('H') && Player.getTexture() != -1) //Cheat
 		{
 			Player.setTexture(-1);
 			UpdateCarTexture();
@@ -1205,6 +1205,14 @@ void SceneGame::RenderMainMenuButtons()
 		const float textTranslate = -3.f;
 		std::string text;
 
+		//Car display
+		modelStack.PushMatrix();
+		modelStack.Translate(3.5f, 0.f, 5.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.PopMatrix();
+
 		//Title
 		modelStack.PushMatrix();
 		modelStack.Translate(0.f, 0.2f, 0.f);
@@ -1216,7 +1224,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Play
 		text = "Play";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Translate(-2.5f, 1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1228,7 +1236,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Shop
 		text = "Shop";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 0.5f, 0.f);
+		modelStack.Translate(-2.5f, 0.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1240,7 +1248,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Leaderboard
 		text = "Leaderboard";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -0.5f, 0.f);
+		modelStack.Translate(-2.5f, -0.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1252,7 +1260,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Quit
 		text = "Quit";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Translate(-2.5f, -1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1262,7 +1270,6 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.PopMatrix();
 
 		//Cursor
-		float sideMove = 5.f;
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Translate(mainMenuCursor.getX(), mainMenuCursor.getY(), 0.f);
@@ -1369,10 +1376,26 @@ void SceneGame::RenderGameChooseButtons()
 		const float textTranslate = -3.f;
 		std::string text;
 
+		//Car display
+		modelStack.PushMatrix();
+		modelStack.Translate(3.5f, 0.f, 5.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.PopMatrix();
+
+		//Title
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.2f, 0.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_TITLE], false);
+		modelStack.PopMatrix();
+
 		//VS Mode
 		text = "VS Mode";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Translate(-2.5f, 1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1384,7 +1407,7 @@ void SceneGame::RenderGameChooseButtons()
 		//Time Mode
 		text = "Time Mode";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 0.f, 0.f);
+		modelStack.Translate(-2.5f, 0.f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1396,7 +1419,7 @@ void SceneGame::RenderGameChooseButtons()
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Translate(-2.5f, -1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1406,7 +1429,6 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.PopMatrix();
 
 		//Cursor
-		float sideMove = 5.f;
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Translate(gameChooseCursor.getX(), gameChooseCursor.getY(), 0.f);
