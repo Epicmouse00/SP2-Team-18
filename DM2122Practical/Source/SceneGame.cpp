@@ -408,6 +408,7 @@ void SceneGame::InitVariables()
 {
 	playerBoost = 0.f;
 	opponentBoost = 0.f;
+	camShake = 0.f;
 	win = false;
 	b_exit = false;
 	delayTime = 0;
@@ -542,7 +543,12 @@ void SceneGame::UpdateDelayTime(double dt)
 
 void SceneGame::UpdateCam(double dt)
 {
-
+	if (menu.getIndex() == E_GAME && camShake > 0.f)
+	{
+		camShake -= (float)(dt * 40);
+		if (camShake < 0.f)
+			camShake = 0.f;
+	}
 	if (!camera.getActive())
 	{
 		if (menu.getIndex() == E_GAME)
@@ -555,7 +561,7 @@ void SceneGame::UpdateCam(double dt)
 					camera.setPosition(Vector3(0.f, 50.f, 250.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
 					//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
 				else
-					camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+					camera.setPosition(Vector3(0.f, 50.f - camShake, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 			}
 		}
 		else
@@ -654,11 +660,13 @@ void SceneGame::UpdateCarCollision()
 		if (playerStatus.getActive(1) == false)
 		{
 			playerBoost -= 100.f;
+			camShake = 10.f;
 		}
 		else
 		{
 			playerStatus.setActive(false, 1);
 		}
+		camShake = 8.f;
 	}
 	if (menu.getGameMode() == MODE_VS)
 	{

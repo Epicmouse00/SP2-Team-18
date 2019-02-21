@@ -255,6 +255,7 @@ private:
 	//Variables
 	bool b_exit;
 	bool win;
+	float camShake;
 	float delayTime;
 	float powerupRotation;
 	float displayRotation;
