@@ -70,6 +70,11 @@ bool Shop::isOwned() const
 	return car[index];
 }
 
+bool Shop::isOwned(int index) const
+{
+	return car[index];
+}
+
 void Shop::setOwned()
 {
 	car[index] = true;

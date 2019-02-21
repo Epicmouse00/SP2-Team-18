@@ -1017,7 +1017,7 @@ void SceneGame::UpdateShop(double dt)
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (!gameShop.isOwned() && (gameBalance.getBalance() >= gameShop.getCost()))
+			if (!gameShop.isOwned() && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
 				gameShop.setOwned();
@@ -1622,6 +1622,10 @@ void SceneGame::RenderShop()
 				cost = "Equipped";
 			else
 				cost = "Owned";
+		}
+		else if (!gameShop.isOwned(gameShop.getIndex() - 1))
+		{
+			cost = "Locked";
 		}
 		else
 		{
