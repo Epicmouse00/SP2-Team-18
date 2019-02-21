@@ -99,9 +99,6 @@ void SceneGame::Render()
 
 	// Menu backdrop
 
-	// GameChoose Button
-	RenderGameChooseButtons();
-
 	// Leaderboard
 	RenderLeaderboard();
 
@@ -139,6 +136,9 @@ void SceneGame::Render()
 
 	// MainMenu Button
 	RenderMainMenuButtons();
+
+	// GameChoose Button
+	RenderGameChooseButtons();
 	////////// RENDER GAME MODELS HERE //////////
 }
 
