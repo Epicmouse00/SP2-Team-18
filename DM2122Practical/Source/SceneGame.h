@@ -202,6 +202,7 @@ private:
 	void		InitCursors();
 //	void		LoadSaveData();
 	void		InitVariables();
+	void		ResetTimer();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 

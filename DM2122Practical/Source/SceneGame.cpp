@@ -50,10 +50,7 @@ void SceneGame::Init()
 	UpdateCarStats();
 	UpdateSong();
 	InitProjection();
-
-	seconds = 0;
-	minutes = 0;
-	miliseconds = 0;
+	ResetTimer();
 }
 
 //static float ROT_LIMIT = 45.0f;
@@ -406,6 +403,13 @@ void SceneGame::InitVariables()
 	displayRotation = 0;
 	leftCursor = 0;
 	rightCursor = 0;
+}
+
+void SceneGame::ResetTimer()
+{
+	miliseconds = 0;
+	seconds = 0;
+	minutes = 0;
 }
 
 void SceneGame::UpdateSong()
@@ -1043,21 +1047,24 @@ void SceneGame::UpdateUI(double dt)
 
 void SceneGame::UpdateTimer(double dt)
 {
-	if (miliseconds < 60)
+	if (menu.getIndex() == E_GAME)
 	{
-		miliseconds++;
-	}
+		if (miliseconds < 60) // Since 60 frames per second
+		{
+			miliseconds++;
+		}
 
-	if (miliseconds == 60)
-	{
-		seconds++;
-		miliseconds = 0;
-	}
+		if (miliseconds == 60)
+		{
+			seconds++;
+			miliseconds = 0;
+		}
 
-	if (seconds == 60)
-	{
-		minutes++;
-		seconds = 0;
+		if (seconds == 60)
+		{
+			minutes++;
+			seconds = 0;
+		}
 	}
 }
 
