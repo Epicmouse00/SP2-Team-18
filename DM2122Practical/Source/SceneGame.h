@@ -14,6 +14,7 @@
 
 #include "Obstacle.h"
 #include "Cursor.h"
+#include "timer2.h"
 #include "Menu.h"
 #include "PowerUps.h"
 #include "Status.h"
@@ -201,8 +202,8 @@ private:
 	void		InitProjection();
 	void		InitCursors();
 //	void		LoadSaveData();
+	void		InitGame();
 	void		InitVariables();
-	void		ResetTimer();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
@@ -220,6 +221,7 @@ private:
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();
+	void		UpdateWinLose();
 	void		UpdateLight();
 	void		UpdateShop(double dt);
 	void		UpdateUI(double dt);
@@ -235,6 +237,7 @@ private:
 	void		RenderSkybox();
 	void		RenderShop();
 	void		RenderUI();
+	void		RenderWinLose();
 	void		RenderTrack();
 	void		RenderTimer();
 	void		RenderBoost();
@@ -257,9 +260,6 @@ private:
 	float opponentBoost;
 	std::string fps;
 
-	int minutes;
-	int seconds;
-	int miliseconds;
 
 	//Skybox
 
@@ -281,6 +281,7 @@ private:
 	Saving		gameSave;
 	Currency	gameBalance;
 	Shop		gameShop;
+	timer2		timer;
 	Leaderboard leaderboard;
 
 	Status playerStatus;

@@ -41,8 +41,6 @@ void SceneGame::Init()
 	InitMeshes();
 	InitCursors();
 //	LoadSaveData();
-	InitObstacles(numberOfRows);
-	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
 	Player.setTexture(gameShop.getEquip());
@@ -50,7 +48,6 @@ void SceneGame::Init()
 	UpdateCarStats();
 	UpdateSong();
 	InitProjection();
-	ResetTimer();
 }
 
 //static float ROT_LIMIT = 45.0f;
@@ -68,6 +65,7 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop(dt);
+	UpdateWinLose();
 	UpdateUI(dt);
 	UpdatePowerUps(dt);
 	UpdateTimer(dt);
@@ -129,6 +127,9 @@ void SceneGame::Render()
 
 	// Obstacles
 	RenderObstacles();
+
+	// WinLose
+	RenderWinLose();
 
 	// Track
 	RenderTrack();
@@ -394,6 +395,13 @@ void SceneGame::InitCursors()
 	leaderboardCursor.addNewPosition(5.f, -3.f, 2);
 }
 
+void SceneGame::InitGame()
+{
+	InitObstacles(numberOfRows);
+	InitPowerUps(numberOfRows);
+	InitVariables();
+}
+
 void SceneGame::InitVariables()
 {
 	playerBoost = 0.f;
@@ -403,13 +411,9 @@ void SceneGame::InitVariables()
 	displayRotation = 0;
 	leftCursor = 0;
 	rightCursor = 0;
-}
-
-void SceneGame::ResetTimer()
-{
-	miliseconds = 0;
-	seconds = 0;
-	minutes = 0;
+	timer.resetTime();
+	Player.setPlayerForward(0.f);
+	Opponent.setPlayerForward(0.f);
 }
 
 void SceneGame::UpdateSong()
@@ -437,7 +441,7 @@ void SceneGame::UpdateSong()
 			break;
 		}
 	}
-	else if (menu.getIndex() == E_MAINMENU)
+	else
 	{
 		PlaySound(TEXT("Music\\Menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	}
@@ -849,7 +853,10 @@ void SceneGame::UpdateGameChooseCursor()
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
 			if (gameChooseCursor.getIndex() != 2)
+			{
 				UpdateSong();
+				InitGame();
+			}
 			gameChooseCursor.updatePositionIndex(-1);
 			gameChooseCursor.updatePositionIndex(-1);
 		}
@@ -929,6 +936,24 @@ void SceneGame::UpdateLeaderboardCursor()
 			else
 			{
 				delayTime = 0;
+			}
+		}
+	}
+}
+
+void SceneGame::UpdateWinLose()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		if (Player.getForward() >= 41000.f / 3 && ((menu.getGameMode() == MODE_VS && Opponent.getForward() >= 41000.f / 3) || menu.getGameMode() == MODE_TIME))
+		{
+			if (timer.getScoreMiliseconds() == 0)
+			{
+				timer.setScoreTime();
+			}
+			else if (timer.getMiliseconds() - timer.getScoreMiliseconds() > (100 * 2))
+			{
+				menu.menuChange(-1);
 			}
 		}
 	}
@@ -1049,22 +1074,7 @@ void SceneGame::UpdateTimer(double dt)
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		if (miliseconds < 60) // Since 60 frames per second
-		{
-			miliseconds++;
-		}
-
-		if (miliseconds == 60)
-		{
-			seconds++;
-			miliseconds = 0;
-		}
-
-		if (seconds == 60)
-		{
-			minutes++;
-			seconds = 0;
-		}
+		timer.updateTime(dt);
 	}
 }
 
@@ -1746,6 +1756,13 @@ void SceneGame::RenderUI()
 	}
 }
 
+void SceneGame::RenderWinLose()
+{
+	if (menu.getIndex() == E_WINLOSE)
+	{
+	}
+}
+
 void SceneGame::RenderTrack()
 {
 	if (menu.getIndex() == E_GAME)
@@ -1772,11 +1789,11 @@ void SceneGame::RenderTimer()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT], to_string(minutes), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 13.f, 1.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], to_string(seconds), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getSeconds()), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 15.f, 1.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], to_string(miliseconds), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getPrintMiliseconds()), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
 	}
 }
 

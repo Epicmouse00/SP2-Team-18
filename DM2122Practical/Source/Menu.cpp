@@ -13,6 +13,11 @@ Menu::~Menu()
 
 bool Menu::menuChange(int cursorIndex)
 {
+	if (cursorIndex == -1) // Set WINLOSE screen
+	{
+		setIndex(5);
+		return false;
+	}
 	if (pageIndex == 0 && cursorIndex == 3)
 	{
 		return true;
