@@ -127,6 +127,9 @@ void SceneGame::Render()
 	// Boost
 	RenderBoost();
 
+	// Finish Line
+	RenderFinishLine();
+
 	// Obstacles
 	RenderObstacles();
 
@@ -347,6 +350,11 @@ void SceneGame::InitMeshes()
 	// Boost
 	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99f, 0.37f, 0.f), 1.f, 1.f, 1.f);
 
+	// Finish Line
+	meshList[GEO_FINISHLINE] = MeshBuilder::GenerateOBJ("FinishLine", "OBJ//FinishLine.obj");
+	meshList[GEO_FINISHLINE]->textureID = LoadTGA("image//FinishLine.tga");
+
+
 	// Shop
 	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
 	meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
@@ -527,9 +535,12 @@ void SceneGame::UpdateCam(double dt)
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			const float camAgile = 0.4f;
-			//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
-			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			if (camera.position.z < 40700.f)
+			{
+				const float camAgile = 0.4f;
+				//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
+				camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			}
 		}
 		else
 		{
@@ -613,28 +624,6 @@ void SceneGame::UpdateCarTexture()
 		break;
 
 	}
-	/*switch (Opponent.getTexture())
-	{
-	case CAR_GREY:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
-		break;
-	case CAR_CYAN:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_cyan.tga");
-		break;
-	case CAR_ORANGE:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_orange.tga");
-		break;
-	case CAR_RED:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_red.tga");
-		break;
-	case CAR_GREEN:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_green.tga");
-		break;
-	default:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
-		break;
-
-	}*/
 }
 
 void SceneGame::UpdateCarCollision()
@@ -764,8 +753,8 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(15.f);
 		break;
 	default:
-		Player.setMaxSpeed(151.f);
-		Player.setAcceleration(100.f);
+		Player.setMaxSpeed(251.f);
+		Player.setAcceleration(400.f);
 		break;
 	}
 	Opponent.setMaxSpeed(116.f);
@@ -1490,6 +1479,18 @@ void SceneGame::RenderLeaderboard()
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
 	
 		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderFinishLine()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 50.f, 41000.f);
+		modelStack.Scale(10.f, 10.f, 10.f);
+		RenderMesh(meshList[GEO_FINISHLINE], false);
 		modelStack.PopMatrix();
 	}
 }

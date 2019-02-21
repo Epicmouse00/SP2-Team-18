@@ -70,6 +70,9 @@ class SceneGame : public Scene
 
 		//Power Up Effects
 		GEO_BOOST,
+
+		// Finish Line
+		GEO_FINISHLINE,
     
 		//Menu buttons
 		GEO_BUTTON,
@@ -225,6 +228,7 @@ private:
 	void		RenderMainMenuButtons();
 	void		RenderGameChooseButtons();
 	void		RenderLeaderboard();
+	void		RenderFinishLine();
 	void		RenderObstacles();
 	void		RenderPowerUps();
 	void		RenderSkybox();
