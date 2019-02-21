@@ -402,15 +402,7 @@ void SceneGame::InitVariables()
 
 void SceneGame::UpdateSong()
 {
-	if (menu.getIndex() == E_LEADERBOARD)
-	{
-		PlaySound(TEXT("Music\\Leaderboard.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-	}
-	else if (menu.getIndex() == E_SHOP)
-	{
-		PlaySound(TEXT("Music\\Shop.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-	}
-	else if (menu.getIndex() == E_GAME)
+	if (menu.getIndex() == E_GAME)
 	{
 		switch (Player.getTexture())
 		{
@@ -789,7 +781,7 @@ void SceneGame::UpdatePowerUps(double dt)
 		// Speed
 		if (playerStatus.getActive(0))
 		{
-			if (playerStatus.getTimer(0) <= 0.5f || Player.getForward() < Opponent.getForward()) //Boost till catch up with opponent
+			if (playerStatus.getTimer(0) <= 0.5f || Player.getForward() < Opponent.getForward() - 100.f) //Boost till catch up with opponent
 				playerStatus.updateTimer(dt, 0);
 			else
 				playerStatus.setActive(false, 0);
@@ -799,7 +791,7 @@ void SceneGame::UpdatePowerUps(double dt)
 		{
 			if (aiStatus.getActive(0))
 			{
-				if (aiStatus.getTimer(0) <= 0.5f || Player.getForward() > Opponent.getForward())
+				if (aiStatus.getTimer(0) <= 0.5f || Player.getForward() - 100.f > Opponent.getForward())
 					aiStatus.updateTimer(dt, 0);
 				else
 					aiStatus.setActive(false, 0);
@@ -839,7 +831,6 @@ void SceneGame::UpdateMainMenuCursor()
 			{
 				mainMenuCursor.updatePositionIndex(-1);
 			}
-			UpdateSong();
 		}
 	}
 }
@@ -940,7 +931,6 @@ void SceneGame::UpdateLeaderboardCursor()
 				menu.menuChange(leaderboardCursor.getIndex());
 				leaderboardCursor.updatePositionIndex(-1);
 				leaderboardCursor.updatePositionIndex(-1);
-				UpdateSong();
 				delayTime = 0;
 			}
 			else
@@ -1049,7 +1039,6 @@ void SceneGame::UpdateShop(double dt)
 				{
 					delayTime = 0;
 					menu.menuChange(0);
-					UpdateSong();
 				}
 
 			} 
