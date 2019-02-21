@@ -1858,6 +1858,15 @@ void SceneGame::RenderWinLose()
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(5.f, -3.f, 0.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
 	}
 }
 
@@ -1885,7 +1894,7 @@ void SceneGame::RenderTrack()
 
 void SceneGame::RenderTimer()
 {
-	if (menu.getIndex() == E_GAME)
+	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_TIME)
 	{
 		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 13.f, 1.f);
