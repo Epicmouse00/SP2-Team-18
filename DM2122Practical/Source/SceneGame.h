@@ -70,6 +70,7 @@ class SceneGame : public Scene
 
 		//Power Up Effects
 		GEO_BOOST,
+		GEO_SHIELD_ORB,
     
 		//Menu buttons
 		GEO_BUTTON,
@@ -234,6 +235,8 @@ private:
 	void		RenderTimer();
 	void		RenderBoost();
 	void		RenderAIBoost();
+	void		RenderShield();
+	void		RenderAIShield();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];

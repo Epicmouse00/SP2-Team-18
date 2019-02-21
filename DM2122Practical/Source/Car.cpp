@@ -10,6 +10,7 @@ Car::Car()
 	JumpPressed = false;
 	isPlayer = true;
 	resetTime = false;
+	Flight = false;
 	texture = 0;
 }
 
@@ -117,46 +118,68 @@ void Car::UpdatePlayerJump(double dt, bool jump)
 {
 	const float jumpHeight = 10.0f;
 	//Player Jump
-	if (jump && Jump <= 0)
+	if (Flight == false)
 	{
-		JumpPressed = true;
-	}
+		if (jump && Jump <= 0)
+		{
+			JumpPressed = true;
+		}
 
-	if (JumpPressed == true)
-	{
-		if (Jump < jumpHeight)
+		if (JumpPressed == true)
 		{
-			Jump += (float)(40 * dt);
-		}
-		else if (Jump < jumpHeight + 2.f)
-		{
-			Jump += (float)(20 * dt);
-		}
-		else
-		{
-			JumpPressed = false;
-		}
-	}
-	else
-	{
-		if (Jump > 0)
-		{
-			if ((Jump -= (float)(40 * dt)) >= 0)
+			if (Jump < jumpHeight)
 			{
-				Jump -= (float)(40 * dt);
+				Jump += (float)(40 * dt);
+			}
+			else if (Jump < jumpHeight + 2.f)
+			{
+				Jump += (float)(20 * dt);
 			}
 			else
 			{
-				Jump = 0;
+				JumpPressed = false;
+			}
+		}
+		else
+		{
+			if (Jump > 0)
+			{
+				if ((Jump -= (float)(40 * dt)) >= 0)
+				{
+					Jump -= (float)(40 * dt);
+				}
+				else
+				{
+					Jump = 0;
+				}
 			}
 		}
 	}
-
 }
 
 void Car::UpdatePlayerForward(double dt, float boost)
 {
 	Forward += (float)((100 + boost) * dt);
+}
+
+void Car::UpdatePlayerFlight(double dt, float height, bool status)
+{
+	if (Jump <= 0)
+	{
+		Flight = true;
+	}
+
+	if (status == true)
+	{
+		if (Jump <= height)
+		{
+			Jump += (float)(40 * dt);
+		}
+	}
+	else
+	{
+		Flight = false;
+	}
 }
 
 void Car::setTexture(int texture)
