@@ -56,7 +56,7 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 					left = true;
 			}
 		}
-		range = 120.f;
+		range = 139.f;
 		if (obstacle[lane][row].getZ() < range + forward)
 		{
 			haveObstacle = true;
@@ -64,19 +64,21 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 				jump = true;
 		}
 	}
-	range = 500.f;
-	if (forward / 800 > 0) // Row in front of car
-		row = ((int)forward / 800);
-	else
-		row = 0;
-	if (!haveObstacle && !powerups[lane][row].getActive())// if no powerup in front and no near obstacles
+	if (!haveObstacle)
 	{
-		if (lane > 0 && powerups[lane - 1][row].getActive() && powerups[lane - 1][row].getZ() < range + forward) // check powerup side
-			left = true;
-		else if (lane < 3 && powerups[lane + 1][row].getActive() && powerups[lane + 1][row].getZ() < range + forward)
-			right = true;
+		range = 150.f;
+		if (forward / 800 > 0) // Row in front of car
+			row = ((int)forward / 800);
+		else
+			row = 0;
+		if (!powerups[lane][row].getActive())// if no powerup in front
+		{
+			if (lane > 0 && powerups[lane - 1][row].getActive() && powerups[lane - 1][row].getZ() - forward < range) // check powerup side
+				left = true;
+			else if (lane < 3 && powerups[lane + 1][row].getActive() && powerups[lane + 1][row].getZ() - forward < range)
+				right = true;
+		}
 	}
-	
 }
 
 AImovement::~AImovement()
