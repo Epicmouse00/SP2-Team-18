@@ -253,7 +253,8 @@ private:
 	unsigned	m_parameters[U_TOTAL];
 
 	//Variables
-	bool b_exit = false;
+	bool b_exit;
+	bool win;
 	float delayTime;
 	float powerupRotation;
 	float displayRotation;

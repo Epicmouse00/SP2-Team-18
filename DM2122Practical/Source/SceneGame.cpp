@@ -99,6 +99,9 @@ void SceneGame::Render()
 
 	// Menu backdrop
 
+	// Track
+	RenderTrack();
+
 	// Leaderboard
 	RenderLeaderboard();
 
@@ -121,9 +124,6 @@ void SceneGame::Render()
 
 	// WinLose
 	RenderWinLose();
-
-	// Track
-	RenderTrack();
 
 	// Gameplay UI
 	RenderUI();
@@ -403,12 +403,15 @@ void SceneGame::InitGame()
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 	InitVariables();
+	//Reset powerups here
 }
 
 void SceneGame::InitVariables()
 {
 	playerBoost = 0.f;
 	opponentBoost = 0.f;
+	win = false;
+	b_exit = false;
 	delayTime = 0;
 	powerupRotation = 0;
 	displayRotation = 0;
@@ -546,7 +549,7 @@ void SceneGame::UpdateCam(double dt)
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			if (camera.position.z < 40700.f || Opponent.getForward() < 41000.f / 3)
+			if (camera.position.z < 40700.f || (Opponent.getForward() < 41000.f / 3 && menu.getGameMode() == MODE_VS))
 			{
 				const float camAgile = 0.4f;
 
@@ -1003,12 +1006,21 @@ void SceneGame::UpdateWinLose()
 			if (timer.getScoreMiliseconds() == 0)
 			{
 				timer.setScoreTime();
+				if (menu.getGameMode() == MODE_VS && Player.getForward() < Opponent.getForward())
+					win = false;
+				else
+					win = true;
 			}
 			else if (timer.getMiliseconds() - timer.getScoreMiliseconds() > (100 * 2))
 			{
 				menu.menuChange(-1);
 			}
 		}
+	}
+	if (menu.getIndex() == E_WINLOSE && (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)))
+	{
+		menu.menuChange(-2);
+		UpdateSong();
 	}
 }
 
@@ -1819,6 +1831,19 @@ void SceneGame::RenderWinLose()
 {
 	if (menu.getIndex() == E_WINLOSE)
 	{
+		std::string text;
+		if (menu.getGameMode() == MODE_VS)
+		{
+			if (win)
+				text = "U're winer lmao";
+			else
+				text = "Haha git gud";
+		}
+		else if (menu.getGameMode() == MODE_TIME)
+		{
+			text = to_string(timer.getMinutes()) + ":" + to_string(timer.getSeconds()) + ":" + to_string(timer.getPrintMiliseconds());
+		}
+		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
 }
 
