@@ -195,12 +195,11 @@ int Car::getTexture() const
 bool Car::collisionPowerUp(PowerUps powerups[4][50]) const
 {
 	const float range = 20.f;
-	const float height = 5.f;
 	int row = 0;
 	float forward = 3 * Forward;
 	if (forward / 800 > 0) // Row in front of car
 		row = ((int)forward / 800);
-	if (powerups[Lane][row].getActive() && Jump < height && powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
+	if (powerups[Lane][row].getActive() &&  powerups[Lane][row].getZ() > forward - range && powerups[Lane][row].getZ() < forward + range)
 		return true;
 	return false;
 }
