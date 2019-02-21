@@ -237,4 +237,9 @@
       <Filter>Save</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Icon\resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>

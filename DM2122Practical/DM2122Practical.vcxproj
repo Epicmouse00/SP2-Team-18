@@ -223,6 +223,9 @@
   <ItemGroup>
     <Text Include="Save\Save.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Icon\resource.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
