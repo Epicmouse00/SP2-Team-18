@@ -1827,9 +1827,9 @@ void SceneGame::RenderTrack()
 	else
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -8.f, 0.f);
+		modelStack.Translate(-60.f, -8.f, 30.f);
 		modelStack.Scale(10.f, 10.f, 10.f);
-		modelStack.Rotate(90.f, 0.f, 1.f, 0.f);
+		modelStack.Rotate(120.f, 0.f, 1.f, 0.f);
 		modelStack.Rotate(90.f, 0.f, 0.f, 1.f);
 		RenderMesh(meshList[GEO_TRACK], false);
 		modelStack.PopMatrix();
@@ -1892,30 +1892,21 @@ void SceneGame::RenderPowerUps()
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());
+					modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+					modelStack.Scale(10.f, 40.f, 10.f);
+					modelStack.Translate(0.f, 0.5f, 0.f);
 					switch (powerupList[lane][row].getType())
 					{
 					case 0:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_SPEED], false);
 						break;
 					case 1:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_SHIELD], false);
 						break;
 					case 2:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_FLIGHT], false);
 						break;
 					case 3:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_DOUBLE], false);
 						break;
 					}
