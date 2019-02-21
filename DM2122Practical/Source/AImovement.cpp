@@ -64,7 +64,7 @@ AImovement::AImovement(int lane, float forward, Obstacle obstacle[4][100], Power
 				jump = true;
 		}
 	}
-	range = 200.f;
+	range = 500.f;
 	if (forward / 800 > 0) // Row in front of car
 		row = ((int)forward / 800);
 	else
