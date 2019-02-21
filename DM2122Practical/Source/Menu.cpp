@@ -18,11 +18,6 @@ bool Menu::menuChange(int cursorIndex)
 		setIndex(5);
 		return false;
 	}
-	else if (cursorIndex == -2) // Set Main menu
-	{
-		setIndex(0);
-		return false;
-	}
 	if (pageIndex == 0 && cursorIndex == 3)
 	{
 		return true;
@@ -41,6 +36,14 @@ bool Menu::menuChange(int cursorIndex)
 		setIndex(0);
 	}
 	else if (pageIndex == 4 && cursorIndex == 2)
+	{
+		setIndex(0);
+	}
+	else if (pageIndex == 5 && cursorIndex == 0)
+	{
+		setIndex(2);
+	}
+	else if (pageIndex == 5 && cursorIndex == 1)
 	{
 		setIndex(0);
 	}

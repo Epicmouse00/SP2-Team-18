@@ -222,6 +222,11 @@ void Car::setPlayerForward(float dist)
 	Forward = dist;
 }
 
+void Car::setPlayerLane(int lane)
+{
+	Lane = lane;
+}
+
 void Car::setMaxSpeed(float maxSpeed)
 {
 	this->maxSpeed = maxSpeed;

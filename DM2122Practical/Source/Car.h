@@ -36,6 +36,7 @@ public:
 	bool	collisionPowerUp(PowerUps powerups[4][50]) const;
 	bool	collisionObstacle(Obstacle obstacle[4][100]) const;
 	void	setPlayerForward(float dist);
+	void	setPlayerLane(int lane);
 	void	setMaxSpeed(float maxSpeed);
 	void	setAcceleration(float acceleration);
 	float	getMaxSpeed() const;
