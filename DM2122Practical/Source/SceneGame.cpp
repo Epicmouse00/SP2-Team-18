@@ -1827,9 +1827,9 @@ void SceneGame::RenderTrack()
 	else
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -8.f, 0.f);
+		modelStack.Translate(-60.f, -8.f, 30.f);
 		modelStack.Scale(10.f, 10.f, 10.f);
-		modelStack.Rotate(90.f, 0.f, 1.f, 0.f);
+		modelStack.Rotate(120.f, 0.f, 1.f, 0.f);
 		modelStack.Rotate(90.f, 0.f, 0.f, 1.f);
 		RenderMesh(meshList[GEO_TRACK], false);
 		modelStack.PopMatrix();
