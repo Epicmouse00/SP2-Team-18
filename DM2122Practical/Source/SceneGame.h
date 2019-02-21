@@ -262,6 +262,7 @@ private:
 	float rightCursor;
 	float playerBoost;
 	float opponentBoost;
+	const float textTranslate = -3.f;
 	std::string fps;
 
 
@@ -286,9 +287,10 @@ private:
 	Currency	gameBalance;
 	Shop		gameShop;
 	timer2		timer;
-	Leaderboard leaderboard;
+	Leaderboard	leaderboard;
+	Menu		menu;
 
-	Status playerStatus;
-	Status aiStatus;
+	Status		playerStatus;
+	Status		aiStatus;
 };
 #endif

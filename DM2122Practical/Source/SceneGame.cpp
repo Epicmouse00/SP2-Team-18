@@ -13,11 +13,9 @@
 
 const unsigned int numberOfRows = 100;
 const float	laneSpacing = 22.5f; // 7.5 x 3
-Menu		menu;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
-Leaderboard leaderboard;
 Car			Player(true);
 Car			Opponent(false);
 Obstacle	obstacleList[4][numberOfRows];
@@ -791,8 +789,8 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(15.f);
 		break;
 	default:
-		Player.setMaxSpeed(251.f);
-		Player.setAcceleration(400.f);
+		Player.setMaxSpeed(351.f);
+		Player.setAcceleration(500.f);
 		break;
 	}
 	Opponent.setMaxSpeed(116.f);
@@ -1021,6 +1019,7 @@ void SceneGame::UpdateWinLose()
 	{
 		menu.menuChange(-2);
 		UpdateSong();
+		delayTime = 0;
 	}
 }
 
@@ -1393,7 +1392,6 @@ void SceneGame::RenderMainMenuButtons()
 	// Render menu buttons
 	if (menu.getIndex() == E_MAINMENU)
 	{
-		const float textTranslate = -3.f;
 		std::string text;
 
 		//Car display
@@ -1486,7 +1484,6 @@ void SceneGame::RenderLeaderboard()
 {
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
-		const float textTranslate = -3.f;
 		std::string text;
 
 		// Time Leaderboard button
@@ -1585,7 +1582,6 @@ void SceneGame::RenderGameChooseButtons()
 	// Render gamechoose buttons
 	if (menu.getIndex() == E_GAMECHOOSE)
 	{
-		const float textTranslate = -3.f;
 		std::string text;
 
 		//Car display
@@ -1751,7 +1747,6 @@ void SceneGame::RenderShop()
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 
-		const float textTranslate = -3.f;
 		std::string text = "Hello, world!";
 
 		text = colour;
@@ -1832,6 +1827,11 @@ void SceneGame::RenderWinLose()
 	if (menu.getIndex() == E_WINLOSE)
 	{
 		std::string text;
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Scale(2.f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
 		if (menu.getGameMode() == MODE_VS)
 		{
 			if (win)
@@ -1843,7 +1843,21 @@ void SceneGame::RenderWinLose()
 		{
 			text = to_string(timer.getMinutes()) + ":" + to_string(timer.getSeconds()) + ":" + to_string(timer.getPrintMiliseconds());
 		}
-		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
+		modelStack.Scale((0.6f / 2.f), (0.6f / 1.f), 0.6f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = "Back";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
 	}
 }
 

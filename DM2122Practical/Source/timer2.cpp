@@ -55,6 +55,7 @@ int timer2::getSeconds() const
 void timer2::resetTime()
 {
 	miliseconds = 0.f;
+	score_miliseconds = 0.f;
 }
 
 void timer2::setScoreTime()
