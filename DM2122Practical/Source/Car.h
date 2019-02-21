@@ -13,6 +13,7 @@ private:
 	bool	JumpPressed;
 	bool	isPlayer;
 	bool	resetTime;
+	bool	Flight;
 	int		texture;
 	float	maxSpeed;
 	float	acceleration;
@@ -25,6 +26,7 @@ public:
 	bool	UpdatePlayerStrafe(double dt, float delayTime, bool left, bool right);
 	void	UpdatePlayerJump(double dt, bool jump);
 	void	UpdatePlayerForward(double dt, float boost);
+	void	UpdatePlayerFlight(double dt, float height, bool status);
 	int		getLane() const;
 	float	getMovement() const;
 	float	getJump() const;

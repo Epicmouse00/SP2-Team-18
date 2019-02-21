@@ -108,9 +108,6 @@ void SceneGame::Render()
 	// Leaderboard
 	RenderLeaderboard();
 
-	// Player + Opponent
-	RenderCar();
-
 	// Coins
 
 	// Shop
@@ -139,6 +136,9 @@ void SceneGame::Render()
 
 	// Others?
 	RenderTimer();
+
+	// Player + Opponent
+	RenderCar();
 	////////// RENDER GAME MODELS HERE //////////
 }
 
@@ -352,6 +352,9 @@ void SceneGame::InitMeshes()
 	meshList[GEO_FINISHLINE] = MeshBuilder::GenerateOBJ("FinishLine", "OBJ//FinishLine.obj");
 	meshList[GEO_FINISHLINE]->textureID = LoadTGA("image//FinishLine.tga");
 
+	// Shield
+	meshList[GEO_SHIELD_ORB] = MeshBuilder::GenerateOBJ("Shield", "OBJ//shield.obj");
+	meshList[GEO_SHIELD_ORB]->textureID = LoadTGA("image//shield.tga");
 
 	// Shop
 	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
@@ -643,7 +646,14 @@ void SceneGame::UpdateCarCollision()
 		if ((forward - 600) / 400 > 0) // Row in front of car
 			row = ((int)forward - 600) / 400;
 		obstacleList[Player.getLane()][row].setActive(false);
-		playerBoost -= 100.f;
+		if (playerStatus.getActive(1) == false)
+		{
+			playerBoost -= 100.f;
+		}
+		else
+		{
+			playerStatus.setActive(false, 1);
+		}
 	}
 	if (menu.getGameMode() == MODE_VS)
 	{
@@ -665,9 +675,12 @@ void SceneGame::UpdateCarCollision()
 				break;
 			case 1:
 				//Shield (Red)
+				playerStatus.setActive(true, 1);
 				break;
 			case 2:
 				//Flight (Blue)
+				playerStatus.setActive(true, 2);
+				playerStatus.setTimer(0.f, 2);
 				break;
 			case 3:
 				//Double Collectibles (Green)
@@ -681,7 +694,14 @@ void SceneGame::UpdateCarCollision()
 			if ((forward - 600) / 400 > 0) // Row in front of car
 				row = ((int)forward - 600) / 400;
 			obstacleList[Opponent.getLane()][row].setActive(false);
-			opponentBoost -= 100.f;
+			if (aiStatus.getActive(1) == false)
+			{
+				opponentBoost -= 100.f;
+			}
+			else
+			{
+				aiStatus.setActive(false, 1);
+			}
 		}
 		if (Opponent.collisionPowerUp(powerupList))
 		{
@@ -701,9 +721,12 @@ void SceneGame::UpdateCarCollision()
 				break;
 			case 1:
 				//Shield (Red)
+				aiStatus.setActive(true, 1);
 				break;
 			case 2:
 				//Flight (Blue)
+				aiStatus.setActive(true, 2);
+				aiStatus.setTimer(0.f, 2);
 				break;
 			case 3:
 				//Double Collectibles (Green)
@@ -783,7 +806,6 @@ void SceneGame::UpdatePowerUps(double dt)
 			else
 				playerStatus.setActive(false, 0);
 		}
-
 		if (menu.getGameMode() == MODE_VS)
 		{
 			if (aiStatus.getActive(0))
@@ -792,6 +814,33 @@ void SceneGame::UpdatePowerUps(double dt)
 					aiStatus.updateTimer(dt, 0);
 				else
 					aiStatus.setActive(false, 0);
+			}
+		}
+
+		if (playerStatus.getActive(2))
+		{
+			if (playerStatus.getTimer(2) <= 6.f)
+			{
+				Player.UpdatePlayerFlight(dt, 10.f, playerStatus.getActive(2));
+				playerStatus.updateTimer(dt, 2);
+			}
+			else
+			{
+				playerStatus.setActive(false, 2);
+				Player.UpdatePlayerFlight(dt, 10.f, playerStatus.getActive(2));
+			}
+		}
+		if (menu.getGameMode() == MODE_VS)
+		{
+			if (aiStatus.getTimer(2) <= 6.f)
+			{
+				Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
+				aiStatus.updateTimer(dt, 2);
+			}
+			else
+			{
+				aiStatus.setActive(false, 2);
+				Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
 			}
 		}
 	}
@@ -1283,6 +1332,7 @@ void SceneGame::RenderCar()
 		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
 		RenderMesh(meshList[GEO_PLAYER], true);
 		RenderBoost();
+		RenderShield();
 		modelStack.Translate(-2.5f, -0.5f, 4.f);
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
@@ -1305,6 +1355,7 @@ void SceneGame::RenderCar()
 			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
 			RenderMesh(meshList[GEO_OPPONENT], false);
 			RenderAIBoost();
+			RenderAIShield();
 			modelStack.Translate(-2.5f, -0.5f, 4.f);
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.Translate(0.f, 0.f, -8.5f);
@@ -1907,6 +1958,26 @@ void SceneGame::RenderAIBoost()
 		modelStack.Translate(-1, -0.5, -20);
 		modelStack.Scale(0.25, 0.25, 30);
 		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderShield()
+{
+	if (playerStatus.getActive(1) == true)
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[GEO_SHIELD_ORB], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderAIShield()
+{
+	if (aiStatus.getActive(1) == true)
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[GEO_SHIELD_ORB], false);
 		modelStack.PopMatrix();
 	}
 }
