@@ -20,9 +20,6 @@ int Shop::getCost() const
 {
 	switch (index)
 	{
-	case 0:
-		return 10;
-		break;
 	case 1:
 		return 20;
 		break;
@@ -35,8 +32,10 @@ int Shop::getCost() const
 	case 4:
 		return 50;
 		break;
+	default:
+		return 0;
+		break;
 	}
-	return 0;
 }
 
 int Shop::getIndex() const

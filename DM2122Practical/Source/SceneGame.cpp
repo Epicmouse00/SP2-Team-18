@@ -415,13 +415,13 @@ void SceneGame::UpdateSong()
 		switch (Player.getTexture())
 		{
 		case CAR_GREY:
-			PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 			break;
 		case CAR_CYAN:
 			PlaySound(TEXT("Music\\FistBump.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 			break;
 		case CAR_ORANGE:
-			PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 			break;
 		case CAR_RED:
 			PlaySound(TEXT("Music\\GasGasGas.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
@@ -579,7 +579,7 @@ void SceneGame::UpdateCar(double dt)
 		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
-		if (Application::IsKeyPressed('H') && Player.getTexture() != -1) //Cheat
+		if (Application::IsKeyPressed('H') && Player.getTexture() == 2) //Cheat
 		{
 			Player.setTexture(-1);
 			UpdateCarTexture();
