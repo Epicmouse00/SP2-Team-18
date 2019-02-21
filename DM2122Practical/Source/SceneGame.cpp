@@ -331,7 +331,7 @@ void SceneGame::InitMeshes()
 
 	// Opponent
 	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
-	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_ai.tga");
+	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_purple.tga");
 
 	// Wheel
 	meshList[GEO_WHEEL] = MeshBuilder::GenerateOBJ("Wheel", "OBJ//wheel.obj");
@@ -508,7 +508,7 @@ void SceneGame::InitPowerUps(unsigned int noOfRows)
 		{
 			for (int lane = 0; lane < 4; lane++)
 			{
-				if ((rand() % 4) == 0)
+				if ((rand() % 5) == 0)
 				{
 					PowerUps temp;
 					temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
@@ -546,11 +546,15 @@ void SceneGame::UpdateCam(double dt)
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			if (camera.position.z < 40700.f)
+			if (camera.position.z < 40700.f || Opponent.getForward() < 41000.f / 3)
 			{
 				const float camAgile = 0.4f;
-				//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
-				camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+
+				if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
+					camera.setPosition(Vector3(0.f, 50.f, 250.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
+					//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
+				else
+					camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 			}
 		}
 		else
@@ -631,7 +635,7 @@ void SceneGame::UpdateCarTexture()
 		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_green.tga");
 		break;
 	default:
-		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_ai.tga");
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_white.tga");
 		break;
 
 	}
@@ -741,7 +745,7 @@ void SceneGame::UpdateCarSpeed(double dt)
 	if (playerStatus.getActive(0) == true)
 		playerBoost = 240.f;
 	else if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed() && playerStatus.getActive(0) == false)
-		playerBoost -= 0.3f;
+		playerBoost -= 0.4f;
 	else if (playerBoost < 0.f)
 		playerBoost = 0.f;
 	else
@@ -750,8 +754,8 @@ void SceneGame::UpdateCarSpeed(double dt)
 	{
 		if (aiStatus.getActive(0) == true)
 			opponentBoost = 240.f;
-		else if(opponentBoost >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == false)
-			opponentBoost -= 0.3f;
+		else if(opponentBoost + (float)(dt * Opponent.getAcceleration()) >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == false)
+			opponentBoost -= 0.4f;
 		else if (opponentBoost < 0.f)
 			opponentBoost = 0.f;
 		else
@@ -1333,7 +1337,7 @@ void SceneGame::RenderCar()
 		RenderMesh(meshList[GEO_PLAYER], true);
 		RenderBoost();
 		RenderShield();
-		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
 		RenderMesh(meshList[GEO_WHEEL], false);
@@ -1356,7 +1360,7 @@ void SceneGame::RenderCar()
 			RenderMesh(meshList[GEO_OPPONENT], false);
 			RenderAIBoost();
 			RenderAIShield();
-			modelStack.Translate(-2.5f, -0.5f, 4.f);
+			modelStack.Translate(-2.5f, -0.6f, 4.f);
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.Translate(0.f, 0.f, -8.5f);
 			RenderMesh(meshList[GEO_WHEEL], false);
@@ -1386,7 +1390,7 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_PLAYER], false);
-		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
 		RenderMesh(meshList[GEO_WHEEL], false);
@@ -1578,7 +1582,7 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_PLAYER], false);
-		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
 		RenderMesh(meshList[GEO_WHEEL], false);
@@ -1706,7 +1710,7 @@ void SceneGame::RenderShop()
 		modelStack.Rotate(displayRotation, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
 		RenderMesh(meshList[GEO_DISPLAY], false);
-		modelStack.Translate(-2.5f, -0.5f, 4.f);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
 		RenderMesh(meshList[GEO_WHEEL], false);
@@ -1801,7 +1805,11 @@ void SceneGame::RenderUI()
 	RenderTextOnScreen(meshList[GEO_TEXT], fps, Color(1.f, 1.f, 1.f), 2.f, 1.f, 29.5f);
 	if (menu.getIndex() == E_GAME)
 	{
-		std::string text = to_string((int)((playerBoost + 100) / 2));
+		std::string text;
+		if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
+			text = to_string((int)((opponentBoost + 100) / 2));
+		else
+			text = to_string((int)((playerBoost + 100) / 2));
 		text += " km/h";
 		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
@@ -1857,7 +1865,7 @@ void SceneGame::RenderObstacles()
 		{
 			for (size_t row = 0; row < numberOfRows; ++row)
 			{
-				if (obstacleList[lane][row].getZ() > camera.position.z && obstacleList[lane][row].getZ() < camera.position.z + 5000.f && obstacleList[lane][row].getActive())
+				if (obstacleList[lane][row].getZ() > camera.position.z - 5000.f  && obstacleList[lane][row].getZ() < camera.position.z + 5000.f && obstacleList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
@@ -1888,7 +1896,7 @@ void SceneGame::RenderPowerUps()
 		{
 			for (size_t row = 0; row < numberOfRows / 2; ++row)
 			{
-				if (powerupList[lane][row].getZ() > camera.position.z && powerupList[lane][row].getZ() < camera.position.z + 5000.f && powerupList[lane][row].getActive())
+				if (powerupList[lane][row].getZ() > camera.position.z - 5000.f  && powerupList[lane][row].getZ() < camera.position.z + 5000.f && powerupList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());
