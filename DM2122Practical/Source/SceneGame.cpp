@@ -130,6 +130,7 @@ void SceneGame::Render()
 
 	// WinLose
 	RenderWinLose();
+
 	// Hit Marker
 	RenderHitMarker();
 	////////// RENDER GAME MODELS HERE //////////
@@ -1462,14 +1463,109 @@ void SceneGame::RenderCar()
 	{
 		if (menu.getGameMode() == MODE_VS)
 		{
-			//Opponent
+			//Render Player Last, Player Behind
+			if (Player.getForward() <= Opponent.getForward())
+			{
+				//Opponent
+				RenderAIMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+				RenderMesh(meshList[GEO_OPPONENT], false);
+				RenderAIBoost();
+				RenderAIShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+
+				//Player
+				RenderMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
+				RenderMesh(meshList[GEO_PLAYER], true);
+				RenderBoost();
+				RenderShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+			}
+			//Render AI Last, AI Behind
+			else
+			{
+				//Player
+				RenderMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
+				RenderMesh(meshList[GEO_PLAYER], true);
+				RenderBoost();
+				RenderShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+
+				//Opponent
+				RenderAIMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+				RenderMesh(meshList[GEO_OPPONENT], false);
+				RenderAIBoost();
+				RenderAIShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+			}
+		}
+		else
+		{
+			//Player
+			RenderMissile();
+
 			modelStack.PushMatrix();
 			modelStack.Translate(-9, 0, 50.f);
 			modelStack.Scale(3, 3, 3);
-			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
-			RenderMesh(meshList[GEO_OPPONENT], false);
-			RenderAIBoost();
-			RenderAIShield();
+			modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
+			RenderMesh(meshList[GEO_PLAYER], true);
+			RenderBoost();
+			RenderShield();
 			modelStack.Translate(-2.5f, -0.6f, 4.f);
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.Translate(0.f, 0.f, -8.5f);
@@ -1480,30 +1576,7 @@ void SceneGame::RenderCar()
 			modelStack.Translate(0.f, 0.f, -8.5f);
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.PopMatrix();
-
-			RenderAIMissile();
 		}
-		//Player
-		modelStack.PushMatrix();
-		modelStack.Translate(-9, 0, 50.f);
-		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
-		RenderMesh(meshList[GEO_PLAYER], true);
-		RenderBoost();
-		RenderShield();
-		modelStack.Translate(-2.5f, -0.6f, 4.f);
-		RenderMesh(meshList[GEO_WHEEL], false);
-		modelStack.Translate(0.f, 0.f, -8.5f);
-		RenderMesh(meshList[GEO_WHEEL], false);
-		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		modelStack.Translate(-5.f, 0.f, 0.f);
-		RenderMesh(meshList[GEO_WHEEL], false);
-		modelStack.Translate(0.f, 0.f, -8.5f);
-		RenderMesh(meshList[GEO_WHEEL], false);
-
-		modelStack.PopMatrix();
-
-		RenderMissile();
 	}
 }
 
