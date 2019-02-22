@@ -414,8 +414,6 @@ void SceneGame::InitVariables()
 	timer.resetTime();
 	Player.setPlayerForward(0.f);
 	Opponent.setPlayerForward(0.f);
-	Player.setPlayerLane(1);
-	Opponent.setPlayerLane(2);
 }
 
 void SceneGame::UpdateSong()
@@ -656,7 +654,10 @@ void SceneGame::UpdateCarCollision()
 		obstacleList[Player.getLane()][row].setActive(false);
 		if (playerStatus.getActive(1) == false)
 		{
-			playerBoost -= 100.f;
+			if (playerBoost > Player.getMaxSpeed())
+				playerBoost = Player.getMaxSpeed();
+			else
+				playerBoost -= 100.f;
 			camShake = 10.f;
 		}
 		else
@@ -706,7 +707,10 @@ void SceneGame::UpdateCarCollision()
 			obstacleList[Opponent.getLane()][row].setActive(false);
 			if (aiStatus.getActive(1) == false)
 			{
-				opponentBoost -= 100.f;
+				if (opponentBoost > Opponent.getMaxSpeed())
+					opponentBoost = Opponent.getMaxSpeed();
+				else
+					opponentBoost -= 100.f;
 			}
 			else
 			{
@@ -1018,6 +1022,12 @@ void SceneGame::UpdateWinLose()
 			{
 				menu.menuChange(-1);
 				delayTime = 0;
+			}
+			else
+			{
+				Player.setPlayerLane(1);
+				if (menu.getGameMode() == MODE_VS)
+					Opponent.setPlayerLane(2);
 			}
 		}
 	}
@@ -1983,7 +1993,7 @@ void SceneGame::RenderPowerUps()
 					modelStack.PushMatrix();
 					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());
 					modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-					modelStack.Scale(10.f, 40.f, 10.f);
+					modelStack.Scale(10.f, 10.f, 10.f);
 					modelStack.Translate(0.f, 0.5f, 0.f);
 					switch (powerupList[lane][row].getType())
 					{
