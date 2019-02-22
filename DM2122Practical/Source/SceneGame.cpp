@@ -110,9 +110,6 @@ void SceneGame::Render()
 	// Power Ups
 	RenderPowerUps();
 
-	// Boost
-	RenderBoost();
-
 	// Finish Line
 	RenderFinishLine();
 
