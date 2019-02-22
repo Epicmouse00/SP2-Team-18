@@ -892,6 +892,15 @@ void SceneGame::UpdatePowerUps(double dt)
 				playerMissile.setShot(true);
 			}
 		}
+		if (aiStatus.getActive(3))
+		{
+			aiMissile.setXYZ(Opponent.getMovement(), Opponent.getJump() + 4.f, Opponent.getForward());
+			if (Opponent.getForward() < Player.getForward() && Opponent.getLane() == Player.getLane())
+			{
+				aiStatus.setActive(false, 3);
+				aiMissile.setShot(true);
+			}
+		}
 		if (playerMissile.getShot() == true)
 		{
 			// Missile Movement
