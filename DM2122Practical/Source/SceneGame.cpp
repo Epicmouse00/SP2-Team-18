@@ -402,7 +402,8 @@ void SceneGame::InitGame()
 	InitPowerUps(numberOfRows);
 	InitVariables();
 	UpdateTrackTexture();
-	//Reset powerups here
+	playerStatus.resetStatus();
+	aiStatus.resetStatus();
 }
 
 void SceneGame::InitVariables()
