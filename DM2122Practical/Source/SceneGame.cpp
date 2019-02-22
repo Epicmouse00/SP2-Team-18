@@ -712,6 +712,7 @@ void SceneGame::UpdateCarCollision()
 				//Missile (Green)
 				playerStatus.setActive(true, 3);
 				playerStatus.setTimer(0.f, 3);
+				playerMissile.setShot(false);
 				break;
 			}
 		}
@@ -855,34 +856,32 @@ void SceneGame::UpdatePowerUps(double dt)
 		{
 			if (playerStatus.getTimer(2) <= 6.f)
 			{
-				Player.UpdatePlayerFlight(dt, 10.f, playerStatus.getActive(2));
+				Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
 				playerStatus.updateTimer(dt, 2);
 			}
 			else
 			{
 				playerStatus.setActive(false, 2);
-				Player.UpdatePlayerFlight(dt, 10.f, playerStatus.getActive(2));
+				Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
 			}
 		}
-		if (menu.getGameMode() == MODE_VS)
+		if (aiStatus.getActive(2))
 		{
-			if (aiStatus.getActive(2))
+			if (aiStatus.getTimer(2) <= 6.f)
 			{
-				if (aiStatus.getTimer(2) <= 6.f)
-				{
-					Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
-					aiStatus.updateTimer(dt, 2);
-				}
-				else
-				{
-					aiStatus.setActive(false, 2);
-					Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
-				}
+				Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
+				aiStatus.updateTimer(dt, 2);
+			}
+			else
+			{
+				aiStatus.setActive(false, 2);
+				Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
 			}
 		}
+		
 
 		// Missile
-		if (playerStatus.getActive(3))
+		if (playerStatus.getActive(3) && !playerMissile.getShot())
 		{
 			playerMissile.setXYZ(Player.getMovement(), Player.getJump() + 4.f, Player.getForward());
 			if (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S'))
@@ -900,7 +899,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				aiMissile.setShot(true);
 			}
 		}
-		if (playerMissile.getShot() == true)
+		if (playerMissile.getShot())
 		{
 			// Missile Movement
 			playerMissile.setXYZ(playerMissile.getX(), playerMissile.getY(), (playerMissile.getZ() + (float)(500 * dt)));
@@ -909,7 +908,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				(playerMissile.getY() <= (Opponent.getJump() + 5.f) && playerMissile.getY() >= (Opponent.getJump() - 5.f)) &&
 				(playerMissile.getZ() <= (Opponent.getForward() + 30.f) && playerMissile.getZ() >= (Opponent.getForward() - 30.f)))
 			{
-				if (aiStatus.getActive(1) == false)
+				if (!aiStatus.getActive(1))
 					opponentBoost = 0.f;
 				else
 					aiStatus.setActive(false, 1);
@@ -917,7 +916,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				playerMissile.setHit(true);
 			}
 		}
-		if (aiMissile.getShot() == true)
+		if (aiMissile.getShot())
 		{
 			// Missile Movement
 			aiMissile.setXYZ(aiMissile.getX(), aiMissile.getY(), (aiMissile.getZ() + (float)(500 * dt)));
@@ -926,7 +925,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				(aiMissile.getY() <= (Player.getJump() + 5.f) && aiMissile.getY() >= (Player.getJump() - 5.f)) &&
 				(aiMissile.getZ() <= (Player.getForward() + 30.f) && aiMissile.getZ() >= (Player.getForward() - 30.f)))
 			{
-				if (playerStatus.getActive(1) == false)
+				if (!playerStatus.getActive(1))
 				{
 					playerBoost = 0.f;
 					camShake = 8.f;
@@ -936,7 +935,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				aiMissile.setShot(false);
 			}
 		}
-		if (playerMissile.getHit() == true)
+		if (playerMissile.getHit())
 		{
 			if (playerStatus.getTimer(3) <= 0.5f)
 			{
@@ -947,12 +946,9 @@ void SceneGame::UpdatePowerUps(double dt)
 				playerMissile.setHit(false);
 			}
 		}
-		if (menu.getGameMode() == MODE_VS)
+		if (aiStatus.getActive(3))
 		{
-			if (aiStatus.getActive(3))
-			{
-				aiMissile.setXYZ(Opponent.getMovement(), Opponent.getJump() + 4.f, Opponent.getForward());
-			}
+			aiMissile.setXYZ(Opponent.getMovement(), Opponent.getJump() + 4.f, Opponent.getForward());
 		}
 	}
 }
