@@ -24,10 +24,10 @@ int Shop::getCost() const
 		return 200;
 		break;
 	case 2:
-		return 300;
+		return 250;
 		break;
 	case 3:
-		return 400;
+		return 300;
 		break;
 	case 4:
 		return 500;

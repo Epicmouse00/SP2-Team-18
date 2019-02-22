@@ -802,7 +802,7 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(500.f);
 		break;
 	}
-	Opponent.setMaxSpeed(131.f);
+	Opponent.setMaxSpeed(Player.getMaxSpeed() + 10.f);
 	Opponent.setAcceleration(30.f);
 }
 
@@ -1025,9 +1025,10 @@ void SceneGame::UpdateWinLose()
 				if (menu.getGameMode() == MODE_VS)
 				{
 					if (win)
-						gameBalance.addBalance(100);
+						gameBalance.addBalance(100 + Player.getTexture() * 25);
 					else
-						gameBalance.deductBalance(25);
+						gameBalance.deductBalance(25 + Player.getTexture() * 15);
+					gameSave.setBalance(gameBalance.getBalance());
 				}
 			}
 			else
@@ -1649,7 +1650,7 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.PopMatrix();
 
 		//VS Mode
-		text = "VS Mode";
+		text = "VS Race";
 		modelStack.PushMatrix();
 		modelStack.Translate(-2.5f, 1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
@@ -1661,7 +1662,7 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.PopMatrix();
 
 		//Time Mode
-		text = "Time Mode";
+		text = "Time Trial";
 		modelStack.PushMatrix();
 		modelStack.Translate(-2.5f, 0.f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
@@ -1913,7 +1914,7 @@ void SceneGame::RenderWinLose()
 		if (menu.getGameMode() == MODE_VS)
 		{
 			text = "Balance: $";
-			text = to_string(gameBalance.getBalance());
+			text += to_string(gameBalance.getBalance());
 			modelStack.PushMatrix();
 			modelStack.Translate(-3.f, 5.f, 0.f);
 			modelStack.Scale(0.8f, 0.4f, 0.4f);
