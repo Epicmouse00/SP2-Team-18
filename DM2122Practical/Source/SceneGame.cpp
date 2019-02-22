@@ -1021,6 +1021,7 @@ void SceneGame::UpdateWinLose()
 			else if (timer.getMiliseconds() - timer.getScoreMiliseconds() > (100 * 2))
 			{
 				menu.menuChange(-1);
+				delayTime = 0;
 			}
 		}
 	}
@@ -1867,7 +1868,7 @@ void SceneGame::RenderWinLose()
 		}
 		else if (menu.getGameMode() == MODE_TIME)
 		{
-			text = to_string(timer.getMinutes()) + ":" + to_string(timer.getSeconds()) + ":" + to_string(timer.getPrintMiliseconds());
+			text = to_string(timer.getScoreMinutes()) + ":" + to_string(timer.getScoreSeconds()) + ":" + to_string(timer.getPrintScoreMiliseconds());
 		}
 		modelStack.Translate((float)(0.3 / 2.2), 0.f, 0.f);
 		modelStack.Scale((0.6f / 2.3f), (0.6f / 1.f), 0.6f);
