@@ -361,7 +361,7 @@ void SceneGame::InitMeshes()
 
 	// Track
 	meshList[GEO_TRACK] = MeshBuilder::GenerateOBJ("Tunnel", "OBJ//tunnelProto.obj");
-	meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel.tga");
+	meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel_1.tga");
 
 	// Others?
 
@@ -396,6 +396,7 @@ void SceneGame::InitGame()
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 	InitVariables();
+	UpdateTrackTexture();
 	//Reset powerups here
 }
 
@@ -585,6 +586,14 @@ void SceneGame::UpdateAppPolygon()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
+}
+
+void SceneGame::UpdateTrackTexture()
+{
+	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_TIME)
+		meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel_2.tga");
+	else
+		meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel_1.tga");
 }
 
 void SceneGame::UpdateCar(double dt)

@@ -212,6 +212,7 @@ private:
 	void		UpdateSong();
 	void		UpdateCam(double dt);
 	void		UpdateAppPolygon();
+	void		UpdateTrackTexture();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
 	void		UpdateCarCollision();
