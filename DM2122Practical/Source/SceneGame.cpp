@@ -782,19 +782,19 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(25.f);
 		break;
 	case CAR_CYAN:
-		Player.setMaxSpeed(126.f);
-		Player.setAcceleration(25.f);
-		break;
-	case CAR_ORANGE:
 		Player.setMaxSpeed(131.f);
 		Player.setAcceleration(20.f);
 		break;
+	case CAR_ORANGE:
+		Player.setMaxSpeed(131.f);
+		Player.setAcceleration(25.f);
+		break;
 	case CAR_RED:
-		Player.setMaxSpeed(136.f);
+		Player.setMaxSpeed(141.f);
 		Player.setAcceleration(20.f);
 		break;
 	case CAR_GREEN:
-		Player.setMaxSpeed(141.f);
+		Player.setMaxSpeed(151.f);
 		Player.setAcceleration(15.f);
 		break;
 	default:
@@ -802,7 +802,7 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(500.f);
 		break;
 	}
-	Opponent.setMaxSpeed(126.f);
+	Opponent.setMaxSpeed(131.f);
 	Opponent.setAcceleration(30.f);
 }
 
@@ -1022,6 +1022,13 @@ void SceneGame::UpdateWinLose()
 			{
 				menu.menuChange(-1);
 				delayTime = 0;
+				if (menu.getGameMode() == MODE_VS)
+				{
+					if (win)
+						gameBalance.addBalance(100);
+					else
+						gameBalance.deductBalance(25);
+				}
 			}
 			else
 			{
@@ -1704,18 +1711,18 @@ void SceneGame::RenderShop()
 		{
 		case 0:
 			colour = "Grey";
-			maxSpeed += "*";
+			maxSpeed += "**";
 			acceleration += "*****";
 			break;
 		case 1:
 			colour = "Cyan";
-			maxSpeed += "**";
-			acceleration += "*****";
+			maxSpeed += "***";
+			acceleration += "****";
 			break;
 		case 2:
 			colour = "Orange";
 			maxSpeed += "***";
-			acceleration += "****";
+			acceleration += "*****";
 			break;
 		case 3:
 			colour = "Red";
@@ -1902,6 +1909,21 @@ void SceneGame::RenderWinLose()
 		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
+
+		if (menu.getGameMode() == MODE_VS)
+		{
+			text = "Balance: $";
+			text = to_string(gameBalance.getBalance());
+			modelStack.PushMatrix();
+			modelStack.Translate(-3.f, 5.f, 0.f);
+			modelStack.Scale(0.8f, 0.4f, 0.4f);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			RenderMesh(meshList[GEO_BUTTON], false);
+			modelStack.Scale((0.3f / 0.8f), (0.3f / 0.4f), 0.3f);
+			modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+			modelStack.PopMatrix();
+		}
 
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);

@@ -16,6 +16,8 @@ void Currency::addBalance(int amount)
 void Currency::deductBalance(int amount)
 {
 	balance -= amount;
+	if (balance < 0)
+		balance = 0;
 }
 
 int Currency::getBalance() const

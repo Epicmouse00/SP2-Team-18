@@ -21,16 +21,16 @@ int Shop::getCost() const
 	switch (index)
 	{
 	case 1:
-		return 20;
+		return 200;
 		break;
 	case 2:
-		return 30;
+		return 300;
 		break;
 	case 3:
-		return 40;
+		return 400;
 		break;
 	case 4:
-		return 50;
+		return 500;
 		break;
 	default:
 		return 0;
