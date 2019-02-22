@@ -119,9 +119,6 @@ void SceneGame::Render()
 	// Obstacles
 	RenderObstacles();
 
-	// WinLose
-	RenderWinLose();
-
 	// Gameplay UI
 	RenderUI();
 
@@ -133,6 +130,9 @@ void SceneGame::Render()
 
 	// GameChoose Button
 	RenderGameChooseButtons();
+
+	// WinLose
+	RenderWinLose();
 	////////// RENDER GAME MODELS HERE //////////
 }
 
