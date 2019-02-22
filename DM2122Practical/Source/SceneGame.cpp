@@ -887,10 +887,9 @@ void SceneGame::UpdateMainMenuCursor()
 		{
 			delayTime = 0;
 			b_exit = menu.menuChange(mainMenuCursor.getIndex());
-			for (int i = 0; i < mainMenuCursor.getIndex() + 1; i++)
-			{
-				mainMenuCursor.updatePositionIndex(-1);
-			}
+			if (!b_exit)
+				for (int i = 0; i < mainMenuCursor.getIndex() + 1; i++)
+					mainMenuCursor.updatePositionIndex(-1);
 		}
 	}
 }

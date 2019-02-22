@@ -14,7 +14,7 @@ timer2::~timer2()
 
 int timer2::getScoreMinutes() const
 {
-	return getScoreSeconds() / 60;
+	return ((int)score_miliseconds / 100) / 60;
 }
 
 float timer2::getScoreMiliseconds() const
