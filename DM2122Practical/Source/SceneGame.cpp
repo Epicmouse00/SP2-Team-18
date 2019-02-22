@@ -886,7 +886,7 @@ void SceneGame::UpdatePowerUps(double dt)
 		if (playerStatus.getActive(3))
 		{
 			playerMissile.setXYZ(Player.getMovement(), Player.getJump() + 4.f, Player.getForward());
-			if (Application::IsKeyPressed(VK_RETURN))
+			if (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S'))
 			{
 				playerStatus.setActive(false, 3);
 				playerMissile.setShot(true);
