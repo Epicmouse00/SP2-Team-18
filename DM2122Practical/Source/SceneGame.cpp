@@ -130,6 +130,7 @@ void SceneGame::Render()
 
 	// WinLose
 	RenderWinLose();
+
 	// Hit Marker
 	RenderHitMarker();
 	////////// RENDER GAME MODELS HERE //////////
@@ -475,11 +476,9 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (rand() % 2)
-			//if (1)
+			if (rand() % 3)
 			{
 				Obstacle temp(rand() % 2);
-				//Obstacle temp(1);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ((float)(400 * row + 1000));
@@ -674,7 +673,7 @@ void SceneGame::UpdateCarCollision()
 				playerBoost = Player.getMaxSpeed();
 			else
 				playerBoost -= 100.f;
-			camShake = 10.f;
+			camShake = 8.f;
 		}
 		else
 		{
@@ -911,17 +910,30 @@ void SceneGame::UpdatePowerUps(double dt)
 				(playerMissile.getZ() <= (Opponent.getForward() + 30.f) && playerMissile.getZ() >= (Opponent.getForward() - 30.f)))
 			{
 				if (aiStatus.getActive(1) == false)
-				{
-					playerMissile.setShot(false);
-					playerMissile.setHit(true);
 					opponentBoost = 0.f;
+				else
+					aiStatus.setActive(false, 1);
+				playerMissile.setShot(false);
+				playerMissile.setHit(true);
+			}
+		}
+		if (aiMissile.getShot() == true)
+		{
+			// Missile Movement
+			aiMissile.setXYZ(aiMissile.getX(), aiMissile.getY(), (aiMissile.getZ() + (float)(500 * dt)));
+			// Collision
+			if (aiMissile.getX() == Player.getMovement() &&
+				(aiMissile.getY() <= (Player.getJump() + 5.f) && aiMissile.getY() >= (Player.getJump() - 5.f)) &&
+				(aiMissile.getZ() <= (Player.getForward() + 30.f) && aiMissile.getZ() >= (Player.getForward() - 30.f)))
+			{
+				if (playerStatus.getActive(1) == false)
+				{
+					playerBoost = 0.f;
+					camShake = 8.f;
 				}
 				else
-				{
-					playerMissile.setShot(false);
-					playerMissile.setHit(true);
-					aiStatus.setActive(false, 1);
-				}
+					playerStatus.setActive(false, 1);
+				aiMissile.setShot(false);
 			}
 		}
 		if (playerMissile.getHit() == true)
@@ -1472,6 +1484,7 @@ void SceneGame::RenderCar()
 		if (menu.getGameMode() == MODE_VS)
 		{
 			//Opponent
+			RenderAIMissile();
 			modelStack.PushMatrix();
 			modelStack.Translate(-9, 0, 50.f);
 			modelStack.Scale(3, 3, 3);
@@ -1490,9 +1503,9 @@ void SceneGame::RenderCar()
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.PopMatrix();
 
-			RenderAIMissile();
 		}
 		//Player
+		RenderMissile();
 		modelStack.PushMatrix();
 		modelStack.Translate(-9, 0, 50.f);
 		modelStack.Scale(3, 3, 3);
@@ -1512,7 +1525,6 @@ void SceneGame::RenderCar()
 
 		modelStack.PopMatrix();
 
-		RenderMissile();
 	}
 }
 
