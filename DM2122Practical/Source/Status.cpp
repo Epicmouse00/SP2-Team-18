@@ -37,3 +37,12 @@ float Status::getTimer(int index)
 {
 	return statusTimers[index];
 }
+
+void Status::resetStatus()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		activeStatus[i] = false;
+		statusTimers[i] = 0.f;
+	}
+}

@@ -13,4 +13,5 @@ public:
 	void setTimer(float time, int index);
 	void updateTimer(double dt, int index);
 	float getTimer(int index);
+	void resetStatus();
 };

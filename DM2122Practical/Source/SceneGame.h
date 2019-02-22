@@ -24,6 +24,7 @@
 #include "Leaderboard.h"
 #include "Saving.h"
 #include "Currency.h"
+#include "Missile.h"
 
 class SceneGame : public Scene
 {
@@ -65,13 +66,14 @@ class SceneGame : public Scene
 
 		//Power Ups
 		GEO_SPEED,
-		GEO_DOUBLE,
+		GEO_MISSILE,
 		GEO_FLIGHT,
 		GEO_SHIELD,
 
 		//Power Up Effects
 		GEO_BOOST,
 		GEO_SHIELD_ORB,
+		GEO_MISSILE_ROCKET,
 
 		// Finish Line
 		GEO_FINISHLINE,
@@ -245,6 +247,9 @@ private:
 	void		RenderAIBoost();
 	void		RenderShield();
 	void		RenderAIShield();
+	void		RenderMissile();
+	void		RenderAIMissile();
+	void		RenderHitMarker();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -291,7 +296,9 @@ private:
 	Leaderboard	leaderboard;
 	Menu		menu;
 
-	Status		playerStatus;
-	Status		aiStatus;
+	Status playerStatus;
+	Status aiStatus;
+	Missile playerMissile;
+	Missile aiMissile;
 };
 #endif

@@ -161,6 +161,7 @@
     <ClInclude Include="Source\Menu.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\Missile.h" />
     <ClInclude Include="Source\Obstacle.h" />
     <ClInclude Include="Source\PowerUps.h" />
     <ClInclude Include="Source\Saving.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="Source\Menu.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\Missile.cpp" />
     <ClCompile Include="Source\Obstacle.cpp" />
     <ClCompile Include="Source\PowerUps.cpp" />
     <ClCompile Include="Source\Saving.cpp" />
