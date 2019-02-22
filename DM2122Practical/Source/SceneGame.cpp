@@ -130,6 +130,8 @@ void SceneGame::Render()
 
 	// WinLose
 	RenderWinLose();
+	// Hit Marker
+	RenderHitMarker();
 	////////// RENDER GAME MODELS HERE //////////
 }
 
@@ -333,19 +335,22 @@ void SceneGame::InitMeshes()
 	// Power-Ups
 	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(0, 0, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
+	meshList[GEO_MISSILE] = MeshBuilder::GenerateCube("Missile Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
 
 	// Boost
 	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99f, 0.37f, 0.f), 1.f, 1.f, 1.f);
 
-	// Finish Line
-	meshList[GEO_FINISHLINE] = MeshBuilder::GenerateOBJ("FinishLine", "OBJ//FinishLine.obj");
-	meshList[GEO_FINISHLINE]->textureID = LoadTGA("image//FinishLine.tga");
-
 	// Shield
 	meshList[GEO_SHIELD_ORB] = MeshBuilder::GenerateOBJ("Shield", "OBJ//shield.obj");
 	meshList[GEO_SHIELD_ORB]->textureID = LoadTGA("image//shield.tga");
+
+	// Missile
+	meshList[GEO_MISSILE_ROCKET] = MeshBuilder::GenerateCube("Missile", Color(0, 1, 0), 1.f, 1.f, 1.f);
+
+	// Finish Line
+	meshList[GEO_FINISHLINE] = MeshBuilder::GenerateOBJ("FinishLine", "OBJ//FinishLine.obj");
+	meshList[GEO_FINISHLINE]->textureID = LoadTGA("image//FinishLine.tga");
 
 	// Shop
 	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
@@ -661,6 +666,7 @@ void SceneGame::UpdateCarCollision()
 		if ((forward - 600) / 400 > 0) // Row in front of car
 			row = ((int)forward - 600) / 400;
 		obstacleList[Player.getLane()][row].setActive(false);
+		// Shield
 		if (playerStatus.getActive(1) == false)
 		{
 			if (playerBoost > Player.getMaxSpeed())
@@ -703,7 +709,9 @@ void SceneGame::UpdateCarCollision()
 				playerStatus.setTimer(0.f, 2);
 				break;
 			case 3:
-				//Double Collectibles (Green)
+				//Missile (Green)
+				playerStatus.setActive(true, 3);
+				playerStatus.setTimer(0.f, 3);
 				break;
 			}
 		}
@@ -714,6 +722,7 @@ void SceneGame::UpdateCarCollision()
 			if ((forward - 600) / 400 > 0) // Row in front of car
 				row = ((int)forward - 600) / 400;
 			obstacleList[Opponent.getLane()][row].setActive(false);
+			//Shield
 			if (aiStatus.getActive(1) == false)
 			{
 				if (opponentBoost > Opponent.getMaxSpeed())
@@ -752,7 +761,8 @@ void SceneGame::UpdateCarCollision()
 				aiStatus.setTimer(0.f, 2);
 				break;
 			case 3:
-				//Double Collectibles (Green)
+				//Missile (Green)
+				aiStatus.setActive(true, 3);
 				break;
 			}
 		}
@@ -840,6 +850,7 @@ void SceneGame::UpdatePowerUps(double dt)
 			}
 		}
 
+		// Flight
 		if (playerStatus.getActive(2))
 		{
 			if (playerStatus.getTimer(2) <= 6.f)
@@ -855,15 +866,70 @@ void SceneGame::UpdatePowerUps(double dt)
 		}
 		if (menu.getGameMode() == MODE_VS)
 		{
-			if (aiStatus.getTimer(2) <= 6.f)
+			if (aiStatus.getActive(2))
 			{
-				Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
-				aiStatus.updateTimer(dt, 2);
+				if (aiStatus.getTimer(2) <= 6.f)
+				{
+					Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
+					aiStatus.updateTimer(dt, 2);
+				}
+				else
+				{
+					aiStatus.setActive(false, 2);
+					Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
+				}
+			}
+		}
+
+		// Missile
+		if (playerStatus.getActive(3))
+		{
+			playerMissile.setXYZ(Player.getMovement(), Player.getJump() + 4.f, Player.getForward());
+			if (Application::IsKeyPressed(VK_RETURN))
+			{
+				playerStatus.setActive(false, 3);
+				playerMissile.setShot(true);
+			}
+		}
+		if (playerMissile.getShot() == true)
+		{
+			// Missile Movement
+			playerMissile.setXYZ(playerMissile.getX(), playerMissile.getY(), (playerMissile.getZ() + (float)(500 * dt)));
+			// Collision
+			if (playerMissile.getX() == Opponent.getMovement() &&
+				(playerMissile.getY() <= (Opponent.getJump() + 5.f) && playerMissile.getY() >= (Opponent.getJump() - 5.f)) &&
+				(playerMissile.getZ() <= (Opponent.getForward() + 30.f) && playerMissile.getZ() >= (Opponent.getForward() - 30.f)))
+			{
+				if (playerStatus.getActive(1) == false)
+				{
+					playerMissile.setShot(false);
+					playerMissile.setHit(true);
+					opponentBoost = 0.f;
+				}
+				else
+				{
+					playerMissile.setShot(false);
+					playerMissile.setHit(true);
+					playerStatus.setActive(false, 1);
+				}
+			}
+		}
+		if (playerMissile.getHit() == true)
+		{
+			if (playerStatus.getTimer(3) <= 0.5f)
+			{
+				playerStatus.updateTimer(dt, 3);
 			}
 			else
 			{
-				aiStatus.setActive(false, 2);
-				Opponent.UpdatePlayerFlight(dt, 10.f, aiStatus.getActive(2));
+				playerMissile.setHit(false);
+			}
+		}
+		if (menu.getGameMode() == MODE_VS)
+		{
+			if (aiStatus.getActive(3))
+			{
+				aiMissile.setXYZ(Opponent.getMovement(), Opponent.getJump() + 4.f, Opponent.getForward());
 			}
 		}
 	}
@@ -1413,6 +1479,8 @@ void SceneGame::RenderCar()
 			modelStack.Translate(0.f, 0.f, -8.5f);
 			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.PopMatrix();
+
+			RenderAIMissile();
 		}
 		//Player
 		modelStack.PushMatrix();
@@ -1431,7 +1499,10 @@ void SceneGame::RenderCar()
 		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.Translate(0.f, 0.f, -8.5f);
 		RenderMesh(meshList[GEO_WHEEL], false);
+
 		modelStack.PopMatrix();
+
+		RenderMissile();
 	}
 }
 
@@ -2039,7 +2110,10 @@ void SceneGame::RenderPowerUps()
 						RenderMesh(meshList[GEO_FLIGHT], false);
 						break;
 					case 3:
-						RenderMesh(meshList[GEO_DOUBLE], false);
+						modelStack.Translate(0.f, 7.5f, 0.f);
+						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+						modelStack.Scale(10.f, 10.f, 10.f);
+						RenderMesh(meshList[GEO_MISSILE], false);
 						break;
 					}
 					modelStack.PopMatrix();
@@ -2104,5 +2178,39 @@ void SceneGame::RenderAIShield()
 		modelStack.Scale(0.6f, 0.6f, 1.2f);
 		RenderMesh(meshList[GEO_SHIELD_ORB], false);
 		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderMissile()
+{
+	if (playerStatus.getActive(3) == true || playerMissile.getShot() == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
+		modelStack.Translate(playerMissile.getX(), playerMissile.getY(), playerMissile.getZ());
+		RenderMesh(meshList[GEO_MISSILE_ROCKET], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderAIMissile()
+{
+	if (aiStatus.getActive(3) == true || aiMissile.getShot() == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
+		modelStack.Translate(aiMissile.getX(), aiMissile.getY(), aiMissile.getZ());
+		RenderMesh(meshList[GEO_MISSILE_ROCKET], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderHitMarker()
+{
+	if (playerMissile.getHit() == true)
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT], "x", Color(1.f, 0.f, 0.f), 4.f, 10.35f, 7.6f);
 	}
 }
