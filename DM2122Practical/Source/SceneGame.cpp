@@ -1124,7 +1124,7 @@ void SceneGame::UpdateWinLose()
 					if (win)
 						gameBalance.addBalance(100 + Player.getTexture() * 25);
 					else
-						gameBalance.deductBalance(25 + Player.getTexture() * 15);
+						gameBalance.deductBalance(Player.getTexture() * 25);
 					gameSave.setBalance(gameBalance.getBalance());
 				}
 			}
