@@ -901,7 +901,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				(playerMissile.getY() <= (Opponent.getJump() + 5.f) && playerMissile.getY() >= (Opponent.getJump() - 5.f)) &&
 				(playerMissile.getZ() <= (Opponent.getForward() + 30.f) && playerMissile.getZ() >= (Opponent.getForward() - 30.f)))
 			{
-				if (playerStatus.getActive(1) == false)
+				if (aiStatus.getActive(1) == false)
 				{
 					playerMissile.setShot(false);
 					playerMissile.setHit(true);
@@ -911,7 +911,7 @@ void SceneGame::UpdatePowerUps(double dt)
 				{
 					playerMissile.setShot(false);
 					playerMissile.setHit(true);
-					playerStatus.setActive(false, 1);
+					aiStatus.setActive(false, 1);
 				}
 			}
 		}
@@ -2111,9 +2111,6 @@ void SceneGame::RenderPowerUps()
 						RenderMesh(meshList[GEO_FLIGHT], false);
 						break;
 					case 3:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
 						RenderMesh(meshList[GEO_MISSILE], false);
 						break;
 					}
