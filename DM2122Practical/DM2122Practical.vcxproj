@@ -161,6 +161,7 @@
     <ClInclude Include="Source\Menu.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\Missile.h" />
     <ClInclude Include="Source\Obstacle.h" />
     <ClInclude Include="Source\PowerUps.h" />
     <ClInclude Include="Source\Saving.h" />
@@ -168,6 +169,8 @@
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\Shop.h" />
+    <ClInclude Include="Source\Status.h" />
+    <ClInclude Include="Source\timer2.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>
@@ -186,12 +189,15 @@
     <ClCompile Include="Source\Menu.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\Missile.cpp" />
     <ClCompile Include="Source\Obstacle.cpp" />
     <ClCompile Include="Source\PowerUps.cpp" />
     <ClCompile Include="Source\Saving.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\Shop.cpp" />
+    <ClCompile Include="Source\Status.cpp" />
+    <ClCompile Include="Source\timer2.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Save\Save.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Icon\resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,23 +20,22 @@ int Shop::getCost() const
 {
 	switch (index)
 	{
-	case 0:
-		return 10;
-		break;
 	case 1:
-		return 20;
+		return 200;
 		break;
 	case 2:
-		return 30;
+		return 250;
 		break;
 	case 3:
-		return 40;
+		return 300;
 		break;
 	case 4:
-		return 50;
+		return 500;
+		break;
+	default:
+		return 0;
 		break;
 	}
-	return 0;
 }
 
 int Shop::getIndex() const
@@ -66,6 +65,11 @@ void Shop::resetIndex()
 }
 
 bool Shop::isOwned() const
+{
+	return car[index];
+}
+
+bool Shop::isOwned(int index) const
 {
 	return car[index];
 }

@@ -17,6 +17,7 @@ public:
 	void previousIndex();
 	void resetIndex();
 	bool isOwned() const;
+	bool isOwned(int index) const;
 	void setOwned();
 	bool getColour(int colourIndex) const;
 	void setEquip();

@@ -13,12 +13,10 @@
 
 const unsigned int numberOfRows = 100;
 const float	laneSpacing = 22.5f; // 7.5 x 3
-Menu		menu;
-Saving		gameSave;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
-Leaderboard leaderboard;
+Cursor		winloseCursor(2);
 Car			Player(true);
 Car			Opponent(false);
 Obstacle	obstacleList[4][numberOfRows];
@@ -42,14 +40,12 @@ void SceneGame::Init()
 	InitMeshes();
 	InitCursors();
 	InitData();
-	InitObstacles(numberOfRows);
-	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
-	InitSong();
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
 	UpdateCarStats();
+	UpdateSong();
 	InitProjection();
 }
 
@@ -68,7 +64,7 @@ void SceneGame::Update(double dt)
 	UpdateLight();
 	UpdateCam(dt);
 	UpdateShop(dt);
-	UpdateUI();
+	UpdateUI(dt);
 	UpdatePowerUps(dt);
 }
 
@@ -100,37 +96,43 @@ void SceneGame::Render()
 
 	// Menu backdrop
 
-	// MainMenu Button
-	RenderMainMenuButtons();
-
-	// GameChoose Button
-	RenderGameChooseButtons();
+	// Track
+	RenderTrack();
 
 	// Leaderboard
 	RenderLeaderboard();
-
-	// Player + Opponent
-	RenderCar();
 
 	// Coins
 
 	// Shop
 	RenderShop();
 
-	// Items
+	// Power Ups
 	RenderPowerUps();
+
+	// Finish Line
+	RenderFinishLine();
 
 	// Obstacles
 	RenderObstacles();
 
-	// Track
-	RenderTrack();
-
 	// Gameplay UI
 	RenderUI();
 
-	// Others?
+	// Player + Opponent
+	RenderCar();
 
+	// MainMenu Button
+	RenderMainMenuButtons();
+
+	// GameChoose Button
+	RenderGameChooseButtons();
+
+	// WinLose
+	RenderWinLose();
+
+	// Hit Marker
+	RenderHitMarker();
 	////////// RENDER GAME MODELS HERE //////////
 }
 
@@ -323,29 +325,57 @@ void SceneGame::InitMeshes()
 
 	// Opponent
 	meshList[GEO_OPPONENT] = MeshBuilder::GenerateOBJ("Opponent Car", "OBJ//gray.obj");
-	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_ai.tga");
+	meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_purple.tga");
+
+	// Wheel
+	meshList[GEO_WHEEL] = MeshBuilder::GenerateOBJ("Wheel", "OBJ//wheel.obj");
+	meshList[GEO_WHEEL]->textureID = LoadTGA("image//wheel_grey.tga");
 
 	// Coins
 
-	// Items
-	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(0, 0, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_DOUBLE] = MeshBuilder::GenerateCube("Double Time Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
+	// Power-Ups
+	meshList[GEO_SPEED] = MeshBuilder::GenerateOBJ("Speed Power-Up", "OBJ//speed.obj");
+	meshList[GEO_SPEED]->textureID = LoadTGA("image//speed.tga");
+
+	meshList[GEO_SHIELD] = MeshBuilder::GenerateOBJ("Shield Power-Up", "OBJ//shield.obj");
+	meshList[GEO_SHIELD]->textureID = LoadTGA("image//shield.tga");
+
+	meshList[GEO_MISSILE] = MeshBuilder::GenerateOBJ("Missile Power-Up", "OBJ//bomb.obj");
+	meshList[GEO_MISSILE]->textureID = LoadTGA("image//bomb.tga");
+
+	meshList[GEO_FLIGHT] = MeshBuilder::GenerateOBJ("Flight Power-Up", "OBJ//wing.obj");
+	meshList[GEO_FLIGHT]->textureID = LoadTGA("image//wing.tga");
+
+	// Boost
+	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99f, 0.37f, 0.f), 1.f, 1.f, 1.f);
+
+	// Shield
+	meshList[GEO_SHIELD_ORB] = MeshBuilder::GenerateOBJ("Shield", "OBJ//shield.obj");
+	meshList[GEO_SHIELD_ORB]->textureID = LoadTGA("image//shield.tga");
+
+	// Missile
+	meshList[GEO_MISSILE_ROCKET] = MeshBuilder::GenerateOBJ("Missile", "OBJ//bomb.obj");
+	meshList[GEO_MISSILE_ROCKET]->textureID = LoadTGA("image//bomb.tga");
+
+	// Finish Line
+	meshList[GEO_FINISHLINE] = MeshBuilder::GenerateOBJ("FinishLine", "OBJ//FinishLine.obj");
+	meshList[GEO_FINISHLINE]->textureID = LoadTGA("image//FinishLine.tga");
 
 	// Shop
 	meshList[GEO_DISPLAY] = MeshBuilder::GenerateOBJ("Display", "OBJ//gray.obj");
 	meshList[GEO_DISPLAY]->textureID = LoadTGA("image//car_grey.tga");
 
 	// Obstacles (1	x	1	x	1)
-	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateCube("Obstacle_Default", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_DEFAULT] = MeshBuilder::GenerateOBJ("Obstacle_Default", "OBJ//CubeObstacle.obj");
+	meshList[GEO_OBSTACLE_DEFAULT]->textureID = LoadTGA("image//CubeTexture.tga");
 
 	// Obstacles (1	x	4	x	1)
-	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateCube("Obstacle_Tall", Color(1, 1, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_OBSTACLE_TALL] = MeshBuilder::GenerateOBJ("Obstacle_Tall", "OBJ//CubeObstacle.obj");
+	meshList[GEO_OBSTACLE_TALL]->textureID = LoadTGA("image//CubeTexture.tga");
 
 	// Track
 	meshList[GEO_TRACK] = MeshBuilder::GenerateOBJ("Tunnel", "OBJ//tunnelProto.obj");
-	meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel.tga");
+	meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel_1.tga");
 
 	// Others?
 
@@ -361,50 +391,75 @@ void SceneGame::InitProjection()
 
 void SceneGame::InitCursors()
 {
-	mainMenuCursor.addNewPosition(5.f, 3.f, 0);
-	mainMenuCursor.addNewPosition(5.f, 1.f, 1);
-	mainMenuCursor.addNewPosition(5.f, -1.f, 2);
-	mainMenuCursor.addNewPosition(5.f, -3.f, 3);
-	gameChooseCursor.addNewPosition(5.f, 3.f, 0);
-	gameChooseCursor.addNewPosition(5.f, 0.f, 1);
-	gameChooseCursor.addNewPosition(5.f, -3.f, 2);
+	mainMenuCursor.addNewPosition(0.f, 3.f, 0);
+	mainMenuCursor.addNewPosition(0.f, 1.f, 1);
+	mainMenuCursor.addNewPosition(0.f, -1.f, 2);
+	mainMenuCursor.addNewPosition(0.f, -3.f, 3);
+	gameChooseCursor.addNewPosition(0.f, 3.f, 0);
+	gameChooseCursor.addNewPosition(0.f, 0.f, 1);
+	gameChooseCursor.addNewPosition(0.f, -3.f, 2);
 	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
 	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
 	leaderboardCursor.addNewPosition(5.f, -3.5f, 2);
+	winloseCursor.addNewPosition(5.f, 0.f, 0);
+	winloseCursor.addNewPosition(5.f, -3.f, 1);
+}
+
+void SceneGame::InitGame()
+{
+	InitObstacles(numberOfRows);
+	InitPowerUps(numberOfRows);
+	InitVariables();
+	UpdateTrackTexture();
+	playerStatus.resetStatus();
+	aiStatus.resetStatus();
 }
 
 void SceneGame::InitVariables()
 {
 	playerBoost = 0.f;
 	opponentBoost = 0.f;
+	camShake = 0.f;
+	win = false;
+	b_exit = false;
 	delayTime = 0;
 	powerupRotation = 0;
 	displayRotation = 0;
 	leftCursor = 0;
 	rightCursor = 0;
+	timer.resetTime();
+	Player.setPlayerForward(0.f);
+	Opponent.setPlayerForward(0.f);
 }
 
-void SceneGame::InitSong()
+void SceneGame::UpdateSong()
 {
-	switch (rand() % 5)
+	if (menu.getIndex() == E_GAME)
 	{
-	case 0:
-		PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 1:
-		PlaySound(TEXT("Music\\FistBump.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 2:
-		PlaySound(TEXT("Music\\GasGasGas.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 3:
-		PlaySound(TEXT("Music\\RunningInThe90s.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	case 4:
-		PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
-		break;
-	default:
-		break;
+		switch (Player.getTexture())
+		{
+		case CAR_GREY:
+			PlaySound(TEXT("Music\\DejaVu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_CYAN:
+			PlaySound(TEXT("Music\\FistBump.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_ORANGE:
+			PlaySound(TEXT("Music\\Sunset.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_RED:
+			PlaySound(TEXT("Music\\GasGasGas.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		case CAR_GREEN:
+			PlaySound(TEXT("Music\\Infinite.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		PlaySound(TEXT("Music\\Menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	}
 }
 
@@ -422,11 +477,9 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 	{
 		for (int lane = 0; lane < 4; ++lane)
 		{
-			if (rand() % 2)
-			//if (1)
+			if (rand() % 3)
 			{
 				Obstacle temp(rand() % 2);
-				//Obstacle temp(1);
 				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
 				temp.setY(0);
 				temp.setZ((float)(400 * row + 1000));
@@ -452,23 +505,26 @@ void SceneGame::InitObstacles(unsigned int noOfRows)
 
 void SceneGame::InitPowerUps(unsigned int noOfRows)
 {
-	powerupRotation = 0;
-	for (int row = 0; row < (int)(noOfRows / 2); row++)
+	if (menu.getGameMode() == MODE_VS)
 	{
-		for (int lane = 0; lane < 4; lane++)
+		powerupRotation = 0;
+		for (int row = 0; row < (int)(noOfRows / 2); row++)
 		{
-			if ((rand() % 4) == 0)
+			for (int lane = 0; lane < 4; lane++)
 			{
-				PowerUps temp;
-				temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
-				temp.setY(0);
-				temp.setZ((float)(800 * row + 800));
-				temp.setActive(true);
-				powerupList[lane][row] = temp;
-			}
-			else
-			{
-				powerupList[lane][row].setActive(false);
+				if ((rand() % 5) == 0)
+				{
+					PowerUps temp;
+					temp.setX((-(float)lane * laneSpacing) + (laneSpacing * (float)1.5));
+					temp.setY(0);
+					temp.setZ((float)(800 * row + 800));
+					temp.setActive(true);
+					powerupList[lane][row] = temp;
+				}
+				else
+				{
+					powerupList[lane][row].setActive(false);
+				}
 			}
 		}
 	}
@@ -489,14 +545,26 @@ void SceneGame::UpdateDelayTime(double dt)
 
 void SceneGame::UpdateCam(double dt)
 {
-
+	if (menu.getIndex() == E_GAME && camShake > 0.f)
+	{
+		camShake -= (float)(dt * 40);
+		if (camShake < 0.f)
+			camShake = 0.f;
+	}
 	if (!camera.getActive())
 	{
 		if (menu.getIndex() == E_GAME)
 		{
-			const float camAgile = 0.4f;
-			//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
-			camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			if (camera.position.z < 40700.f || (Opponent.getForward() < 41000.f / 3 && menu.getGameMode() == MODE_VS))
+			{
+				const float camAgile = 0.4f;
+
+				if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
+					camera.setPosition(Vector3(0.f, 50.f, 250.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
+					//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
+				else
+					camera.setPosition(Vector3(0.f, 50.f - camShake, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
+			}
 		}
 		else
 		{
@@ -526,16 +594,30 @@ void SceneGame::UpdateAppPolygon()
 	}
 }
 
+void SceneGame::UpdateTrackTexture()
+{
+	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_TIME)
+		meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel_2.tga");
+	else
+		meshList[GEO_TRACK]->textureID = LoadTGA("image//Tunnel_1.tga");
+}
+
 void SceneGame::UpdateCar(double dt)
 {
 	if (menu.getIndex() == E_GAME)
 	{
 		//Player
 		Player.UpdatePlayerForward(dt, playerBoost);
-		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
+		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
-		
+		if (Application::IsKeyPressed('H') && Player.getTexture() == 2) //Cheat
+		{
+			Player.setTexture(-1);
+			UpdateCarTexture();
+			UpdateCarStats();
+		}
+
 		if (menu.getGameMode() == MODE_VS)
 		{
 			//Opponent
@@ -570,32 +652,10 @@ void SceneGame::UpdateCarTexture()
 		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_green.tga");
 		break;
 	default:
-		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_grey.tga");
+		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_white.tga");
 		break;
 
 	}
-	/*switch (Opponent.getTexture())
-	{
-	case CAR_GREY:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
-		break;
-	case CAR_CYAN:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_cyan.tga");
-		break;
-	case CAR_ORANGE:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_orange.tga");
-		break;
-	case CAR_RED:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_red.tga");
-		break;
-	case CAR_GREEN:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_green.tga");
-		break;
-	default:
-		meshList[GEO_OPPONENT]->textureID = LoadTGA("image//car_grey.tga");
-		break;
-
-	}*/
 }
 
 void SceneGame::UpdateCarCollision()
@@ -607,19 +667,55 @@ void SceneGame::UpdateCarCollision()
 		if ((forward - 600) / 400 > 0) // Row in front of car
 			row = ((int)forward - 600) / 400;
 		obstacleList[Player.getLane()][row].setActive(false);
-		playerBoost -= 30.f;
-	}
-	if (Player.collisionPowerUp(powerupList))
-	{
-		int row = 0;
-		float forward = 3 * Player.getForward();
-		if (forward / 800 > 0) // Row in front of car
-			row = ((int)forward / 800);
-		powerupList[Player.getLane()][row].setActive(false);
-		playerBoost += 10.f;
+		// Shield
+		if (playerStatus.getActive(1) == false)
+		{
+			if (playerBoost > Player.getMaxSpeed())
+				playerBoost = Player.getMaxSpeed();
+			else
+				playerBoost -= 100.f;
+			camShake = 8.f;
+		}
+		else
+		{
+			playerStatus.setActive(false, 1);
+		}
+		camShake = 8.f;
 	}
 	if (menu.getGameMode() == MODE_VS)
 	{
+		if (Player.collisionPowerUp(powerupList))
+		{
+			int row = 0;
+			float forward = 3 * Player.getForward();
+			if (forward / 800 > 0) // Row in front of car
+				row = ((int)forward / 800);
+			powerupList[Player.getLane()][row].setActive(false);
+
+			switch (powerupList[Player.getLane()][row].getType())
+			{
+			case 0:
+				//Speed (Black)
+				playerStatus.setActive(true, 0);
+				playerStatus.setTimer(0.f, 0);
+				playerBoost += 240.f;
+				break;
+			case 1:
+				//Shield (Red)
+				playerStatus.setActive(true, 1);
+				break;
+			case 2:
+				//Flight (Blue)
+				playerStatus.setActive(true, 2);
+				playerStatus.setTimer(0.f, 2);
+				break;
+			case 3:
+				//Missile (Green)
+				playerStatus.setActive(true, 3);
+				playerMissile.setShot(false);
+				break;
+			}
+		}
 		if (Opponent.collisionObstacle(obstacleList))
 		{
 			int row = 0;
@@ -627,7 +723,18 @@ void SceneGame::UpdateCarCollision()
 			if ((forward - 600) / 400 > 0) // Row in front of car
 				row = ((int)forward - 600) / 400;
 			obstacleList[Opponent.getLane()][row].setActive(false);
-			opponentBoost -= 30.f;
+			//Shield
+			if (aiStatus.getActive(1) == false)
+			{
+				if (opponentBoost > Opponent.getMaxSpeed())
+					opponentBoost = Opponent.getMaxSpeed();
+				else
+					opponentBoost -= 100.f;
+			}
+			else
+			{
+				aiStatus.setActive(false, 1);
+			}
 		}
 		if (Opponent.collisionPowerUp(powerupList))
 		{
@@ -636,23 +743,49 @@ void SceneGame::UpdateCarCollision()
 			if (forward / 800 > 0) // Row in front of car
 				row = ((int)forward / 800);
 			powerupList[Opponent.getLane()][row].setActive(false);
-			opponentBoost += 10.f;
+			
+			switch (powerupList[Opponent.getLane()][row].getType())
+			{
+			case 0:
+				//Speed (Black)
+				aiStatus.setActive(true, 0);
+				aiStatus.setTimer(0.f, 0);
+				opponentBoost += 240.f;
+				break;
+			case 1:
+				//Shield (Red)
+				aiStatus.setActive(true, 1);
+				break;
+			case 2:
+				//Flight (Blue)
+				aiStatus.setActive(true, 2);
+				aiStatus.setTimer(0.f, 2);
+				break;
+			case 3:
+				//Missile (Green)
+				aiStatus.setActive(true, 3);
+				break;
+			}
 		}
 	}
 }
 
 void SceneGame::UpdateCarSpeed(double dt)
 {
-	if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed())
-		playerBoost -= 0.3f;
+	if (playerStatus.getActive(0) == true)
+		playerBoost = 240.f;
+	else if (playerBoost + (float)(dt * Player.getAcceleration()) >= Player.getMaxSpeed() && playerStatus.getActive(0) == false)
+		playerBoost -= 0.4f;
 	else if (playerBoost < 0.f)
 		playerBoost = 0.f;
 	else
 		playerBoost += (float)(dt * Player.getAcceleration());
 	if (menu.getGameMode() == MODE_VS)
 	{
-		if (opponentBoost >= Opponent.getMaxSpeed())
-			opponentBoost -= 0.3f;
+		if (aiStatus.getActive(0) == true)
+			opponentBoost = 240.f;
+		else if(opponentBoost + (float)(dt * Opponent.getAcceleration()) >= Opponent.getMaxSpeed() && aiStatus.getActive(0) == false)
+			opponentBoost -= 0.4f;
 		else if (opponentBoost < 0.f)
 			opponentBoost = 0.f;
 		else
@@ -666,36 +799,158 @@ void SceneGame::UpdateCarStats()
 	{
 	case CAR_GREY:
 		Player.setMaxSpeed(121.f);
-		Player.setAcceleration(5.f);
+		Player.setAcceleration(25.f);
 		break;
 	case CAR_CYAN:
-		Player.setMaxSpeed(126.f);
-		Player.setAcceleration(5.f);
+		Player.setMaxSpeed(131.f);
+		Player.setAcceleration(20.f);
 		break;
 	case CAR_ORANGE:
 		Player.setMaxSpeed(131.f);
-		Player.setAcceleration(4.f);
+		Player.setAcceleration(25.f);
 		break;
 	case CAR_RED:
-		Player.setMaxSpeed(136.f);
-		Player.setAcceleration(4.f);
+		Player.setMaxSpeed(141.f);
+		Player.setAcceleration(20.f);
 		break;
 	case CAR_GREEN:
-		Player.setMaxSpeed(141.f);
-		Player.setAcceleration(3.f);
+		Player.setMaxSpeed(151.f);
+		Player.setAcceleration(15.f);
 		break;
 	default:
-		Player.setMaxSpeed(120.f);
-		Player.setAcceleration(5.f);
+		Player.setMaxSpeed(351.f);
+		Player.setAcceleration(500.f);
 		break;
 	}
-	Opponent.setMaxSpeed(Player.getMaxSpeed() - 15.f);
-	Opponent.setAcceleration(Player.getAcceleration() + 5.f);
+	Opponent.setMaxSpeed(Player.getMaxSpeed() + 10.f);
+	Opponent.setAcceleration(30.f);
 }
 
 void SceneGame::UpdatePowerUps(double dt)
 {
-	powerupRotation += float(dt) * 90.f;
+	if (menu.getGameMode() == MODE_VS)
+	{
+		powerupRotation += float(dt) * 90.f;
+
+		// Speed
+		if (playerStatus.getActive(0))
+		{
+			if (playerStatus.getTimer(0) <= 0.5f || Player.getForward() < Opponent.getForward() - 100.f) //Boost till catch up with opponent
+				playerStatus.updateTimer(dt, 0);
+			else
+				playerStatus.setActive(false, 0);
+		}
+		if (menu.getGameMode() == MODE_VS)
+		{
+			if (aiStatus.getActive(0))
+			{
+				if (aiStatus.getTimer(0) <= 0.5f || Player.getForward() - 100.f > Opponent.getForward())
+					aiStatus.updateTimer(dt, 0);
+				else
+					aiStatus.setActive(false, 0);
+			}
+		}
+
+		// Flight
+		if (playerStatus.getActive(2))
+		{
+			if (playerStatus.getTimer(2) <= 6.f)
+			{
+				Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
+				playerStatus.updateTimer(dt, 2);
+			}
+			else
+			{
+				playerStatus.setActive(false, 2);
+				Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
+			}
+		}
+		if (aiStatus.getActive(2))
+		{
+			if (aiStatus.getTimer(2) <= 6.f)
+			{
+				Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
+				aiStatus.updateTimer(dt, 2);
+			}
+			else
+			{
+				aiStatus.setActive(false, 2);
+				Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
+			}
+		}
+		
+
+		// Missile
+		if (playerStatus.getActive(3) && !playerMissile.getShot())
+		{
+			playerMissile.setXYZ(Player.getMovement(), Player.getJump() + 4.f, Player.getForward());
+			if (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S') || Application::IsKeyPressed(VK_SPACE))
+			{
+				playerStatus.setActive(false, 3);
+				playerMissile.setShot(true);
+			}
+		}
+		if (aiStatus.getActive(3))
+		{
+			aiMissile.setXYZ(Opponent.getMovement(), Opponent.getJump() + 4.f, Opponent.getForward());
+			if (Opponent.getForward() < Player.getForward() && Opponent.getLane() == Player.getLane())
+			{
+				aiStatus.setActive(false, 3);
+				aiMissile.setShot(true);
+			}
+		}
+		if (playerMissile.getShot())
+		{
+			// Missile Movement
+			playerMissile.setXYZ(playerMissile.getX(), playerMissile.getY(), (playerMissile.getZ() + (float)(500 * dt)));
+			// Collision
+			if (playerMissile.getX() == Opponent.getMovement() &&
+				(playerMissile.getY() <= (Opponent.getJump() + 5.f) && playerMissile.getY() >= (Opponent.getJump() - 5.f)) &&
+				(playerMissile.getZ() <= (Opponent.getForward() + 30.f) && playerMissile.getZ() >= (Opponent.getForward() - 30.f)))
+			{
+				if (!aiStatus.getActive(1))
+					opponentBoost = 0.f;
+				else
+					aiStatus.setActive(false, 1);
+				playerMissile.setShot(false);
+				playerMissile.setHit(true);
+			}
+		}
+		if (aiMissile.getShot())
+		{
+			// Missile Movement
+			aiMissile.setXYZ(aiMissile.getX(), aiMissile.getY(), (aiMissile.getZ() + (float)(500 * dt)));
+			// Collision
+			if (aiMissile.getX() == Player.getMovement() &&
+				(aiMissile.getY() <= (Player.getJump() + 5.f) && aiMissile.getY() >= (Player.getJump() - 5.f)) &&
+				(aiMissile.getZ() <= (Player.getForward() + 30.f) && aiMissile.getZ() >= (Player.getForward() - 30.f)))
+			{
+				if (!playerStatus.getActive(1))
+				{
+					playerBoost = 0.f;
+					camShake = 8.f;
+				}
+				else
+					playerStatus.setActive(false, 1);
+				aiMissile.setShot(false);
+			}
+		}
+		if (playerMissile.getHit())
+		{
+			if (playerStatus.getTimer(3) <= 0.5f)
+			{
+				playerStatus.updateTimer(dt, 3);
+			}
+			else
+			{
+				playerMissile.setHit(false);
+			}
+		}
+		if (aiStatus.getActive(3))
+		{
+			aiMissile.setXYZ(Opponent.getMovement(), Opponent.getJump() + 4.f, Opponent.getForward());
+		}
+	}
 }
 
 void SceneGame::UpdateCursor()
@@ -703,6 +958,7 @@ void SceneGame::UpdateCursor()
 	UpdateMainMenuCursor();
 	UpdateGameChooseCursor();
 	UpdateLeaderboardCursor();
+	UpdateWinLose();
 }
 
 void SceneGame::UpdateMainMenuCursor()
@@ -725,10 +981,9 @@ void SceneGame::UpdateMainMenuCursor()
 		{
 			delayTime = 0;
 			b_exit = menu.menuChange(mainMenuCursor.getIndex());
-			for (int i = 0; i < mainMenuCursor.getIndex() + 1; i++)
-			{
-				mainMenuCursor.updatePositionIndex(-1);
-			}
+			if (!b_exit)
+				for (int i = 0; i < mainMenuCursor.getIndex() + 1; i++)
+					mainMenuCursor.updatePositionIndex(-1);
 		}
 	}
 }
@@ -753,6 +1008,11 @@ void SceneGame::UpdateGameChooseCursor()
 		{
 			delayTime = 0;
 			menu.menuChange(gameChooseCursor.getIndex());
+			if (gameChooseCursor.getIndex() != 2)
+			{
+				UpdateSong();
+				InitGame();
+			}
 			gameChooseCursor.updatePositionIndex(-1);
 			gameChooseCursor.updatePositionIndex(-1);
 		}
@@ -837,6 +1097,69 @@ void SceneGame::UpdateLeaderboardCursor()
 	}
 }
 
+void SceneGame::UpdateWinLose()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		if (Player.getForward() >= 41000.f / 3 && ((menu.getGameMode() == MODE_VS && Opponent.getForward() >= 41000.f / 3) || menu.getGameMode() == MODE_TIME))
+		{
+			if (timer.getScoreMiliseconds() == 0.f)
+			{
+				timer.setScoreTime();
+				if (menu.getGameMode() == MODE_VS && Player.getForward() < Opponent.getForward())
+					win = false;
+				else
+					win = true;
+			}
+			else if (timer.getMiliseconds() - timer.getScoreMiliseconds() > (100 * 2))
+			{
+				menu.menuChange(-1);
+				delayTime = 0;
+				if (menu.getGameMode() == MODE_VS)
+				{
+					if (win)
+						gameBalance.addBalance(100 + Player.getTexture() * 25);
+					else
+						gameBalance.deductBalance(Player.getTexture() * 25);
+					gameSave.setBalance(gameBalance.getBalance());
+				}
+			}
+			else
+			{
+				Player.setPlayerLane(1);
+				if (menu.getGameMode() == MODE_VS)
+					Opponent.setPlayerLane(2);
+			}
+		}
+	}
+	else if (menu.getIndex() == E_WINLOSE)
+	{
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f) //Cursor stuff
+		{
+			winloseCursor.updatePositionIndex(-1);
+			delayTime = 0;
+		}
+
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
+		{
+			winloseCursor.updatePositionIndex(1);
+			delayTime = 0;
+		}
+
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
+		{
+			delayTime = 0;
+			InitGame();
+			menu.menuChange(winloseCursor.getIndex());
+			UpdateSong();
+			for (int i = 0; i < winloseCursor.getIndex() + 1; i++)
+			{
+				winloseCursor.updatePositionIndex(-1);
+			}
+		}
+	}
+}
+
 void SceneGame::UpdateShop(double dt)
 {
 	if (menu.getIndex() == E_SHOP)
@@ -913,7 +1236,7 @@ void SceneGame::UpdateShop(double dt)
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (!gameShop.isOwned() && (gameBalance.getBalance() >= gameShop.getCost()))
+			if (!gameShop.isOwned() && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
 				gameShop.setOwned();
@@ -921,32 +1244,45 @@ void SceneGame::UpdateShop(double dt)
 				gameSave.setBalance(gameBalance.getBalance());
 				gameSave.setColour(gameShop.getIndex());
 			}
-			else if (gameShop.isOwned() && gameShop.getEquip() != gameShop.getIndex())
+			else if (gameShop.isOwned())
 			{
-				gameShop.setEquip();
-				gameSave.setEquip(gameShop.getEquip());
-				Player.setTexture(gameShop.getEquip());
-				UpdateCarTexture();
-				UpdateCarStats();
+				if (gameShop.getEquip() != gameShop.getIndex())
+				{
+					gameShop.setEquip();
+					gameSave.setEquip(gameShop.getEquip());
+					Player.setTexture(gameShop.getEquip());
+					UpdateCarTexture();
+					UpdateCarStats();
+				}
+				else
+				{
+					delayTime = 0;
+					menu.menuChange(0);
+				}
+
 			} 
-			else
-			{
-				delayTime = 0;
-				gameShop.resetIndex();
-				menu.menuChange(0);
-			}
 			gameSave.save();
 		}
 	}
 }
 
-void SceneGame::UpdateUI()
+void SceneGame::UpdateUI(double dt)
 {
+	fps = to_string((int)(1 / dt)) + " fps";
+	UpdateTimer(dt);
+}
+
+void SceneGame::UpdateTimer(double dt)
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		timer.updateTime(dt);
+	}
 }
 
 void SceneGame::UpdateLight()
 {
-		light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
+	light[0].position.Set(camera.position.x, camera.position.y + 20.f, camera.position.z + 100.f);
 }
 
 
@@ -1109,15 +1445,7 @@ void SceneGame::RenderTextOnScreen(Mesh * mesh, std::string text, Color color, f
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity(); //Reset modelStack
 
-	
-	modelStack.Translate(0.f, -1.5f, 0.f);
-	modelStack.Scale(1.f, 0.5f, 0.5f);
-	modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-	RenderMesh(meshList[GEO_BUTTON], false);
-	modelStack.Rotate(-180.f, 0.f, 1.f, 0.f);
-	
-
-	modelStack.Scale(size/1.f, size/0.5f, size/0.5f);
+	modelStack.Scale(size, size, size);
 	modelStack.Translate(x, y, 0);
 
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
@@ -1149,24 +1477,120 @@ void SceneGame::RenderCar()
 {
 	if (menu.getIndex() == E_GAME)
 	{
-		//Player
-		modelStack.PushMatrix();
-		modelStack.Translate(-9, 0, 50.f);
-		modelStack.Rotate(0, 0, 1, 0);
-		modelStack.Scale(3, 3, 3);
-		modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
-		RenderMesh(meshList[GEO_PLAYER], true);
-		modelStack.PopMatrix();
-
 		if (menu.getGameMode() == MODE_VS)
 		{
-			//Opponent
+			//Render Player Last, Player Behind
+			if (Player.getForward() <= Opponent.getForward())
+			{
+				//Opponent
+				RenderAIMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+				RenderMesh(meshList[GEO_OPPONENT], false);
+				RenderAIBoost();
+				RenderAIShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+
+				//Player
+				RenderMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
+				RenderMesh(meshList[GEO_PLAYER], true);
+				RenderBoost();
+				RenderShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+			}
+			//Render AI Last, AI Behind
+			else
+			{
+				//Player
+				RenderMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
+				RenderMesh(meshList[GEO_PLAYER], true);
+				RenderBoost();
+				RenderShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+
+				//Opponent
+				RenderAIMissile();
+
+				modelStack.PushMatrix();
+				modelStack.Translate(-9, 0, 50.f);
+				modelStack.Scale(3, 3, 3);
+				modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
+				RenderMesh(meshList[GEO_OPPONENT], false);
+				RenderAIBoost();
+				RenderAIShield();
+				modelStack.Translate(-2.5f, -0.6f, 4.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+				modelStack.Translate(-5.f, 0.f, 0.f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.Translate(0.f, 0.f, -8.5f);
+				RenderMesh(meshList[GEO_WHEEL], false);
+				modelStack.PopMatrix();
+			}
+		}
+		else
+		{
+			//Player
+			RenderMissile();
+
 			modelStack.PushMatrix();
 			modelStack.Translate(-9, 0, 50.f);
-			modelStack.Rotate(0, 0, 1, 0);
 			modelStack.Scale(3, 3, 3);
-			modelStack.Translate(Opponent.getMovement(), Opponent.getJump(), Opponent.getForward());
-			RenderMesh(meshList[GEO_OPPONENT], false);
+			modelStack.Translate(Player.getMovement(), Player.getJump(), Player.getForward());
+			RenderMesh(meshList[GEO_PLAYER], true);
+			RenderBoost();
+			RenderShield();
+			modelStack.Translate(-2.5f, -0.6f, 4.f);
+			RenderMesh(meshList[GEO_WHEEL], false);
+			modelStack.Translate(0.f, 0.f, -8.5f);
+			RenderMesh(meshList[GEO_WHEEL], false);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			modelStack.Translate(-5.f, 0.f, 0.f);
+			RenderMesh(meshList[GEO_WHEEL], false);
+			modelStack.Translate(0.f, 0.f, -8.5f);
+			RenderMesh(meshList[GEO_WHEEL], false);
 			modelStack.PopMatrix();
 		}
 	}
@@ -1178,8 +1602,24 @@ void SceneGame::RenderMainMenuButtons()
 	// Render menu buttons
 	if (menu.getIndex() == E_MAINMENU)
 	{
-		const float textTranslate = -3.f;
 		std::string text;
+
+		//Car display
+		modelStack.PushMatrix();
+		modelStack.Translate(3.5f, 0.f, 5.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.PopMatrix();
 
 		//Title
 		modelStack.PushMatrix();
@@ -1192,7 +1632,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Play
 		text = "Play";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Translate(-2.5f, 1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1204,7 +1644,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Shop
 		text = "Shop";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 0.5f, 0.f);
+		modelStack.Translate(-2.5f, 0.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1216,7 +1656,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Leaderboard
 		text = "Leaderboard";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -0.5f, 0.f);
+		modelStack.Translate(-2.5f, -0.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1228,7 +1668,7 @@ void SceneGame::RenderMainMenuButtons()
 		//Quit
 		text = "Quit";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Translate(-2.5f, -1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1238,7 +1678,6 @@ void SceneGame::RenderMainMenuButtons()
 		modelStack.PopMatrix();
 
 		//Cursor
-		float sideMove = 5.f;
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Translate(mainMenuCursor.getX(), mainMenuCursor.getY(), 0.f);
@@ -1255,7 +1694,6 @@ void SceneGame::RenderLeaderboard()
 {
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
-		const float textTranslate = -3.f;
 		std::string text;
 
 		// Time Leaderboard button
@@ -1335,19 +1773,55 @@ void SceneGame::RenderLeaderboard()
 	}
 }
 
+void SceneGame::RenderFinishLine()
+{
+	if (menu.getIndex() == E_GAME)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 50.f, 41000.f);
+		modelStack.Scale(10.f, 10.f, 10.f);
+		RenderMesh(meshList[GEO_FINISHLINE], false);
+		modelStack.PopMatrix();
+	}
+}
+
 // Game Mode Seleciton
 void SceneGame::RenderGameChooseButtons()
 {
 	// Render gamechoose buttons
 	if (menu.getIndex() == E_GAMECHOOSE)
 	{
-		const float textTranslate = -3.f;
 		std::string text;
 
-		//VS Mode
-		text = "VS Mode";
+		//Car display
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 1.5f, 0.f);
+		modelStack.Translate(3.5f, 0.f, 5.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(150.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.PopMatrix();
+
+		//Title
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, 0.2f, 0.f);
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_TITLE], false);
+		modelStack.PopMatrix();
+
+		//VS Mode
+		text = "VS Race";
+		modelStack.PushMatrix();
+		modelStack.Translate(-2.5f, 1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1357,9 +1831,9 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.PopMatrix();
 
 		//Time Mode
-		text = "Time Mode";
+		text = "Time Trial";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, 0.f, 0.f);
+		modelStack.Translate(-2.5f, 0.f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1371,7 +1845,7 @@ void SceneGame::RenderGameChooseButtons()
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Translate(-2.5f, -1.5f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1381,7 +1855,6 @@ void SceneGame::RenderGameChooseButtons()
 		modelStack.PopMatrix();
 
 		//Cursor
-		float sideMove = 5.f;
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
 		modelStack.Translate(gameChooseCursor.getX(), gameChooseCursor.getY(), 0.f);
@@ -1408,18 +1881,18 @@ void SceneGame::RenderShop()
 		{
 		case 0:
 			colour = "Grey";
-			maxSpeed += "*";
+			maxSpeed += "**";
 			acceleration += "*****";
 			break;
 		case 1:
 			colour = "Cyan";
-			maxSpeed += "**";
-			acceleration += "*****";
+			maxSpeed += "***";
+			acceleration += "****";
 			break;
 		case 2:
 			colour = "Orange";
 			maxSpeed += "***";
-			acceleration += "****";
+			acceleration += "*****";
 			break;
 		case 3:
 			colour = "Red";
@@ -1440,6 +1913,10 @@ void SceneGame::RenderShop()
 			else
 				cost = "Owned";
 		}
+		else if (!gameShop.isOwned(gameShop.getIndex() - 1))
+		{
+			cost = "Locked";
+		}
 		else
 		{
 			cost += to_string(gameShop.getCost());
@@ -1450,6 +1927,15 @@ void SceneGame::RenderShop()
 		modelStack.Rotate(displayRotation, 0, 1, 0);
 		modelStack.Scale(3, 3, 3);
 		RenderMesh(meshList[GEO_DISPLAY], false);
+		modelStack.Translate(-2.5f, -0.6f, 4.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Translate(-5.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_WHEEL], false);
+		modelStack.Translate(0.f, 0.f, -8.5f);
+		RenderMesh(meshList[GEO_WHEEL], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -1470,7 +1956,6 @@ void SceneGame::RenderShop()
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 
-		const float textTranslate = -3.f;
 		std::string text = "Hello, world!";
 
 		text = colour;
@@ -1502,7 +1987,7 @@ void SceneGame::RenderShop()
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
 		modelStack.Scale((0.5f / 1.2f), (0.5f / 0.5f), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		modelStack.Translate(-3.f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
@@ -1513,7 +1998,7 @@ void SceneGame::RenderShop()
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
 		modelStack.Scale((0.5f / 1.2f), (0.5f / 0.5f), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		modelStack.Translate(-3.f, 0.f, 0.f);
 		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
 		modelStack.PopMatrix();
 
@@ -1533,11 +2018,91 @@ void SceneGame::RenderShop()
 
 void SceneGame::RenderUI()
 {
+	RenderTextOnScreen(meshList[GEO_TEXT], fps, Color(1.f, 1.f, 1.f), 2.f, 1.f, 29.5f);
 	if (menu.getIndex() == E_GAME)
 	{
-		std::string text = to_string((int)((playerBoost + 100) / 2));
+		std::string text;
+		if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
+			text = to_string((int)((opponentBoost + 100) / 2));
+		else
+			text = to_string((int)((playerBoost + 100) / 2));
 		text += " km/h";
 		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
+	}
+	RenderTimer();
+}
+
+void SceneGame::RenderWinLose()
+{
+	if (menu.getIndex() == E_WINLOSE)
+	{
+		std::string text;
+		modelStack.PushMatrix();
+		modelStack.Translate(0.3f, 2.f, 0.f);
+		modelStack.Scale(2.3f, 1.f, 1.f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		if (menu.getGameMode() == MODE_VS)
+		{
+			if (win)
+				text = "You're the Raceholder!";
+			else
+				text = "Better luck next time!";
+		}
+		else if (menu.getGameMode() == MODE_TIME)
+		{
+			text = to_string(timer.getScoreMinutes()) + ":" + to_string(timer.getScoreSeconds()) + ":" + to_string(timer.getPrintScoreMiliseconds());
+		}
+		modelStack.Translate((float)(0.3 / 2.2), 0.f, 0.f);
+		modelStack.Scale((0.6f / 2.3f), (0.6f / 1.f), 0.6f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = "Retry";
+		modelStack.PushMatrix();
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		text = "Back";
+		modelStack.PushMatrix();
+		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.5f / 1.f), (0.5f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		if (menu.getGameMode() == MODE_VS)
+		{
+			text = "Balance: $";
+			text += to_string(gameBalance.getBalance());
+			modelStack.PushMatrix();
+			modelStack.Translate(-3.f, 5.f, 0.f);
+			modelStack.Scale(0.8f, 0.4f, 0.4f);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			RenderMesh(meshList[GEO_BUTTON], false);
+			modelStack.Scale((0.3f / 0.8f), (0.3f / 0.4f), 0.3f);
+			modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.f, 0.f);
+			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+			modelStack.PopMatrix();
+		}
+
+		modelStack.PushMatrix();
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(winloseCursor.getX(), winloseCursor.getY(), 0.f);
+		modelStack.Rotate(180, 1.f, 0.f, 0.f);
+		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		RenderMesh(meshList[GEO_CURSOR], false);
+		modelStack.PopMatrix();
 	}
 }
 
@@ -1554,11 +2119,24 @@ void SceneGame::RenderTrack()
 	else
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -8.f, 0.f);
+		modelStack.Translate(-60.f, -8.f, 30.f);
 		modelStack.Scale(10.f, 10.f, 10.f);
-		modelStack.Rotate(90.f, 0.f, 1.f, 0.f);
+		modelStack.Rotate(120.f, 0.f, 1.f, 0.f);
+		modelStack.Rotate(90.f, 0.f, 0.f, 1.f);
 		RenderMesh(meshList[GEO_TRACK], false);
 		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderTimer()
+{
+	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_TIME)
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 13.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getSeconds()), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 15.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getPrintMiliseconds()), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
 	}
 }
 
@@ -1571,20 +2149,20 @@ void SceneGame::RenderObstacles()
 		{
 			for (size_t row = 0; row < numberOfRows; ++row)
 			{
-				if (obstacleList[lane][row].getZ() > camera.position.z && obstacleList[lane][row].getZ() < camera.position.z + 5000.f && obstacleList[lane][row].getActive())
+				if (obstacleList[lane][row].getZ() > camera.position.z - 5000.f  && obstacleList[lane][row].getZ() < camera.position.z + 5000.f && obstacleList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(obstacleList[lane][row].getX(), obstacleList[lane][row].getY(), obstacleList[lane][row].getZ());
 					if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_DEFAULT)
 					{
-						modelStack.Scale(10.f, 10.f, 10.f);
-						modelStack.Translate(0.f, 0.5f, 0.f);
+						modelStack.Scale(3.f, 3.f, 3.f);
+						modelStack.Translate(0.f, 1.5f, 0.f);
 						RenderMesh(meshList[GEO_OBSTACLE_DEFAULT], false);
 					}
 					else if (10 + obstacleList[lane][row].getObstacleType() == GEO_OBSTACLE_TALL)
 					{
-						modelStack.Scale(10.f, 40.f, 10.f);
-						modelStack.Translate(0.f, 0.5f, 0.f);
+						modelStack.Scale(3.f, 12.f, 3.f);
+						modelStack.Translate(0.f, 1.75f, 0.f);
 						RenderMesh(meshList[GEO_OBSTACLE_TALL], false);
 					}
 					modelStack.PopMatrix();
@@ -1596,46 +2174,137 @@ void SceneGame::RenderObstacles()
 
 void SceneGame::RenderPowerUps()
 {
-	if (menu.getIndex() == E_GAME)
+	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_VS)
 	{
 		for (size_t lane = 0; lane < 4; ++lane)
 		{
 			for (size_t row = 0; row < numberOfRows / 2; ++row)
 			{
-				if (powerupList[lane][row].getZ() > camera.position.z && powerupList[lane][row].getZ() < camera.position.z + 5000.f && powerupList[lane][row].getActive())
+				if (powerupList[lane][row].getZ() > camera.position.z - 5000.f  && powerupList[lane][row].getZ() < camera.position.z + 5000.f && powerupList[lane][row].getActive())
 				{
 					modelStack.PushMatrix();
 					modelStack.Translate(powerupList[lane][row].getX(), powerupList[lane][row].getY(), powerupList[lane][row].getZ());
+					modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
+					modelStack.Scale(10.f, 10.f, 10.f);
+					modelStack.Translate(0.f, 0.5f, 0.f);
 					switch (powerupList[lane][row].getType())
 					{
 					case 0:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
+						modelStack.Scale(3.f, 3.f, 3.f);
 						RenderMesh(meshList[GEO_SPEED], false);
 						break;
 					case 1:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
+						modelStack.Scale(0.1f, 0.1f, 0.1f);
 						RenderMesh(meshList[GEO_SHIELD], false);
 						break;
 					case 2:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
+						modelStack.Scale(0.1f, 0.1f, 0.1f);
+						modelStack.Rotate(-90.f, 1.f, 0.f, 0.f);
 						RenderMesh(meshList[GEO_FLIGHT], false);
 						break;
 					case 3:
-						modelStack.Translate(0.f, 7.5f, 0.f);
-						modelStack.Rotate(powerupRotation, 0.f, 1.f, 0.f);
-						modelStack.Scale(10.f, 10.f, 10.f);
-						RenderMesh(meshList[GEO_DOUBLE], false);
+						RenderMesh(meshList[GEO_MISSILE], false);
 						break;
 					}
 					modelStack.PopMatrix();
 				}
 			}
 		}
+	}
+}
+
+void SceneGame::RenderBoost()
+{
+	if (playerStatus.getActive(0) == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderAIBoost()
+{
+	if (aiStatus.getActive(0) == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-1, -0.5, -20);
+		modelStack.Scale(0.25, 0.25, 30);
+		RenderMesh(meshList[GEO_BOOST], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderShield()
+{
+	if (playerStatus.getActive(1) == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Scale(0.6f, 0.6f, 1.2f);
+		RenderMesh(meshList[GEO_SHIELD_ORB], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderAIShield()
+{
+	if (aiStatus.getActive(1) == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Scale(0.6f, 0.6f, 1.2f);
+		RenderMesh(meshList[GEO_SHIELD_ORB], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderMissile()
+{
+	if (playerStatus.getActive(3) == true || playerMissile.getShot() == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
+		modelStack.Translate(playerMissile.getX(), playerMissile.getY(), playerMissile.getZ());
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
+		RenderMesh(meshList[GEO_MISSILE_ROCKET], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderAIMissile()
+{
+	if (aiStatus.getActive(3) == true || aiMissile.getShot() == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(-9, 0, 50.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
+		modelStack.Translate(aiMissile.getX(), aiMissile.getY(), aiMissile.getZ());
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
+		RenderMesh(meshList[GEO_MISSILE_ROCKET], false);
+		modelStack.PopMatrix();
+	}
+}
+
+void SceneGame::RenderHitMarker()
+{
+	if (playerMissile.getHit() == true)
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT], "x", Color(1.f, 0.f, 0.f), 4.f, 10.35f, 7.6f);
 	}
 }

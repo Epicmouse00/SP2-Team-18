@@ -14,14 +14,17 @@
 
 #include "Obstacle.h"
 #include "Cursor.h"
+#include "timer2.h"
 #include "Menu.h"
 #include "PowerUps.h"
+#include "Status.h"
 #include "Car.h"
 #include "AImovement.h"
 #include "Shop.h"
 #include "Leaderboard.h"
 #include "Saving.h"
 #include "Currency.h"
+#include "Missile.h"
 
 class SceneGame : public Scene
 {
@@ -58,13 +61,22 @@ class SceneGame : public Scene
 		GEO_LEADERBOARDSA,
 		GEO_PLAYER,
 		GEO_OPPONENT,
+		GEO_WHEEL,
 		GEO_TITLE,
 
 		//Power Ups
 		GEO_SPEED,
-		GEO_DOUBLE,
+		GEO_MISSILE,
 		GEO_FLIGHT,
 		GEO_SHIELD,
+
+		//Power Up Effects
+		GEO_BOOST,
+		GEO_SHIELD_ORB,
+		GEO_MISSILE_ROCKET,
+
+		// Finish Line
+		GEO_FINISHLINE,
     
 		//Menu buttons
 		GEO_BUTTON,
@@ -193,14 +205,16 @@ private:
 	void		InitProjection();
 	void		InitCursors();
 	void		InitData();
+	void		InitGame();
 	void		InitVariables();
-	void		InitSong();
 	void		InitObstacles(unsigned int noOfRows);
 	void		InitPowerUps(unsigned int noOfRows);
 
 	void		UpdateDelayTime(double dt);
+	void		UpdateSong();
 	void		UpdateCam(double dt);
 	void		UpdateAppPolygon();
+	void		UpdateTrackTexture();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();
 	void		UpdateCarCollision();
@@ -211,20 +225,32 @@ private:
 	void		UpdateMainMenuCursor();
 	void		UpdateGameChooseCursor();
 	void		UpdateLeaderboardCursor();
+	void		UpdateWinLose();
 	void		UpdateLight();
 	void		UpdateShop(double dt);
-	void		UpdateUI();
+	void		UpdateUI(double dt);
+	void		UpdateTimer(double dt);
 
 	void		RenderCar();
 	void		RenderMainMenuButtons();
 	void		RenderGameChooseButtons();
 	void		RenderLeaderboard();
+	void		RenderFinishLine();
 	void		RenderObstacles();
 	void		RenderPowerUps();
 	void		RenderSkybox();
 	void		RenderShop();
 	void		RenderUI();
+	void		RenderWinLose();
 	void		RenderTrack();
+	void		RenderTimer();
+	void		RenderBoost();
+	void		RenderAIBoost();
+	void		RenderShield();
+	void		RenderAIShield();
+	void		RenderMissile();
+	void		RenderAIMissile();
+	void		RenderHitMarker();
 
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
@@ -233,7 +259,9 @@ private:
 	unsigned	m_parameters[U_TOTAL];
 
 	//Variables
-	bool b_exit = false;
+	bool b_exit;
+	bool win;
+	float camShake;
 	float delayTime;
 	float powerupRotation;
 	float displayRotation;
@@ -241,6 +269,9 @@ private:
 	float rightCursor;
 	float playerBoost;
 	float opponentBoost;
+	const float textTranslate = -3.f;
+	std::string fps;
+
 
 	//Skybox
 
@@ -262,6 +293,13 @@ private:
 	Saving		gameSave;
 	Currency	gameBalance;
 	Shop		gameShop;
-	Leaderboard leaderboard;
+	timer2		timer;
+	Leaderboard	leaderboard;
+	Menu		menu;
+
+	Status playerStatus;
+	Status aiStatus;
+	Missile playerMissile;
+	Missile aiMissile;
 };
 #endif
