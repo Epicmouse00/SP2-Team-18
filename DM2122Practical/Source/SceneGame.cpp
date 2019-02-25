@@ -865,6 +865,10 @@ void SceneGame::UpdatePowerUps(double dt)
 				Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
 			}
 		}
+		else
+		{
+			Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
+		}
 		if (aiStatus.getActive(2))
 		{
 			if (aiStatus.getTimer(2) <= 6.f)
@@ -877,6 +881,10 @@ void SceneGame::UpdatePowerUps(double dt)
 				aiStatus.setActive(false, 2);
 				Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
 			}
+		}
+		else
+		{
+			Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
 		}
 		
 
