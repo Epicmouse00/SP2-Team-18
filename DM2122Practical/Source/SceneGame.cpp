@@ -21,6 +21,8 @@ Car			Player(true);
 Car			Opponent(false);
 Obstacle	obstacleList[4][numberOfRows];
 PowerUps	powerupList[4][numberOfRows / 2];
+Shop		gameShop;
+Leaderboard	leaderboard;
 
 
 SceneGame::SceneGame()
@@ -40,7 +42,7 @@ void SceneGame::Init()
 	InitMeshes();
 	InitCursors();
 	InitData();
-	gameBalance.setBalance(gameSave.getBalance());
+	
 	InitVariables();
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
@@ -465,6 +467,9 @@ void SceneGame::UpdateSong()
 
 void SceneGame::InitData()
 {
+	Saving	gameSave(&gameShop, &leaderboard);
+	gameBalance.setBalance(gameSave->getBalance());
+	gameSave.loadShopData(&gameShop);
 	for (int i = 0; i < 5; i++)
 	{
 		leaderboard.setVersus(gameSave.getVersusLeaderboard(i), i);
@@ -1121,7 +1126,7 @@ void SceneGame::UpdateWinLose()
 						gameBalance.addBalance(100 + Player.getTexture() * 25);
 					else
 						gameBalance.deductBalance(Player.getTexture() * 25);
-					gameSave.setBalance(gameBalance.getBalance());
+					gameShop.setBalance(gameBalance.getBalance());
 				}
 			}
 			else
@@ -1236,20 +1241,17 @@ void SceneGame::UpdateShop(double dt)
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (!gameShop.isOwned() && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
+			if (!gameShop.isOwned(gameShop.getIndex()) && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
-				gameShop.setOwned();
-
-				gameSave.setBalance(gameBalance.getBalance());
-				gameSave.setColour(gameShop.getIndex());
+				gameShop.setBalance(gameBalance.getBalance());
+				gameShop.setOwned(gameShop.getIndex());
 			}
-			else if (gameShop.isOwned())
+			else if (gameShop.isOwned(gameShop.getIndex()))
 			{
 				if (gameShop.getEquip() != gameShop.getIndex())
 				{
 					gameShop.setEquip();
-					gameSave.setEquip(gameShop.getEquip());
 					Player.setTexture(gameShop.getEquip());
 					UpdateCarTexture();
 					UpdateCarStats();
@@ -1259,7 +1261,6 @@ void SceneGame::UpdateShop(double dt)
 					delayTime = 0;
 					menu.menuChange(0);
 				}
-
 			} 
 			gameSave.save();
 		}
@@ -1757,7 +1758,6 @@ void SceneGame::RenderLeaderboard()
 				RenderText(meshList[GEO_TEXT], leaderboard.getTime(i), Color(1.f, 0.f, 0.f));
 			}
 		}
-		
 		modelStack.PopMatrix();
 
 		//Cursor
@@ -1767,7 +1767,6 @@ void SceneGame::RenderLeaderboard()
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
-	
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}
@@ -1906,7 +1905,7 @@ void SceneGame::RenderShop()
 			break;
 		}
 
-		if (gameShop.isOwned())
+		if (gameShop.isOwned(gameShop.getIndex()))
 		{
 			if (gameShop.isEquip())
 				cost = "Equipped";

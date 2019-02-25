@@ -14,12 +14,12 @@ Leaderboard::~Leaderboard()
 
 }
 
-void Leaderboard::setVersus(std::string record, int index)
+void Leaderboard::setVersus(std::string record, int timeTaken, int index)
 {
 	versusScores[index] = record;
 }
 
-void Leaderboard::setTime(std::string record, int index)
+void Leaderboard::setTime(std::string record, int timeTaken, int index)
 {
 	timeScores[index] = record;
 }

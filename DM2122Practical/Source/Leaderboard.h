@@ -12,9 +12,9 @@ public:
 	Leaderboard();
 	~Leaderboard();
 
-	void setVersus(std::string record, int index);
+	void setVersus(std::string record, int timeTaken, int index);
 	std::string getVersus(int index) const;
-	void setTime(std::string record, int index);
+	void setTime(std::string record, int timeTaken, int index);
 	std::string getTime(int index) const;
 
 };

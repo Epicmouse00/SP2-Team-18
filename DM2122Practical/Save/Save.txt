@@ -1,17 +1,7 @@
 0>Money
-0>Equipped
+4>Equipped
 1>Grey
 0>Cyan
 0>Orange
 0>Red
 1>Monster
-Player                         0:00:00
-Player                         0:00:01
-Player                         0:00:02
-Player                         0:00:03
-Player                         0:00:04
-Player                         0:00:05
-Player                         0:00:06
-Player                         0:00:07
-Player                         0:00:08
-Player                         0:00:09

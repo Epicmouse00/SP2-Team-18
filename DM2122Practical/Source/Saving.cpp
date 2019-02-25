@@ -1,37 +1,31 @@
 #include "Saving.h"
 
-Saving::Saving()
+Saving::Saving(Shop* shop, Leaderboard* leaderboard)
 {
 	//open savedata and set balance from .txt
 	fstream saveData("Save/Save.txt");
 
 	if (saveData.is_open())
 	{
+		loadShopData(shop);
 		string line;
-		getline(saveData, line, '>');
-		balance = stoi(line);
-		getline(saveData, line);
-		getline(saveData, line, '>');
-		equip = stoi(line);
+
 		getline(saveData, line);
 		for (int i = 0; i < 5; ++i)
 		{
-			getline(saveData, line, '>');
-			if (line == "1")
-				car[i] = true;
-			else
-				car[i] = false;
 			getline(saveData, line);
+			if (line != "")
+			{
+				versusLeaderboard[i] = line;
+			}
 		}
 		for (int i = 0; i < 5; ++i)
 		{
 			getline(saveData, line);
-			versusLeaderboard[i] = line;
-		}
-		for (int i = 0; i < 5; ++i)
-		{
-			getline(saveData, line);
-			timeLeaderboard[i] = line;
+			if (line != "")
+			{
+				timeLeaderboard[i] = line;
+			}
 		}
 		saveData.close();
 	}
@@ -92,17 +86,43 @@ void Saving::setColour(int carIndex)
 	car[carIndex] = true;
 }
 
-void Saving::save()
+void Saving::loadShopData(Shop* shop)
 {
-	fstream saveData;
-	int cars[5];
+	int equip;
+	int balance;
+	//open savedata and set balance from .txt
+	fstream saveData("Save/Save.txt");
+
+	string line;
+	getline(saveData, line);
+	getline(saveData, line, '>');
+	equip = stoi(line);
+	getline(saveData, line, '>');
+	balance = stoi(line);
+	shop->loadNumberData(equip, balance);
+	getline(saveData, line);
 	for (int i = 0; i < 5; ++i)
 	{
-		if (car[i] == true)
-			cars[i] = 1;
+		getline(saveData, line, '>');
+		if (line == "1")
+		{
+			shop->loadCarData(true, i);
+		}
 		else
-			cars[i] = 0;
+		{
+			shop->loadCarData(false, i);
+		}
 	}
+}
+
+void Saving::loadLeaderboardData(Leaderboard* leaderboard)
+{
+
+}
+
+void Saving::saveShopData(Shop* shop)
+{
+	fstream saveData;
 	saveData.open("Save/Save.txt", fstream::in | fstream::out | fstream::trunc);
 	saveData << balance << ">Money" << '\n';
 	saveData << equip << ">Equipped" << '\n';
@@ -127,7 +147,7 @@ void Saving::save()
 			colour += "Monster";
 			break;
 		}
-		saveData << cars[i] << colour << '\n';
+		saveData << shop.isown << colour << '\n';
 	}
 	saveData.close();
 }

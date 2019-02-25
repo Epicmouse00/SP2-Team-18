@@ -290,12 +290,10 @@ private:
 	//cursor defined in .cpp
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
-	Saving		gameSave;
 	Currency	gameBalance;
-	Shop		gameShop;
 	timer2		timer;
-	Leaderboard	leaderboard;
 	Menu		menu;
+	Saving		gameSave(Shop*, Leaderboard*);
 
 	Status playerStatus;
 	Status aiStatus;
