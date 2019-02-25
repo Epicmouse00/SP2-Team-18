@@ -27,6 +27,9 @@ Saving::Saving()
 		{
 			getline(saveData, line);
 			versusLeaderboard[i] = line;
+		}
+		for (int i = 0; i < 5; ++i)
+		{
 			getline(saveData, line);
 			timeLeaderboard[i] = line;
 		}
@@ -47,6 +50,16 @@ string Saving::getVersusLeaderboard(int index)
 string Saving::getTimeLeaderboard(int index)
 {
 	return timeLeaderboard[index];
+}
+
+void Saving::setVersusLeaderboard(int index, string record)
+{
+	versusLeaderboard[index] = record;
+}
+
+void Saving::setTimeLeaderboard(int index, string record)
+{
+	timeLeaderboard[index] = record;
 }
 
 bool Saving::getCar(int carIndex) const

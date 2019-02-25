@@ -21,6 +21,8 @@ public:
 
 	string	getVersusLeaderboard(int index);
 	string	getTimeLeaderboard(int index);
+	void	setVersusLeaderboard(int index, string record);
+	void	setTimeLeaderboard(int index, string record);
 	void	setBalance(int amount);
 	int		getEquip() const;
 	void	setEquip(int equip);
