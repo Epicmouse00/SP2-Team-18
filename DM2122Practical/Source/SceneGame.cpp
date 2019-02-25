@@ -607,7 +607,7 @@ void SceneGame::UpdateCar(double dt)
 	{
 		//Player
 		Player.UpdatePlayerForward(dt, playerBoost);
-		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W') || Application::IsKeyPressed(VK_SPACE)));
+		Player.UpdatePlayerJump(dt, (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')));
 		if (Player.UpdatePlayerStrafe(dt, delayTime, (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')), (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))))
 			delayTime = 0.f;
 		if (Application::IsKeyPressed('H') && Player.getTexture() == 2) //Cheat
@@ -884,7 +884,7 @@ void SceneGame::UpdatePowerUps(double dt)
 		if (playerStatus.getActive(3) && !playerMissile.getShot())
 		{
 			playerMissile.setXYZ(Player.getMovement(), Player.getJump() + 4.f, Player.getForward());
-			if (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S'))
+			if (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S') || Application::IsKeyPressed(VK_SPACE))
 			{
 				playerStatus.setActive(false, 3);
 				playerMissile.setShot(true);
