@@ -347,7 +347,8 @@ void SceneGame::InitMeshes()
 	meshList[GEO_SHIELD_ORB]->textureID = LoadTGA("image//shield.tga");
 
 	// Missile
-	meshList[GEO_MISSILE_ROCKET] = MeshBuilder::GenerateCube("Missile", Color(0, 1, 0), 1.f, 1.f, 1.f);
+	meshList[GEO_MISSILE_ROCKET] = MeshBuilder::GenerateOBJ("Missile", "OBJ//bomb.obj");
+	meshList[GEO_MISSILE_ROCKET]->textureID = LoadTGA("image//bomb.tga");
 
 	// Finish Line
 	meshList[GEO_FINISHLINE] = MeshBuilder::GenerateOBJ("FinishLine", "OBJ//FinishLine.obj");
@@ -711,7 +712,6 @@ void SceneGame::UpdateCarCollision()
 			case 3:
 				//Missile (Green)
 				playerStatus.setActive(true, 3);
-				playerStatus.setTimer(0.f, 3);
 				playerMissile.setShot(false);
 				break;
 			}
@@ -2276,6 +2276,8 @@ void SceneGame::RenderMissile()
 		modelStack.Translate(-9, 0, 50.f);
 		modelStack.Scale(3.f, 3.f, 3.f);
 		modelStack.Translate(playerMissile.getX(), playerMissile.getY(), playerMissile.getZ());
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
 		RenderMesh(meshList[GEO_MISSILE_ROCKET], false);
 		modelStack.PopMatrix();
 	}
@@ -2289,6 +2291,8 @@ void SceneGame::RenderAIMissile()
 		modelStack.Translate(-9, 0, 50.f);
 		modelStack.Scale(3.f, 3.f, 3.f);
 		modelStack.Translate(aiMissile.getX(), aiMissile.getY(), aiMissile.getZ());
+		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+		modelStack.Scale(3.f, 3.f, 3.f);
 		RenderMesh(meshList[GEO_MISSILE_ROCKET], false);
 		modelStack.PopMatrix();
 	}
