@@ -192,7 +192,7 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
-//	void		LoadSaveData();
+	void		InitData();
 	void		InitVariables();
 	void		InitSong();
 	void		InitObstacles(unsigned int noOfRows);

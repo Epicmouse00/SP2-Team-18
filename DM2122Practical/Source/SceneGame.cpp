@@ -14,6 +14,7 @@
 const unsigned int numberOfRows = 100;
 const float	laneSpacing = 22.5f; // 7.5 x 3
 Menu		menu;
+Saving		save;
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
 Cursor		leaderboardCursor(3);
@@ -40,7 +41,7 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitCursors();
-//	LoadSaveData();
+	InitData();
 	InitObstacles(numberOfRows);
 	InitPowerUps(numberOfRows);
 	gameBalance.setBalance(gameSave.getBalance());
@@ -406,22 +407,15 @@ void SceneGame::InitSong()
 		break;
 	}
 }
-/*
-void SceneGame::LoadSaveData()
+
+void SceneGame::InitData()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		if (i < 5)
-		{
-			playerScores[i] = leaderboard.getVersus(i);
-		}
-		else
-		{
-			playerScores[i] = leaderboard.getTime(i);
-		}
+		leaderboard.setVersus(save.getVersusLeaderboard(i), i);
+		leaderboard.setTime(save.getTimeLeaderboard(i), i);
 	}
 }
-*/
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
 	for (int row = 0; row < (int)noOfRows; ++row)
@@ -1301,30 +1295,28 @@ void SceneGame::RenderLeaderboard()
 		modelStack.PopMatrix();
 
 		//Leaderboard
-		string playerScores[10];
-		float translateY = 0.5f;
+		float translateY = 1.f;
 		modelStack.PushMatrix();
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		modelStack.Scale(2.2f, 2.2f, 2.2f);
 		modelStack.Translate(0.f, 0.15f, 0.f);
 		RenderMesh(meshList[GEO_LEADERBOARDSA], false);
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
 		for (int i = 0; i < 10; i++)
 		{
 			if (i < 5 && leaderboardCursor.getIndex() == 0)
 			{
-				playerScores[i] = leaderboard.getVersus(i);
-				modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+				//modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
 				modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
 				modelStack.Translate(0.f, translateY * (float)i, 0.f);
-				RenderText(meshList[GEO_TEXT], playerScores[i], Color(1.f, 0.f, 0.f));
+				RenderText(meshList[GEO_TEXT], leaderboard.getVersus(i), Color(1.f, 0.f, 0.f));
 			}
 			else if (leaderboardCursor.getIndex() == 1)
 			{
-				playerScores[i] = leaderboard.getTime(i);
-				modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
+				//modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
 				modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-				modelStack.Translate(0.f, translateY * ((float)i - 5), 0.f);
-				RenderText(meshList[GEO_TEXT], playerScores[i], Color(1.f, 0.f, 0.f));
+				modelStack.Translate(0.f, translateY * ((float)i - 5), -0.f);
+				RenderText(meshList[GEO_TEXT], leaderboard.getTime(i-5), Color(1.f, 0.f, 0.f));
 			}
 		}
 		modelStack.PopMatrix();
