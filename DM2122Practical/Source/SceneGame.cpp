@@ -337,11 +337,14 @@ void SceneGame::InitMeshes()
 	meshList[GEO_SPEED] = MeshBuilder::GenerateOBJ("Speed Power-Up", "OBJ//speed.obj");
 	meshList[GEO_SPEED]->textureID = LoadTGA("image//speed.tga");
 
-	meshList[GEO_SHIELD] = MeshBuilder::GenerateOBJ("Shield Power-Up", "OBJ//shield2.obj");
-	meshList[GEO_SHIELD]->textureID = LoadTGA("image//shield2.tga");
+	meshList[GEO_SHIELD] = MeshBuilder::GenerateOBJ("Shield Power-Up", "OBJ//shield.obj");
+	meshList[GEO_SHIELD]->textureID = LoadTGA("image//shield.tga");
 
-	meshList[GEO_MISSILE] = MeshBuilder::GenerateCube("Missile Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
+	meshList[GEO_MISSILE] = MeshBuilder::GenerateOBJ("Missile Power-Up", "OBJ//bomb.obj");
+	meshList[GEO_MISSILE]->textureID = LoadTGA("image//bomb.tga");
+
+	meshList[GEO_FLIGHT] = MeshBuilder::GenerateOBJ("Flight Power-Up", "OBJ//wing.obj");
+	meshList[GEO_FLIGHT]->textureID = LoadTGA("image//wing.tga");
 
 	// Boost
 	meshList[GEO_BOOST] = MeshBuilder::GenerateCube("Boost", Color(0.99f, 0.37f, 0.f), 1.f, 1.f, 1.f);
@@ -2199,9 +2202,12 @@ void SceneGame::RenderPowerUps()
 						RenderMesh(meshList[GEO_SPEED], false);
 						break;
 					case 1:
+						modelStack.Scale(0.1f, 0.1f, 0.1f);
 						RenderMesh(meshList[GEO_SHIELD], false);
 						break;
 					case 2:
+						modelStack.Scale(0.1f, 0.1f, 0.1f);
+						modelStack.Rotate(-90.f, 1.f, 0.f, 0.f);
 						RenderMesh(meshList[GEO_FLIGHT], false);
 						break;
 					case 3:
