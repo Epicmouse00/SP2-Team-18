@@ -334,8 +334,12 @@ void SceneGame::InitMeshes()
 	// Coins
 
 	// Power-Ups
-	meshList[GEO_SPEED] = MeshBuilder::GenerateCube("Speed Power-Up", Color(0, 0, 0), 1.f, 1.f, 1.f);
-	meshList[GEO_SHIELD] = MeshBuilder::GenerateCube("Shield Power-Up", Color(1, 0, 0), 1.f, 1.f, 1.f);
+	meshList[GEO_SPEED] = MeshBuilder::GenerateOBJ("Speed Power-Up", "OBJ//speed.obj");
+	meshList[GEO_SPEED]->textureID = LoadTGA("image//speed.tga");
+
+	meshList[GEO_SHIELD] = MeshBuilder::GenerateOBJ("Shield Power-Up", "OBJ//shield2.obj");
+	meshList[GEO_SHIELD]->textureID = LoadTGA("image//shield2.tga");
+
 	meshList[GEO_MISSILE] = MeshBuilder::GenerateCube("Missile Power-Up", Color(0, 1, 0), 1.f, 1.f, 1.f);
 	meshList[GEO_FLIGHT] = MeshBuilder::GenerateCube("Flight Power-Up", Color(0, 0, 1), 1.f, 1.f, 1.f);
 
@@ -2191,6 +2195,7 @@ void SceneGame::RenderPowerUps()
 					switch (powerupList[lane][row].getType())
 					{
 					case 0:
+						modelStack.Scale(3.f, 3.f, 3.f);
 						RenderMesh(meshList[GEO_SPEED], false);
 						break;
 					case 1:
