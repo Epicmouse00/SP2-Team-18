@@ -204,7 +204,7 @@ private:
 	void		InitMeshes();
 	void		InitProjection();
 	void		InitCursors();
-//	void		LoadSaveData();
+	void		InitData();
 	void		InitGame();
 	void		InitVariables();
 	void		InitObstacles(unsigned int noOfRows);

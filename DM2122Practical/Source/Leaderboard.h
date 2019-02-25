@@ -1,23 +1,21 @@
 #ifndef LEADERBOARD_H
 #define LEADERBOARD_H
-#include "Saving.h"
+#include <iostream>
 #include <string>
 
 class Leaderboard
 {
 private:
-	string versusScores[5];
-	string timeScores[5];
-	Saving save;
-
+	std::string versusScores[5];
+	std::string timeScores[5];
 public:
 	Leaderboard();
 	~Leaderboard();
 
-	void setVersus(string record);
-	string getVersus(int index) const;
-	void setTime(string record);
-	string getTime(int index) const;
+	void setVersus(std::string record, int index);
+	std::string getVersus(int index) const;
+	void setTime(std::string record, int index);
+	std::string getTime(int index) const;
 
 };
 

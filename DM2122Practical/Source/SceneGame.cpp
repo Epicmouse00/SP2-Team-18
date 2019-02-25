@@ -39,7 +39,7 @@ void SceneGame::Init()
 	InitCamera();
 	InitMeshes();
 	InitCursors();
-//	LoadSaveData();
+	InitData();
 	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
 	Player.setTexture(gameShop.getEquip());
@@ -400,7 +400,7 @@ void SceneGame::InitCursors()
 	gameChooseCursor.addNewPosition(0.f, -3.f, 2);
 	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
 	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
-	leaderboardCursor.addNewPosition(5.f, -3.f, 2);
+	leaderboardCursor.addNewPosition(5.f, -3.5f, 2);
 	winloseCursor.addNewPosition(5.f, 0.f, 0);
 	winloseCursor.addNewPosition(5.f, -3.f, 1);
 }
@@ -462,22 +462,15 @@ void SceneGame::UpdateSong()
 		PlaySound(TEXT("Music\\Menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 	}
 }
-/*
-void SceneGame::LoadSaveData()
+
+void SceneGame::InitData()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		if (i < 5)
-		{
-			playerScores[i] = leaderboard.getVersus(i);
-		}
-		else
-		{
-			playerScores[i] = leaderboard.getTime(i);
-		}
+		leaderboard.setVersus(gameSave.getVersusLeaderboard(i), i);
+		leaderboard.setTime(gameSave.getTimeLeaderboard(i), i);
 	}
 }
-*/
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
 	for (int row = 0; row < (int)noOfRows; ++row)
@@ -1706,7 +1699,7 @@ void SceneGame::RenderLeaderboard()
 		// Time Leaderboard button
 		text = "Time Leaderboard";
 		modelStack.PushMatrix();
-		modelStack.Translate(2.5f, 5.f, 0.f);
+		modelStack.Translate(-2.5f, 5.f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1718,7 +1711,7 @@ void SceneGame::RenderLeaderboard()
 		// VS Leaderboard button
 		text = "VS Leaderboard";
 		modelStack.PushMatrix();
-		modelStack.Translate(-2.5f, 5.f, 0.f);
+		modelStack.Translate(2.5f, 5.f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1730,7 +1723,7 @@ void SceneGame::RenderLeaderboard()
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
-		modelStack.Translate(0.f, -1.5f, 0.f);
+		modelStack.Translate(0.f, -1.8f, 0.f);
 		modelStack.Scale(1.f, 0.5f, 0.5f);
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		RenderMesh(meshList[GEO_BUTTON], false);
@@ -1740,32 +1733,31 @@ void SceneGame::RenderLeaderboard()
 		modelStack.PopMatrix();
 
 		//Leaderboard
-		string playerScores[10];
-		float translateY = 0.5f;
+		float translateY = -1.f;
 		modelStack.PushMatrix();
 		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
 		modelStack.Scale(2.2f, 2.2f, 2.2f);
 		modelStack.Translate(0.f, 0.15f, 0.f);
 		RenderMesh(meshList[GEO_LEADERBOARDSA], false);
-		for (int i = 0; i < 10; i++)
+		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 1.2), 0.33f);
+		modelStack.Translate(-12.f, 4.2f, 0.f);
+		if (leaderboardCursor.getIndex() == 0)
 		{
-			if (i < 5 && leaderboardCursor.getIndex() == 0)
+			for (int i = 0; i < 5; i++)
 			{
-				playerScores[i] = leaderboard.getVersus(i);
-				modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-				modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-				modelStack.Translate(0.f, translateY * (float)i, 0.f);
-				RenderText(meshList[GEO_TEXT], playerScores[i], Color(1.f, 0.f, 0.f));
-			}
-			else if (leaderboardCursor.getIndex() == 1)
-			{
-				playerScores[i] = leaderboard.getTime(i);
-				modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 0.8), 0.5f);
-				modelStack.Translate(((float)text.size() / textTranslate) + 0.5f, 0.f, 0.f);
-				modelStack.Translate(0.f, translateY * ((float)i - 5), 0.f);
-				RenderText(meshList[GEO_TEXT], playerScores[i], Color(1.f, 0.f, 0.f));
+				modelStack.Translate(0.f, translateY, 0.f);
+				RenderText(meshList[GEO_TEXT], leaderboard.getVersus(i), Color(1.f, 0.f, 0.f));
 			}
 		}
+		if (leaderboardCursor.getIndex() == 1)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				modelStack.Translate(0.f, translateY, 0.f);
+				RenderText(meshList[GEO_TEXT], leaderboard.getTime(i), Color(1.f, 0.f, 0.f));
+			}
+		}
+		
 		modelStack.PopMatrix();
 
 		//Cursor
