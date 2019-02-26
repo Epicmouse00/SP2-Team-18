@@ -14,6 +14,7 @@ public:
 	void addTime(Highscore highscore);
 	std::string getTime(int index) const;
 	std::string getCar(int index) const;
+	Highscore getHighscore(int index) const;
 };
 
 #endif

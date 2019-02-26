@@ -465,6 +465,7 @@ void SceneGame::InitData()
 	{
 		leaderboard.addTime(gameSave.getHighscore(i));
 	}
+	gameSave.save();
 }
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
@@ -1026,7 +1027,7 @@ void SceneGame::UpdateLeaderboardCursor()
 {
 	if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 	{
-		menu.menuChange(2);
+		menu.menuChange(0);
 		delayTime = 0;
 	}
 }
@@ -1054,6 +1055,8 @@ void SceneGame::UpdateWinLose()
 					highscore.setCar(Player.getTexture());
 					highscore.setTimeTaken(timer.getScoreMiliseconds());
 					leaderboard.addTime(highscore);
+					for (int i = 0; i < 5; ++i)
+						gameSave.setHighscore(leaderboard.getHighscore(i), i);
 					gameSave.save();
 				}
 				else if (menu.getGameMode() == MODE_VS)
@@ -1181,7 +1184,6 @@ void SceneGame::UpdateShop(double dt)
 			{
 				gameBalance.deductBalance(gameShop.getCost());
 				gameShop.setOwned();
-
 				gameSave.setBalance(gameBalance.getBalance());
 				gameSave.setColour(gameShop.getIndex());
 			}
@@ -1197,7 +1199,6 @@ void SceneGame::UpdateShop(double dt)
 				}
 				else
 				{
-					delayTime = 0;
 					menu.menuChange(0);
 				}
 

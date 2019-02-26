@@ -96,6 +96,12 @@ Highscore Saving::getHighscore(int index)
 	return temp;
 }
 
+void Saving::setHighscore(Highscore highscore, int index)
+{
+	nameLeaderboard[index] = highscore.getCar();
+	timeLeaderboard[index] = highscore.getTimeTaken();
+}
+
 void Saving::save()
 {
 	std::fstream saveData;

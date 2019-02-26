@@ -27,5 +27,6 @@ public:
 	void		setEquip(int equip);
 	void		setColour(int carIndex);
 	Highscore	getHighscore(int index);
+	void		setHighscore(Highscore highscore, int index);
 	void		save();
 };

@@ -63,3 +63,8 @@ std::string Leaderboard::getCar(int index) const
 	return temp;
 }
 
+Highscore Leaderboard::getHighscore(int index) const
+{
+	return timeScores[index];
+}
+
