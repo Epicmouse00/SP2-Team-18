@@ -15,7 +15,6 @@ const unsigned int numberOfRows = 100;
 const float	laneSpacing = 22.5f; // 7.5 x 3
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
-Cursor		leaderboardCursor(3);
 Cursor		winloseCursor(2);
 Car			Player(true);
 Car			Opponent(false);
@@ -398,9 +397,6 @@ void SceneGame::InitCursors()
 	gameChooseCursor.addNewPosition(0.f, 3.f, 0);
 	gameChooseCursor.addNewPosition(0.f, 0.f, 1);
 	gameChooseCursor.addNewPosition(0.f, -3.f, 2);
-	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
-	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
-	leaderboardCursor.addNewPosition(5.f, -3.5f, 2);
 	winloseCursor.addNewPosition(5.f, 0.f, 0);
 	winloseCursor.addNewPosition(5.f, -3.f, 1);
 }
@@ -467,8 +463,7 @@ void SceneGame::InitData()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		leaderboard.setVersus(gameSave.getVersusLeaderboard(i), i);
-		leaderboard.setTime(gameSave.getTimeLeaderboard(i), i);
+		leaderboard.addTime(gameSave.getHighscore(i));
 	}
 }
 void SceneGame::InitObstacles(unsigned int noOfRows)
@@ -1029,79 +1024,10 @@ void SceneGame::UpdateGameChooseCursor()
 
 void SceneGame::UpdateLeaderboardCursor()
 {
-	if (menu.getIndex() == E_LEADERBOARD)
+	if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 	{
-		if ((Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')) && delayTime >= 1.f)
-		{
-			if (leaderboardCursor.getIndex() != 2)
-			{
-				leaderboardCursor.updatePositionIndex(-1);
-				delayTime = 0;
-			}
-			else
-			{
-				delayTime = 0;
-			}
-		}
-
-		if ((Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D')) && delayTime >= 1.f)
-		{
-			if (leaderboardCursor.getIndex() != 1)
-			{
-				leaderboardCursor.updatePositionIndex(1);
-				delayTime = 0;
-			}
-			else
-			{
-				delayTime = 0;
-			}
-		}
-
-		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
-		{
-			if (leaderboardCursor.getIndex() == 0)
-			{
-				leaderboardCursor.updatePositionIndex(1);
-				leaderboardCursor.updatePositionIndex(1);
-				delayTime = 0;
-			}
-			else if (leaderboardCursor.getIndex() == 1)
-			{
-				leaderboardCursor.updatePositionIndex(1);
-				delayTime = 0;
-			}
-			else
-			{
-				delayTime = 0;
-			}
-		}
-		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f)
-		{
-			if (leaderboardCursor.getIndex() == 2)
-			{
-				leaderboardCursor.updatePositionIndex(-1);
-				leaderboardCursor.updatePositionIndex(-1);
-				delayTime = 0;
-			}
-			else
-			{
-				delayTime = 0;
-			}
-		}
-		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
-		{
-			if (leaderboardCursor.getIndex() == 2)
-			{
-				menu.menuChange(leaderboardCursor.getIndex());
-				leaderboardCursor.updatePositionIndex(-1);
-				leaderboardCursor.updatePositionIndex(-1);
-				delayTime = 0;
-			}
-			else
-			{
-				delayTime = 0;
-			}
-		}
+		menu.menuChange(2);
+		delayTime = 0;
 	}
 }
 
@@ -1123,7 +1049,14 @@ void SceneGame::UpdateWinLose()
 			{
 				menu.menuChange(-1);
 				delayTime = 0;
-				if (menu.getGameMode() == MODE_VS)
+				if (menu.getGameMode() == MODE_TIME)
+				{
+					highscore.setCar(Player.getTexture());
+					highscore.setTimeTaken(timer.getScoreMiliseconds());
+					leaderboard.addTime(highscore);
+					gameSave.save();
+				}
+				else if (menu.getGameMode() == MODE_VS)
 				{
 					if (win)
 						gameBalance.addBalance(100 + Player.getTexture() * 25);
@@ -1276,7 +1209,7 @@ void SceneGame::UpdateShop(double dt)
 
 void SceneGame::UpdateUI(double dt)
 {
-	fps = to_string((int)(1 / dt)) + " fps";
+	fps = std::to_string((int)(1 / dt)) + " fps";
 	UpdateTimer(dt);
 }
 
@@ -1703,31 +1636,7 @@ void SceneGame::RenderLeaderboard()
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
 		std::string text;
-
-		// Time Leaderboard button
-		text = "Time Leaderboard";
-		modelStack.PushMatrix();
-		modelStack.Translate(-2.5f, 5.f, 0.f);
-		modelStack.Scale(1.f, 0.5f, 0.5f);
-		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.1f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
-		modelStack.PopMatrix();
-
-		// VS Leaderboard button
-		text = "VS Leaderboard";
-		modelStack.PushMatrix();
-		modelStack.Translate(2.5f, 5.f, 0.f);
-		modelStack.Scale(1.f, 0.5f, 0.5f);
-		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		RenderMesh(meshList[GEO_BUTTON], false);
-		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
-		modelStack.Translate(((float)text.size() / textTranslate) + 0.9f, 0.1f, 0.f);
-		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
-		modelStack.PopMatrix();
-
+		
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
@@ -1747,35 +1656,39 @@ void SceneGame::RenderLeaderboard()
 		modelStack.Scale(2.2f, 2.2f, 2.2f);
 		modelStack.Translate(0.f, 0.15f, 0.f);
 		RenderMesh(meshList[GEO_LEADERBOARDSA], false);
-		modelStack.Scale((float)(0.5 / 4), (float)(0.5 / 1.2), 0.33f);
-		modelStack.Translate(-12.f, 4.2f, 0.f);
-		if (leaderboardCursor.getIndex() == 0)
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				modelStack.Translate(0.f, translateY, 0.f);
-				RenderText(meshList[GEO_TEXT], leaderboard.getVersus(i), Color(1.f, 0.f, 0.f));
-			}
-		}
-		if (leaderboardCursor.getIndex() == 1)
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				modelStack.Translate(0.f, translateY, 0.f);
-				RenderText(meshList[GEO_TEXT], leaderboard.getTime(i), Color(1.f, 0.f, 0.f));
-			}
-		}
-		
 		modelStack.PopMatrix();
+
+		//Name
+		for (int i = 0; i < 5; ++i)
+		{
+			modelStack.PushMatrix();
+			text = leaderboard.getCar(i);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			modelStack.Translate(-3.f, 3.5f - (float)i, 0.f);
+			modelStack.Scale(0.7f, 0.7f, 0.7f);
+			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+			modelStack.PopMatrix();
+		}
+
+		//Time
+		for (int i = 0; i < 5; ++i)
+		{
+			modelStack.PushMatrix();
+			text = leaderboard.getTime(i);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			modelStack.Translate(1.f, 3.5f - (float)i, 0.f);
+			modelStack.Scale(0.7f, 0.7f, 0.7f);
+			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+			modelStack.PopMatrix();
+		}
 
 		//Cursor
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
-		modelStack.Translate(leaderboardCursor.getX(), leaderboardCursor.getY(), 0.f);
+		modelStack.Translate(5.f, -3.5f, 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
-	
 		RenderMesh(meshList[GEO_CURSOR], false);
 		modelStack.PopMatrix();
 	}
@@ -1879,11 +1792,11 @@ void SceneGame::RenderShop()
 	// Render gamechoose buttons
 	if (menu.getIndex() == E_SHOP)
 	{
-		string colour;
-		string cost = "$";
-		string balance = to_string(gameBalance.getBalance());
-		string maxSpeed = "Speed: ";
-		string acceleration = "Accel: ";
+		std::string colour;
+		std::string cost = "$";
+		std::string balance = std::to_string(gameBalance.getBalance());
+		std::string maxSpeed = "Speed: ";
+		std::string acceleration = "Accel: ";
 
 		switch (gameShop.getIndex())
 		{
@@ -1927,7 +1840,7 @@ void SceneGame::RenderShop()
 		}
 		else
 		{
-			cost += to_string(gameShop.getCost());
+			cost += std::to_string(gameShop.getCost());
 		}
 
 		modelStack.PushMatrix();
@@ -2031,9 +1944,9 @@ void SceneGame::RenderUI()
 	{
 		std::string text;
 		if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
-			text = to_string((int)((opponentBoost + 100) / 2));
+			text = std::to_string((int)((opponentBoost + 100) / 2));
 		else
-			text = to_string((int)((playerBoost + 100) / 2));
+			text = std::to_string((int)((playerBoost + 100) / 2));
 		text += " km/h";
 		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
@@ -2059,7 +1972,7 @@ void SceneGame::RenderWinLose()
 		}
 		else if (menu.getGameMode() == MODE_TIME)
 		{
-			text = to_string(timer.getScoreMinutes()) + ":" + to_string(timer.getScoreSeconds()) + ":" + to_string(timer.getPrintScoreMiliseconds());
+			text = std::to_string(timer.getScoreMinutes()) + ":" + std::to_string(timer.getScoreSeconds()) + ":" + std::to_string(timer.getPrintScoreMiliseconds());
 		}
 		modelStack.Translate((float)(0.3 / 2.2), 0.f, 0.f);
 		modelStack.Scale((0.6f / 2.3f), (0.6f / 1.f), 0.6f);
@@ -2091,7 +2004,7 @@ void SceneGame::RenderWinLose()
 		if (menu.getGameMode() == MODE_VS)
 		{
 			text = "Balance: $";
-			text += to_string(gameBalance.getBalance());
+			text += std::to_string(gameBalance.getBalance());
 			modelStack.PushMatrix();
 			modelStack.Translate(-3.f, 5.f, 0.f);
 			modelStack.Scale(0.8f, 0.4f, 0.4f);
@@ -2140,11 +2053,11 @@ void SceneGame::RenderTimer()
 {
 	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_TIME)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 13.f, 1.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getSeconds()), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(timer.getSeconds()), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 15.f, 1.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getPrintMiliseconds()), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(timer.getPrintMiliseconds()), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
 	}
 }
 

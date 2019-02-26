@@ -24,6 +24,7 @@
 #include "Leaderboard.h"
 #include "Saving.h"
 #include "Currency.h"
+#include "Highscore.h"
 #include "Missile.h"
 
 class SceneGame : public Scene
@@ -295,6 +296,7 @@ private:
 	Shop		gameShop;
 	timer2		timer;
 	Leaderboard	leaderboard;
+	Highscore	highscore;
 	Menu		menu;
 
 	Status playerStatus;

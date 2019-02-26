@@ -153,6 +153,7 @@
     <ClInclude Include="Source\Car.h" />
     <ClInclude Include="Source\Currency.h" />
     <ClInclude Include="Source\Cursor.h" />
+    <ClInclude Include="Source\Highscore.h" />
     <ClInclude Include="Source\Leaderboard.h" />
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\LoadOBJ.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="Source\Car.cpp" />
     <ClCompile Include="Source\Currency.cpp" />
     <ClCompile Include="Source\Cursor.cpp" />
+    <ClCompile Include="Source\Highscore.cpp" />
     <ClCompile Include="Source\Leaderboard.cpp" />
     <ClCompile Include="Source\LoadOBJ.cpp" />
     <ClCompile Include="Source\LoadTGA.cpp" />

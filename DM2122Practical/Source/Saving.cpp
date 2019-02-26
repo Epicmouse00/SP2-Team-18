@@ -3,11 +3,11 @@
 Saving::Saving()
 {
 	//open savedata and set balance from .txt
-	fstream saveData("Save/Save.txt");
+	std::fstream saveData("Save/Save.txt");
 
 	if (saveData.is_open())
 	{
-		string line;
+		std::string line;
 		getline(saveData, line, '>');
 		balance = stoi(line);
 		getline(saveData, line);
@@ -26,40 +26,36 @@ Saving::Saving()
 		for (int i = 0; i < 5; ++i)
 		{
 			getline(saveData, line);
-			versusLeaderboard[i] = line;
-		}
-		for (int i = 0; i < 5; ++i)
-		{
+			nameLeaderboard[i] = stoi(line); // Car
 			getline(saveData, line);
-			timeLeaderboard[i] = line;
+			timeLeaderboard[i] = (float)stoi(line); // Time
 		}
 		saveData.close();
 	}
-	else cout << "Unable to open file";
 }
 
 Saving::~Saving()
 {
 }
 
-string Saving::getVersusLeaderboard(int index)
+int Saving::getNameLeaderboard(int index)
 {
-	return versusLeaderboard[index];
+	return nameLeaderboard[index];
 }
 
-string Saving::getTimeLeaderboard(int index)
+float Saving::getTimeLeaderboard(int index)
 {
 	return timeLeaderboard[index];
 }
 
-void Saving::setVersusLeaderboard(int index, string record)
+void Saving::setNameLeaderboard(int index, int car)
 {
-	versusLeaderboard[index] = record;
+	nameLeaderboard[index] = car;
 }
 
-void Saving::setTimeLeaderboard(int index, string record)
+void Saving::setTimeLeaderboard(int index, float time)
 {
-	timeLeaderboard[index] = record;
+	timeLeaderboard[index] = time;
 }
 
 bool Saving::getCar(int carIndex) const
@@ -92,9 +88,17 @@ void Saving::setColour(int carIndex)
 	car[carIndex] = true;
 }
 
+Highscore Saving::getHighscore(int index)
+{
+	Highscore temp;
+	temp.setCar(nameLeaderboard[index]);
+	temp.setTimeTaken(timeLeaderboard[index]);
+	return temp;
+}
+
 void Saving::save()
 {
-	fstream saveData;
+	std::fstream saveData;
 	int cars[5];
 	for (int i = 0; i < 5; ++i)
 	{
@@ -103,7 +107,7 @@ void Saving::save()
 		else
 			cars[i] = 0;
 	}
-	saveData.open("Save/Save.txt", fstream::in | fstream::out | fstream::trunc);
+	saveData.open("Save/Save.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
 	saveData << balance << ">Money" << '\n';
 	saveData << equip << ">Equipped" << '\n';
 	for (int i = 0; i < 5; ++i)
@@ -128,6 +132,10 @@ void Saving::save()
 			break;
 		}
 		saveData << cars[i] << colour << '\n';
+	}
+	for (int i = 0; i < 5; ++i)
+	{
+		saveData << nameLeaderboard[i] << '\n' << timeLeaderboard[i] << '\n';
 	}
 	saveData.close();
 }

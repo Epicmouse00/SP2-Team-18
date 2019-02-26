@@ -31,7 +31,7 @@ bool Menu::menuChange(int cursorIndex)
 		setGameMode(cursorIndex);
 		setIndex(2);
 	}
-	else if (pageIndex == 3 && cursorIndex == 0)
+	else if (pageIndex == 3 && cursorIndex == 2)
 	{
 		setIndex(0);
 	}
