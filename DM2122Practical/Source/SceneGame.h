@@ -24,6 +24,7 @@
 #include "Leaderboard.h"
 #include "Saving.h"
 #include "Currency.h"
+#include "Highscore.h"
 #include "Missile.h"
 
 class SceneGame : public Scene

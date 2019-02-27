@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SAVING_H
+#define SAVING_H
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -15,3 +16,4 @@ public:
 	void	loadLeaderboardData(Leaderboard* leaderboard);
 	void	saveData(Shop* shop, Leaderboard* leaderboard);
 };
+#endif
