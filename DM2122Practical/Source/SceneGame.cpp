@@ -20,10 +20,6 @@ Car			Player(true);
 Car			Opponent(false);
 Obstacle	obstacleList[4][numberOfRows];
 PowerUps	powerupList[4][numberOfRows / 2];
-Shop		gameShop;
-Leaderboard	leaderboard;
-Saving		gameSave(&gameShop, &leaderboard);
-
 
 
 SceneGame::SceneGame()
@@ -43,7 +39,7 @@ void SceneGame::Init()
 	InitMeshes();
 	InitCursors();
 	InitData();
-	
+	gameBalance.setBalance(gameSave.getBalance());
 	InitVariables();
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
@@ -157,7 +153,6 @@ void SceneGame::Exit()
 
 bool SceneGame::getExit()
 {
-	gameSave.saveData(&gameShop, &leaderboard);
 	return b_exit;
 }
 
@@ -466,7 +461,11 @@ void SceneGame::UpdateSong()
 
 void SceneGame::InitData()
 {
-	gameBalance.setBalance(gameShop.getBalance());
+	for (int i = 0; i < 5; i++)
+	{
+		leaderboard.addTime(gameSave.getHighscore(i));
+	}
+	gameSave.save();
 }
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
@@ -1065,20 +1064,11 @@ void SceneGame::UpdateWinLose()
 				}
 				else if (menu.getGameMode() == MODE_VS)
 				{
-					leaderboard.addNewScore(Player.getTexture(), timer.getScoreMiliseconds(), true);
-				}
-				else if (menu.getGameMode() == MODE_TIME)
-				{
-					leaderboard.addNewScore(Player.getTexture(), timer.getScoreMiliseconds(), false);
-				}
-				gameSave.saveData(&gameShop, &leaderboard);
-				if (menu.getGameMode() == MODE_VS)
-				{
 					if (win)
 						gameBalance.addBalance(100 + Player.getTexture() * 25);
 					else
 						gameBalance.deductBalance(Player.getTexture() * 25);
-					gameShop.setBalance(gameBalance.getBalance());
+					gameSave.setBalance(gameBalance.getBalance());
 				}
 			}
 			else
@@ -1193,17 +1183,19 @@ void SceneGame::UpdateShop(double dt)
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (!gameShop.isOwned(gameShop.getIndex()) && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
+			if (!gameShop.isOwned() && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
-				gameShop.setBalance(gameBalance.getBalance());
-				gameShop.setOwned(gameShop.getIndex());
+				gameShop.setOwned();
+				gameSave.setBalance(gameBalance.getBalance());
+				gameSave.setColour(gameShop.getIndex());
 			}
-			else if (gameShop.isOwned(gameShop.getIndex()))
+			else if (gameShop.isOwned())
 			{
 				if (gameShop.getEquip() != gameShop.getIndex())
 				{
 					gameShop.setEquip();
+					gameSave.setEquip(gameShop.getEquip());
 					Player.setTexture(gameShop.getEquip());
 					UpdateCarTexture();
 					UpdateCarStats();
@@ -1212,7 +1204,9 @@ void SceneGame::UpdateShop(double dt)
 				{
 					menu.menuChange(0);
 				}
+
 			} 
+			gameSave.save();
 		}
 	}
 }
@@ -1668,35 +1662,30 @@ void SceneGame::RenderLeaderboard()
 		RenderMesh(meshList[GEO_LEADERBOARDSA], false);
 		modelStack.PopMatrix();
 
-    //Leaderboard text
-		modelStack.PushMatrix();
-		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-		modelStack.Scale(0.6f, 0.6f, 0.6f);
-		modelStack.Translate(-5.5f, 5.f, 0.f);
-		if (leaderboardCursor.getIndex() == 0)
+		//Name
+		for (int i = 0; i < 5; ++i)
 		{
-			//Car names
-			for (int i = 0; i < 5; i++)
-			{
-				RenderText(meshList[GEO_TEXT], leaderboard.getVersusCar(i), Color(1.f, 0.f, 0.f));
-				modelStack.Translate(7.5f, 0.f, 0.f);
-				RenderText(meshList[GEO_TEXT], leaderboard.getVersusRecord(i), Color(1.f, 0.f, 0.f));
-				modelStack.Translate(-7.5f, -1.3f, 0.f);
-			}
+			modelStack.PushMatrix();
+			text = leaderboard.getCar(i);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			modelStack.Translate(-3.f, 3.5f - (float)i, 0.f);
+			modelStack.Scale(0.7f, 0.7f, 0.7f);
+			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+			modelStack.PopMatrix();
 		}
-		else if (leaderboardCursor.getIndex() == 1)
+
+		//Time
+		for (int i = 0; i < 5; ++i)
 		{
-			//Record times
-			for (int i = 0; i < 5; i++)
-			{
-				RenderText(meshList[GEO_TEXT], leaderboard.getTimeCar(i), Color(1.f, 0.f, 0.f));
-				modelStack.Translate(7.5f, 0.f, 0.f);
-				RenderText(meshList[GEO_TEXT], leaderboard.getTimeRecord(i), Color(1.f, 0.f, 0.f));
-				modelStack.Translate(-7.5f, -1.3f, 0.f);
-			}
+			modelStack.PushMatrix();
+			text = leaderboard.getTime(i);
+			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+			modelStack.Translate(1.f, 3.5f - (float)i, 0.f);
+			modelStack.Scale(0.7f, 0.7f, 0.7f);
+			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+			modelStack.PopMatrix();
 		}
-		modelStack.PopMatrix();
-    
+
 		//Cursor
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
@@ -1842,7 +1831,7 @@ void SceneGame::RenderShop()
 			break;
 		}
 
-		if (gameShop.isOwned(gameShop.getIndex()))
+		if (gameShop.isOwned())
 		{
 			if (gameShop.isEquip())
 				cost = "Equipped";
@@ -2243,9 +2232,4 @@ void SceneGame::RenderHitMarker()
 	{
 		RenderTextOnScreen(meshList[GEO_TEXT], "x", Color(1.f, 0.f, 0.f), 4.f, 10.35f, 7.6f);
 	}
-}
-
-void SceneGame::SaveData()
-{
-	gameSave.saveData(&gameShop, &leaderboard);
 }
