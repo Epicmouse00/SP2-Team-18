@@ -88,23 +88,25 @@ void Saving::setColour(int carIndex)
 
 void Saving::loadShopData(Shop* shop)
 {
-	int equip;
-	int balance;
-	//open savedata and set balance from .txt
+	//open savedata and set values from .txt
 	fstream saveData("Save/Save.txt");
 
-	string line;
-	getline(saveData, line);
-	getline(saveData, line, '>');
-	equip = stoi(line);
-	getline(saveData, line, '>');
-	balance = stoi(line);
-	shop->loadNumberData(equip, balance);
-	getline(saveData, line);
+	string balance;
+	string equip;
+	string temp;
+
+	getline(saveData, balance);
+	getline(saveData, temp, '>');
+
+	getline(saveData, equip, '>');
+	getline(saveData, temp, '>');
+
+	shop->loadNumberData(stoi(equip), stoi(balance));
+
 	for (int i = 0; i < 5; ++i)
 	{
-		getline(saveData, line, '>');
-		if (line == "1")
+		getline(saveData, temp);
+		if (temp == "1")
 		{
 			shop->loadCarData(true, i);
 		}
@@ -112,20 +114,49 @@ void Saving::loadShopData(Shop* shop)
 		{
 			shop->loadCarData(false, i);
 		}
+		getline(saveData, temp, '>');
 	}
+	saveData.close();
 }
 
 void Saving::loadLeaderboardData(Leaderboard* leaderboard)
 {
+	fstream saveData("Save/Save.txt");
+	string temp;
+	string carName;
+	string record;
+	string timeTaken;
+	string index;
+	for (int i = 0; i < 7; i++)
+	{
+		getline(saveData, temp);
+	}
 
+	for (int i = 0; i < 5; i++)
+	{
+		getline(saveData, carName, ',');
+		getline(saveData, record, ',');
+		getline(saveData, timeTaken, ',');
+		getline(saveData, index, '\n');
+		leaderboard->setVersus(carName, record, stoi(timeTaken), stoi(index));
+	}
+	
+	for (int i = 0; i < 5; i++)
+	{
+		getline(saveData, carName, ',');
+		getline(saveData, record, ',');
+		getline(saveData, timeTaken, ',');
+		getline(saveData, index, '\n');
+		leaderboard->setTime(carName, record, stoi(timeTaken), stoi(index));
+	}
 }
 
 void Saving::saveShopData(Shop* shop)
 {
 	fstream saveData;
 	saveData.open("Save/Save.txt", fstream::in | fstream::out | fstream::trunc);
-	saveData << balance << ">Money" << '\n';
-	saveData << equip << ">Equipped" << '\n';
+	saveData << shop->getBalance() << ">Money" << '\n';
+	saveData << shop->getEquip() << ">Equipped" << '\n';
 	for (int i = 0; i < 5; ++i)
 	{
 		std::string colour = ">";
@@ -147,7 +178,7 @@ void Saving::saveShopData(Shop* shop)
 			colour += "Monster";
 			break;
 		}
-		saveData << shop.isown << colour << '\n';
+		saveData << shop->isOwned(i) << colour << '\n';
 	}
 	saveData.close();
 }

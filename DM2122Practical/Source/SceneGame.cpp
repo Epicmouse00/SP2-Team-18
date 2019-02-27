@@ -468,7 +468,7 @@ void SceneGame::UpdateSong()
 void SceneGame::InitData()
 {
 	Saving	gameSave(&gameShop, &leaderboard);
-	gameBalance.setBalance(gameSave->getBalance());
+	gameBalance.setBalance(gameSave.getBalance());
 	gameSave.loadShopData(&gameShop);
 	for (int i = 0; i < 5; i++)
 	{
