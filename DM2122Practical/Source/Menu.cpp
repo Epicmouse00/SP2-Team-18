@@ -18,46 +18,42 @@ bool Menu::menuChange(int cursorIndex)
 		setIndex(5);
 		return false;
 	}
-	if (pageIndex == 0 && cursorIndex == 3) // Quit
+	if (pageIndex == 0 && cursorIndex == 3)
 	{
 		return true;
 	}
-	if (pageIndex == 1 && cursorIndex == 2) // Gamechoose Back
+	if (pageIndex == 1 && cursorIndex == 2)
 	{
 		setIndex(0);
 	}
-	else if (pageIndex == 1 && cursorIndex != 2) // Gamechoose Gamemode
+	else if (pageIndex == 1 && cursorIndex != 2)
 	{
 		setGameMode(cursorIndex);
 		setIndex(2);
 	}
-	else if (pageIndex == 3 && cursorIndex == 0) // Shop Back
+	else if (pageIndex == 3 && cursorIndex == 0)
 	{
 		setIndex(0);
 	}
-	else if (pageIndex == 4 && cursorIndex == 0) // Leaderboard Back
+	else if (pageIndex == 4 && cursorIndex == 2)
 	{
 		setIndex(0);
 	}
-	else if (pageIndex == 5 && cursorIndex == 0) // Winlose retry
+	else if (pageIndex == 5 && cursorIndex == 0)
 	{
 		setIndex(2);
 	}
-	else if (pageIndex == 5 && cursorIndex == 1) // Winlose Back
+	else if (pageIndex == 5 && cursorIndex == 1)
 	{
 		setIndex(0);
 	}
-	else if (pageIndex == 0 && cursorIndex == 0) // Main menu play
+	else if (cursorIndex > 0)
 	{
-		setIndex(1);
+		setIndex(cursorIndex + 2);
 	}
-	else if (pageIndex == 0 && cursorIndex == 1) // Main menu shop
+	else
 	{
-		setIndex(3);
-	}
-	else if (pageIndex == 0 && cursorIndex == 2) // Main menu leaderboard
-	{
-		setIndex(4);
+		setIndex(cursorIndex + 1);
 	}
 	return false;
 }

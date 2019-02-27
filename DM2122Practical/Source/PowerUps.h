@@ -1,4 +1,5 @@
-#pragma once
+#ifndef POWERUPS_H
+#define POWERUPS_H
 #include <cstdlib>
 class PowerUps
 {
@@ -22,3 +23,4 @@ public:
 	bool getActive();
 	int getType();
 };
+#endif

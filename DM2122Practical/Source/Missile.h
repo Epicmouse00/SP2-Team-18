@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MISSILE_H
+#define MISSILE_H
 class Missile
 {
 private:
@@ -20,3 +21,4 @@ public:
 	void setHit(bool isHit);
 	bool getHit();
 };
+#endif

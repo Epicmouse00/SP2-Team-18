@@ -15,11 +15,16 @@ const unsigned int numberOfRows = 100;
 const float	laneSpacing = 22.5f; // 7.5 x 3
 Cursor		mainMenuCursor(4);
 Cursor		gameChooseCursor(3);
+Cursor		leaderboardCursor(3);
 Cursor		winloseCursor(2);
 Car			Player(true);
 Car			Opponent(false);
 Obstacle	obstacleList[4][numberOfRows];
 PowerUps	powerupList[4][numberOfRows / 2];
+Shop		gameShop;
+Leaderboard	leaderboard;
+Saving		gameSave(&gameShop, &leaderboard);
+
 
 
 SceneGame::SceneGame()
@@ -39,7 +44,7 @@ void SceneGame::Init()
 	InitMeshes();
 	InitCursors();
 	InitData();
-	gameBalance.setBalance(gameSave.getBalance());
+	
 	InitVariables();
 	Player.setTexture(gameShop.getEquip());
 	UpdateCarTexture();
@@ -153,6 +158,7 @@ void SceneGame::Exit()
 
 bool SceneGame::getExit()
 {
+	gameSave.saveData(&gameShop, &leaderboard);
 	return b_exit;
 }
 
@@ -336,8 +342,8 @@ void SceneGame::InitMeshes()
 	meshList[GEO_SPEED] = MeshBuilder::GenerateOBJ("Speed Power-Up", "OBJ//speed.obj");
 	meshList[GEO_SPEED]->textureID = LoadTGA("image//speed.tga");
 
-	meshList[GEO_SHIELD] = MeshBuilder::GenerateOBJ("Shield Power-Up", "OBJ//shield2.obj");
-	meshList[GEO_SHIELD]->textureID = LoadTGA("image//shield2.tga");
+	meshList[GEO_SHIELD] = MeshBuilder::GenerateOBJ("Shield Power-Up", "OBJ//shield.obj");
+	meshList[GEO_SHIELD]->textureID = LoadTGA("image//shield.tga");
 
 	meshList[GEO_MISSILE] = MeshBuilder::GenerateOBJ("Missile Power-Up", "OBJ//bomb.obj");
 	meshList[GEO_MISSILE]->textureID = LoadTGA("image//bomb.tga");
@@ -397,6 +403,9 @@ void SceneGame::InitCursors()
 	gameChooseCursor.addNewPosition(0.f, 3.f, 0);
 	gameChooseCursor.addNewPosition(0.f, 0.f, 1);
 	gameChooseCursor.addNewPosition(0.f, -3.f, 2);
+	leaderboardCursor.addNewPosition(10.f, 10.f, 0);
+	leaderboardCursor.addNewPosition(0.f, 10.f, 1);
+	leaderboardCursor.addNewPosition(5.f, -3.5f, 2);
 	winloseCursor.addNewPosition(5.f, 0.f, 0);
 	winloseCursor.addNewPosition(5.f, -3.f, 1);
 }
@@ -461,11 +470,7 @@ void SceneGame::UpdateSong()
 
 void SceneGame::InitData()
 {
-	for (int i = 0; i < 5; i++)
-	{
-		leaderboard.addTime(gameSave.getHighscore(i));
-	}
-	gameSave.save();
+	gameBalance.setBalance(gameShop.getBalance());
 }
 void SceneGame::InitObstacles(unsigned int noOfRows)
 {
@@ -818,7 +823,7 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(500.f);
 		break;
 	}
-	Opponent.setMaxSpeed(Player.getMaxSpeed() - 10.f);
+	Opponent.setMaxSpeed(Player.getMaxSpeed() + 10.f);
 	Opponent.setAcceleration(30.f);
 }
 
@@ -861,10 +866,6 @@ void SceneGame::UpdatePowerUps(double dt)
 				Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
 			}
 		}
-		else
-		{
-			Player.UpdatePlayerFlight(dt, 12.f, playerStatus.getActive(2));
-		}
 		if (aiStatus.getActive(2))
 		{
 			if (aiStatus.getTimer(2) <= 6.f)
@@ -877,10 +878,6 @@ void SceneGame::UpdatePowerUps(double dt)
 				aiStatus.setActive(false, 2);
 				Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
 			}
-		}
-		else
-		{
-			Opponent.UpdatePlayerFlight(dt, 12.f, aiStatus.getActive(2));
 		}
 		
 
@@ -1027,10 +1024,76 @@ void SceneGame::UpdateLeaderboardCursor()
 {
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
+		if ((Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A')) && delayTime >= 1.f)
+		{
+			if (leaderboardCursor.getIndex() != 2)
+			{
+				leaderboardCursor.updatePositionIndex(-1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
+		}
+
+		if ((Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D')) && delayTime >= 1.f)
+		{
+			if (leaderboardCursor.getIndex() != 1)
+			{
+				leaderboardCursor.updatePositionIndex(1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
+		}
+
+		if ((Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S')) && delayTime >= 1.f)
+		{
+			if (leaderboardCursor.getIndex() == 0)
+			{
+				leaderboardCursor.updatePositionIndex(1);
+				leaderboardCursor.updatePositionIndex(1);
+				delayTime = 0;
+			}
+			else if (leaderboardCursor.getIndex() == 1)
+			{
+				leaderboardCursor.updatePositionIndex(1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
+		}
+		if ((Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W')) && delayTime >= 1.f)
+		{
+			if (leaderboardCursor.getIndex() == 2)
+			{
+				leaderboardCursor.updatePositionIndex(-1);
+				leaderboardCursor.updatePositionIndex(-1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
+		}
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
-			menu.menuChange(0);
-			delayTime = 0;
+			if (leaderboardCursor.getIndex() == 2)
+			{
+				menu.menuChange(leaderboardCursor.getIndex());
+				leaderboardCursor.updatePositionIndex(-1);
+				leaderboardCursor.updatePositionIndex(-1);
+				delayTime = 0;
+			}
+			else
+			{
+				delayTime = 0;
+			}
 		}
 	}
 }
@@ -1053,22 +1116,22 @@ void SceneGame::UpdateWinLose()
 			{
 				menu.menuChange(-1);
 				delayTime = 0;
-				if (menu.getGameMode() == MODE_TIME)
+				if (menu.getGameMode() == MODE_VS)
 				{
-					highscore.setCar(Player.getTexture());
-					highscore.setTimeTaken(timer.getScoreMiliseconds());
-					leaderboard.addTime(highscore);
-					for (int i = 0; i < 5; ++i)
-						gameSave.setHighscore(leaderboard.getHighscore(i), i);
-					gameSave.save();
+					leaderboard.addNewScore(Player.getTexture(), timer.getScoreMiliseconds(), true);
 				}
-				else if (menu.getGameMode() == MODE_VS)
+				else if (menu.getGameMode() == MODE_TIME)
+				{
+					leaderboard.addNewScore(Player.getTexture(), timer.getScoreMiliseconds(), false);
+				}
+				gameSave.saveData(&gameShop, &leaderboard);
+				if (menu.getGameMode() == MODE_VS)
 				{
 					if (win)
 						gameBalance.addBalance(100 + Player.getTexture() * 25);
 					else
 						gameBalance.deductBalance(Player.getTexture() * 25);
-					gameSave.setBalance(gameBalance.getBalance());
+					gameShop.setBalance(gameBalance.getBalance());
 				}
 			}
 			else
@@ -1183,37 +1246,34 @@ void SceneGame::UpdateShop(double dt)
 		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
 		{
 			delayTime = 0;
-			if (!gameShop.isOwned() && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
+			if (!gameShop.isOwned(gameShop.getIndex()) && gameShop.isOwned(gameShop.getIndex() - 1) && (gameBalance.getBalance() >= gameShop.getCost()))
 			{
 				gameBalance.deductBalance(gameShop.getCost());
-				gameShop.setOwned();
-				gameSave.setBalance(gameBalance.getBalance());
-				gameSave.setColour(gameShop.getIndex());
+				gameShop.setBalance(gameBalance.getBalance());
+				gameShop.setOwned(gameShop.getIndex());
 			}
-			else if (gameShop.isOwned())
+			else if (gameShop.isOwned(gameShop.getIndex()))
 			{
 				if (gameShop.getEquip() != gameShop.getIndex())
 				{
 					gameShop.setEquip();
-					gameSave.setEquip(gameShop.getEquip());
 					Player.setTexture(gameShop.getEquip());
 					UpdateCarTexture();
 					UpdateCarStats();
 				}
 				else
 				{
+					delayTime = 0;
 					menu.menuChange(0);
 				}
-
 			} 
-			gameSave.save();
 		}
 	}
 }
 
 void SceneGame::UpdateUI(double dt)
 {
-	fps = std::to_string((int)(1 / dt)) + " fps";
+	fps = to_string((int)(1 / dt)) + " fps";
 	UpdateTimer(dt);
 }
 
@@ -1640,7 +1700,31 @@ void SceneGame::RenderLeaderboard()
 	if (menu.getIndex() == E_LEADERBOARD)
 	{
 		std::string text;
-		
+
+		// Time Leaderboard button
+		text = "Time Leaderboard";
+		modelStack.PushMatrix();
+		modelStack.Translate(-2.5f, 5.f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.7f, 0.1f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
+		// VS Leaderboard button
+		text = "VS Leaderboard";
+		modelStack.PushMatrix();
+		modelStack.Translate(2.5f, 5.f, 0.f);
+		modelStack.Scale(1.f, 0.5f, 0.5f);
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		RenderMesh(meshList[GEO_BUTTON], false);
+		modelStack.Scale((0.35f / 1.f), (0.35f / 0.5f), 0.5f);
+		modelStack.Translate(((float)text.size() / textTranslate) + 0.9f, 0.1f, 0.f);
+		RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
+		modelStack.PopMatrix();
+
 		//Back
 		text = "Back";
 		modelStack.PushMatrix();
@@ -1662,34 +1746,36 @@ void SceneGame::RenderLeaderboard()
 		RenderMesh(meshList[GEO_LEADERBOARDSA], false);
 		modelStack.PopMatrix();
 
-		//Name
-		for (int i = 0; i < 5; ++i)
+		modelStack.PushMatrix();
+		modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
+		modelStack.Scale(0.6f, 0.6f, 0.6f);
+		modelStack.Translate(-5.5f, 5.f, 0.f);
+		if (leaderboardCursor.getIndex() == 0)
 		{
-			modelStack.PushMatrix();
-			text = leaderboard.getCar(i);
-			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-			modelStack.Translate(-3.f, 3.5f - (float)i, 0.f);
-			modelStack.Scale(0.7f, 0.7f, 0.7f);
-			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
-			modelStack.PopMatrix();
+			for (int i = 0; i < 5; i++)
+			{
+				RenderText(meshList[GEO_TEXT], leaderboard.getVersusCar(i), Color(1.f, 0.f, 0.f));
+				modelStack.Translate(7.5f, 0.f, 0.f);
+				RenderText(meshList[GEO_TEXT], leaderboard.getVersusRecord(i), Color(1.f, 0.f, 0.f));
+				modelStack.Translate(-7.5f, -1.3f, 0.f);
+			}
 		}
-
-		//Time
-		for (int i = 0; i < 5; ++i)
+		if (leaderboardCursor.getIndex() == 1)
 		{
-			modelStack.PushMatrix();
-			text = leaderboard.getTime(i);
-			modelStack.Rotate(180.f, 0.f, 1.f, 0.f);
-			modelStack.Translate(1.f, 3.5f - (float)i, 0.f);
-			modelStack.Scale(0.7f, 0.7f, 0.7f);
-			RenderText(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f));
-			modelStack.PopMatrix();
+			for (int i = 0; i < 5; i++)
+			{
+				RenderText(meshList[GEO_TEXT], leaderboard.getTimeCar(i), Color(1.f, 0.f, 0.f));
+				modelStack.Translate(7.5f, 0.f, 0.f);
+				RenderText(meshList[GEO_TEXT], leaderboard.getTimeRecord(i), Color(1.f, 0.f, 0.f));
+				modelStack.Translate(-7.5f, -1.3f, 0.f);
+			}
 		}
+		modelStack.PopMatrix();
 
 		//Cursor
 		modelStack.PushMatrix();
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
-		modelStack.Translate(5.f, -3.5f, 0.f);
+		modelStack.Translate(leaderboardCursor.getX(), leaderboardCursor.getY(), 0.f);
 		modelStack.Rotate(180, 1.f, 0.f, 0.f);
 		modelStack.Rotate(-45, 0.f, 0.f, 1.f);
 		modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
@@ -1796,11 +1882,11 @@ void SceneGame::RenderShop()
 	// Render gamechoose buttons
 	if (menu.getIndex() == E_SHOP)
 	{
-		std::string colour;
-		std::string cost = "$";
-		std::string balance = std::to_string(gameBalance.getBalance());
-		std::string maxSpeed = "Speed: ";
-		std::string acceleration = "Accel: ";
+		string colour;
+		string cost = "$";
+		string balance = to_string(gameBalance.getBalance());
+		string maxSpeed = "Speed: ";
+		string acceleration = "Accel: ";
 
 		switch (gameShop.getIndex())
 		{
@@ -1831,7 +1917,7 @@ void SceneGame::RenderShop()
 			break;
 		}
 
-		if (gameShop.isOwned())
+		if (gameShop.isOwned(gameShop.getIndex()))
 		{
 			if (gameShop.isEquip())
 				cost = "Equipped";
@@ -1844,7 +1930,7 @@ void SceneGame::RenderShop()
 		}
 		else
 		{
-			cost += std::to_string(gameShop.getCost());
+			cost += to_string(gameShop.getCost());
 		}
 
 		modelStack.PushMatrix();
@@ -1948,9 +2034,9 @@ void SceneGame::RenderUI()
 	{
 		std::string text;
 		if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
-			text = std::to_string((int)((opponentBoost + 100) / 2));
+			text = to_string((int)((opponentBoost + 100) / 2));
 		else
-			text = std::to_string((int)((playerBoost + 100) / 2));
+			text = to_string((int)((playerBoost + 100) / 2));
 		text += " km/h";
 		RenderTextOnScreen(meshList[GEO_TEXT], text, Color(0.f, 1.f, 1.f), 5.f, 1.f, 1.f);
 	}
@@ -1976,7 +2062,7 @@ void SceneGame::RenderWinLose()
 		}
 		else if (menu.getGameMode() == MODE_TIME)
 		{
-			text = std::to_string(timer.getScoreMinutes()) + ":" + std::to_string(timer.getScoreSeconds()) + ":" + std::to_string(timer.getPrintScoreMiliseconds());
+			text = to_string(timer.getScoreMinutes()) + ":" + to_string(timer.getScoreSeconds()) + ":" + to_string(timer.getPrintScoreMiliseconds());
 		}
 		modelStack.Translate((float)(0.3 / 2.2), 0.f, 0.f);
 		modelStack.Scale((0.6f / 2.3f), (0.6f / 1.f), 0.6f);
@@ -2008,7 +2094,7 @@ void SceneGame::RenderWinLose()
 		if (menu.getGameMode() == MODE_VS)
 		{
 			text = "Balance: $";
-			text += std::to_string(gameBalance.getBalance());
+			text += to_string(gameBalance.getBalance());
 			modelStack.PushMatrix();
 			modelStack.Translate(-3.f, 5.f, 0.f);
 			modelStack.Scale(0.8f, 0.4f, 0.4f);
@@ -2057,11 +2143,11 @@ void SceneGame::RenderTimer()
 {
 	if (menu.getIndex() == E_GAME && menu.getGameMode() == MODE_TIME)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getMinutes()), Color(0.f, 1.f, 1.f), 3.f, 12.f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 13.f, 1.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(timer.getSeconds()), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getSeconds()), Color(0.f, 1.f, 1.f), 3.f, 13.5f, 1.f);
 		RenderTextOnScreen(meshList[GEO_TEXT], ":", Color(0.f, 1.f, 1.f), 3.f, 15.f, 1.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(timer.getPrintMiliseconds()), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT], to_string(timer.getPrintMiliseconds()), Color(0.f, 1.f, 1.f), 3.f, 15.5f, 1.f);
 	}
 }
 
@@ -2119,7 +2205,7 @@ void SceneGame::RenderPowerUps()
 						RenderMesh(meshList[GEO_SPEED], false);
 						break;
 					case 1:
-						modelStack.Scale(0.2f, 0.2f, 0.2f);
+						modelStack.Scale(0.1f, 0.1f, 0.1f);
 						RenderMesh(meshList[GEO_SHIELD], false);
 						break;
 					case 2:
@@ -2232,4 +2318,9 @@ void SceneGame::RenderHitMarker()
 	{
 		RenderTextOnScreen(meshList[GEO_TEXT], "x", Color(1.f, 0.f, 0.f), 4.f, 10.35f, 7.6f);
 	}
+}
+
+void SceneGame::SaveData()
+{
+	gameSave.saveData(&gameShop, &leaderboard);
 }

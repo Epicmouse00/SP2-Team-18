@@ -24,7 +24,6 @@
 #include "Leaderboard.h"
 #include "Saving.h"
 #include "Currency.h"
-#include "Highscore.h"
 #include "Missile.h"
 
 class SceneGame : public Scene
@@ -253,6 +252,8 @@ private:
 	void		RenderAIMissile();
 	void		RenderHitMarker();
 
+	void		SaveData();
+
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
 
@@ -291,12 +292,8 @@ private:
 	//cursor defined in .cpp
 	
 	void		RenderMesh(Mesh *mesh, bool enableLight);
-	Saving		gameSave;
 	Currency	gameBalance;
-	Shop		gameShop;
 	timer2		timer;
-	Leaderboard	leaderboard;
-	Highscore	highscore;
 	Menu		menu;
 
 	Status playerStatus;

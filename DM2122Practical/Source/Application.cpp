@@ -69,7 +69,7 @@ void Application::Init()
 
 
 	//Create a window and create its OpenGL context
-	m_window = glfwCreateWindow(900, 675, "Raceholders", NULL, NULL);
+	m_window = glfwCreateWindow(800, 600, "Raceholders", NULL, NULL);
 
 	//If the window couldn't be created
 	if (!m_window)

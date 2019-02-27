@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OBSTACLE_H
+#define OBSTACLE_H
 class Obstacle
 {
 	enum O_Type
@@ -28,4 +29,4 @@ private:
 	float	z				= 0;
 	bool	active			= false;
 };
-
+#endif

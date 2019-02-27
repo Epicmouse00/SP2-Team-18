@@ -3,17 +3,27 @@
 Shop::Shop()
 {
 	index = 0;
-
-	Saving save;
 	for (int i = 0; i < 5; ++i)
 	{
-		car[i] = save.getCar(i);
+		car[i] = false;
 	}
-	equip = save.getEquip();
+	equip = 0;
+	balance = 0;
 }
 
 Shop::~Shop()
 {
+}
+
+void Shop::loadCarData(bool ownedCar, int index)
+{
+	car[index] = ownedCar;
+}
+
+void Shop::loadNumberData(int equip, int balance)
+{
+	this->equip = equip;
+	this->balance = balance;
 }
 
 int Shop::getCost() const
@@ -64,24 +74,14 @@ void Shop::resetIndex()
 	index = 0;
 }
 
-bool Shop::isOwned() const
-{
-	return car[index];
-}
-
 bool Shop::isOwned(int index) const
 {
 	return car[index];
 }
 
-void Shop::setOwned()
+void Shop::setOwned(int index)
 {
 	car[index] = true;
-}
-
-bool Shop::getColour(int colourIndex) const
-{
-	return car[colourIndex];
 }
 
 void Shop::setEquip()
@@ -97,4 +97,14 @@ bool Shop::isEquip() const
 int Shop::getEquip() const
 {
 	return equip;
+}
+
+int Shop::getBalance() const
+{
+	return balance;
+}
+
+void Shop::setBalance(int balance)
+{
+	this->balance = balance;
 }

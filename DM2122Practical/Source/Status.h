@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STATUS_H
+#define STATUS_H
 class Status
 {
 private:
@@ -15,3 +16,4 @@ public:
 	float getTimer(int index);
 	void resetStatus();
 };
+#endif

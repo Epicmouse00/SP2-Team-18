@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CURRENCY_H
+#define CURRENCY_H
 class Currency
 {
 private:
@@ -11,3 +12,4 @@ public:
 	int		getBalance() const;
 	void	setBalance(int amount);
 };
+#endif

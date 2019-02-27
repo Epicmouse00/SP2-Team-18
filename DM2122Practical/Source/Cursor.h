@@ -16,5 +16,4 @@ public:
 	float getY() const;
 	int getIndex() const;
 };
-
 #endif
