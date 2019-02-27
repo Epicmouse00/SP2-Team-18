@@ -18,16 +18,22 @@ Leaderboard::~Leaderboard()
 
 void Leaderboard::addTime(Highscore highscore)
 {
-	for (int i = 4; i >= 0; --i)
+	for (int i = 0; i < 5; ++i) // Starts checking from first element
 	{
-		if (timeScores[i].getTimeTaken() == -1.f || highscore.getTimeTaken() < timeScores[i].getTimeTaken())
+		if (timeScores[i].getTimeTaken() == -1.f) // If default
 		{
-			if (i != 4)
-				timeScores[i + 1] = timeScores[i];
-			timeScores[i] = highscore;
-		}
-		else
+			timeScores[i] = highscore; // Set the new score
 			break;
+		}
+		else if (highscore.getTimeTaken() < timeScores[i].getTimeTaken()) // if new score is faster
+		{
+			for (int j = 5 - i; j > 0; --j) // Push back the rest
+			{
+					timeScores[j] = timeScores[j - 1];
+			}
+			timeScores[i] = highscore; // Set the new score
+			break;
+		}
 	}
 }
 
