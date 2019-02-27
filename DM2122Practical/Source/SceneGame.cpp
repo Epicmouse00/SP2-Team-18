@@ -1025,10 +1025,13 @@ void SceneGame::UpdateGameChooseCursor()
 
 void SceneGame::UpdateLeaderboardCursor()
 {
-	if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
+	if (menu.getIndex() == E_LEADERBOARD)
 	{
-		menu.menuChange(0);
-		delayTime = 0;
+		if ((Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)) && delayTime >= 1.f)
+		{
+			menu.menuChange(0);
+			delayTime = 0;
+		}
 	}
 }
 
