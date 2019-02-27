@@ -6,20 +6,23 @@
 class Leaderboard
 {
 private:
-	std::string versusScores[5];
-	std::string timeScores[5];
+	int versusCarIndex[5];
+	int versusTimeTaken[5];
+	int timeCarIndex[5];
+	int timeTimeTaken[5];
 public:
 	Leaderboard();
 	~Leaderboard();
 
-	void setVersus(std::string carName, std::string record, int timeTaken, int index);
-	std::string getVersusName(int index) const;
+	void setVersus(int carIndex, int timeTaken, int index);
+	std::string getVersus(int index) const;
+	std::string getVersusCar(int index) const;
 	std::string getVersusRecord(int index) const;
-	void setTime(std::string carName,std::string record, int timeTaken, int index);
-	std::string getTimeName(int index) const;
+	void setTime(int carIndex, int timeTaken, int index);
+	std::string getTime(int index) const;
+	std::string getTimeCar(int index) const;
 	std::string getTimeRecord(int index) const;
-	void addNewScore(std::string carName, std::string record, int timeTaken, int index, bool isVersus);
-
+	void addNewScore(int carIndex, int timeTaken, bool isVersus);
 };
 
 #endif

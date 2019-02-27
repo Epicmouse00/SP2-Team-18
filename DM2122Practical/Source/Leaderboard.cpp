@@ -4,8 +4,10 @@ Leaderboard::Leaderboard()
 {
 	for (int i = 0; i < 5; i++)
 	{
-		versusScores[i] = "Error";
-		timeScores[i] = "Error";
+		versusCarIndex[i] = 0;
+		versusTimeTaken[i] = 0;
+		timeCarIndex[i] = 0;
+		timeTimeTaken[i] = 0;
 	}
 }
 
@@ -14,76 +16,163 @@ Leaderboard::~Leaderboard()
 
 }
 
-void Leaderboard::setVersus(std::string carName, std::string record, int timeTaken, int index)
+void Leaderboard::setVersus(int carIndex, int timeTaken, int index)
 {
-	carName += ",";
-	carName += record;
-	carName += ",";
-	carName += std::to_string(timeTaken);
-	carName += ",";
-	carName += std::to_string(index);
-	versusScores[index] = carName;
+	versusCarIndex[index] = carIndex;
+	versusTimeTaken[index] = timeTaken;
 }
 
-void Leaderboard::setTime(std::string carName, std::string record, int timeTaken, int index)
+void Leaderboard::setTime(int carIndex, int timeTaken, int index)
 {
-	carName += ",";
-	carName += record;
-	carName += ",";
-	carName += std::to_string(timeTaken);
-	carName += ",";
-	carName += std::to_string(index);
-	timeScores[index] = carName;
+	timeCarIndex[index] = carIndex;
+	timeTimeTaken[index] = timeTaken;
 }
 
-std::string Leaderboard::getVersusName(int index) const
+std::string Leaderboard::getVersus(int index) const
 {
-	return versusScores[index];
+	std::string record;
+	record += std::to_string(versusCarIndex[index]);
+	record += ',';
+	record += std::to_string(versusTimeTaken[index]);
+	return record;
 }
 
-std::string Leaderboard::getVersusName(int index) const
+std::string Leaderboard::getVersusCar(int index) const
 {
-
+	std::string carName;
+	switch (versusCarIndex[index])
+	{
+	case 0:
+		carName = "Grey";
+		break;
+	case 1:
+		carName = "Cyan";
+		break;
+	case 2:
+		carName = "Orange";
+		break;
+	case 3:
+		carName = "Red";
+		break;
+	case 4:
+		carName = "Monster";
+		break;
+	default:
+		carName = "Raceholder";
+		break;
+	}
+	return carName;
 }
 
-std::string Leaderboard::getTimeName(int index) const
+std::string Leaderboard::getVersusRecord(int index) const
 {
-	return timeScores[index];
+	std::string stringRecord;
+	stringRecord += std::to_string(((int)versusTimeTaken[index] / 100) / 60);
+	stringRecord += ":";
+	stringRecord += std::to_string(((int)versusTimeTaken[index] / 100) % 60);
+	stringRecord += ":";
+	stringRecord += std::to_string((int)versusTimeTaken[index] % 100);
+	return stringRecord;
+}
+
+std::string Leaderboard::getTime(int index) const
+{
+	std::string record;
+	record += std::to_string(timeCarIndex[index]);
+	record += ',';
+	record += std::to_string(timeTimeTaken[index]);
+	return record;
+}
+std::string Leaderboard::getTimeCar(int index) const
+{
+	std::string carName;
+	switch (timeCarIndex[index])
+	{
+	case 0:
+		carName = "Grey";
+		break;
+	case 1:
+		carName = "Cyan";
+		break;
+	case 2:
+		carName = "Orange";
+		break;
+	case 3:
+		carName = "Red";
+		break;
+	case 4:
+		carName = "Monster";
+		break;
+	default:
+		carName = "Raceholder";
+		break;
+	}
+	return carName;
 }
 
 std::string Leaderboard::getTimeRecord(int index) const
 {
-
+	std::string stringRecord;
+	stringRecord += std::to_string(((int)timeTimeTaken[index] / 100) / 60);
+	stringRecord += ":";
+	stringRecord += std::to_string(((int)timeTimeTaken[index] / 100) % 60);
+	stringRecord += ":";
+	stringRecord += std::to_string((int)timeTimeTaken[index] % 100);
+	return stringRecord;
 }
 
-void Leaderboard::addNewScore(std::string carName, std::string record, int timeTaken, int index, bool isVersus)
+void Leaderboard::addNewScore(int carIndex, int timeTaken, bool isVersus)
 {
-	std::string recordTimeTaken;
 	if (isVersus)
 	{
 		for (int i = 0; i < 5; i++)
 		{
-			int dataPosition;
-			for (int t = 0; t < versusScores[i].size(); t++)
+			if (timeTaken < versusTimeTaken[i])
 			{
-				if (versusScores[i][t] == ',')
+				if (i != 4)
 				{
-					dataPosition++;
-					if (dataPosition == 2)
+					for (int t = 3; t > (i - 1); t--)
 					{
-						recordTimeTaken += versusScores[i][t];
+						versusCarIndex[t + 1] = versusCarIndex[t];
+						versusTimeTaken[t + 1] = versusTimeTaken[t];
 					}
+					versusCarIndex[i] = carIndex;
+					versusTimeTaken[i] = timeTaken;
+					break;
 				}
-			}
-			if (std::stoi(recordTimeTaken) < timeTaken)
-			{
-
+				else
+				{
+					versusCarIndex[i] = carIndex;
+					versusTimeTaken[i] = timeTaken;
+					break;
+				}
 			}
 		}
 	}
 	else
 	{
-
+		for (int i = 0; i < 5; i++)
+		{
+			if (timeTaken < timeTimeTaken[i])
+			{
+				if (i != 4)
+				{
+					for (int t = 3; t > (i - 1); t--)
+					{
+						timeCarIndex[t + 1] = timeCarIndex[t];
+						timeTimeTaken[t + 1] = timeTimeTaken[t];
+					}
+					timeCarIndex[i] = carIndex;
+					timeTimeTaken[i] = timeTaken;
+					break;
+				}
+				else
+				{
+					timeCarIndex[i] = carIndex;
+					timeTimeTaken[i] = timeTaken;
+					break;
+				}
+			}
+		}
 	}
-
 }

@@ -2,88 +2,19 @@
 
 Saving::Saving(Shop* shop, Leaderboard* leaderboard)
 {
-	//open savedata and set balance from .txt
+	//open savedata and set values from .txt
 	fstream saveData("Save/Save.txt");
 
 	if (saveData.is_open())
 	{
 		loadShopData(shop);
-		string line;
-
-		getline(saveData, line);
-		for (int i = 0; i < 5; ++i)
-		{
-			getline(saveData, line);
-			if (line != "")
-			{
-				versusLeaderboard[i] = line;
-			}
-		}
-		for (int i = 0; i < 5; ++i)
-		{
-			getline(saveData, line);
-			if (line != "")
-			{
-				timeLeaderboard[i] = line;
-			}
-		}
-		saveData.close();
+		loadLeaderboardData(leaderboard);
 	}
-	else cout << "Unable to open file";
 }
 
 Saving::~Saving()
 {
-}
 
-string Saving::getVersusLeaderboard(int index)
-{
-	return versusLeaderboard[index];
-}
-
-string Saving::getTimeLeaderboard(int index)
-{
-	return timeLeaderboard[index];
-}
-
-void Saving::setVersusLeaderboard(int index, string record)
-{
-	versusLeaderboard[index] = record;
-}
-
-void Saving::setTimeLeaderboard(int index, string record)
-{
-	timeLeaderboard[index] = record;
-}
-
-bool Saving::getCar(int carIndex) const
-{
-	return car[carIndex];
-}
-
-void Saving::setBalance(int amount)
-{
-	balance = amount;
-}
-
-int Saving::getBalance() const
-{
-	return balance;
-}
-
-int Saving::getEquip() const
-{
-	return equip;
-}
-
-void Saving::setEquip(int equip)
-{
-	this->equip = equip;
-}
-
-void Saving::setColour(int carIndex)
-{
-	car[carIndex] = true;
 }
 
 void Saving::loadShopData(Shop* shop)
@@ -95,17 +26,17 @@ void Saving::loadShopData(Shop* shop)
 	string equip;
 	string temp;
 
-	getline(saveData, balance);
-	getline(saveData, temp, '>');
+	getline(saveData, balance, '>');
+	getline(saveData, temp);
 
 	getline(saveData, equip, '>');
-	getline(saveData, temp, '>');
+	getline(saveData, temp);
 
 	shop->loadNumberData(stoi(equip), stoi(balance));
 
 	for (int i = 0; i < 5; ++i)
 	{
-		getline(saveData, temp);
+		getline(saveData, temp, '>');
 		if (temp == "1")
 		{
 			shop->loadCarData(true, i);
@@ -114,7 +45,7 @@ void Saving::loadShopData(Shop* shop)
 		{
 			shop->loadCarData(false, i);
 		}
-		getline(saveData, temp, '>');
+		getline(saveData, temp);
 	}
 	saveData.close();
 }
@@ -123,10 +54,8 @@ void Saving::loadLeaderboardData(Leaderboard* leaderboard)
 {
 	fstream saveData("Save/Save.txt");
 	string temp;
-	string carName;
-	string record;
+	string carIndex;
 	string timeTaken;
-	string index;
 	for (int i = 0; i < 7; i++)
 	{
 		getline(saveData, temp);
@@ -134,24 +63,21 @@ void Saving::loadLeaderboardData(Leaderboard* leaderboard)
 
 	for (int i = 0; i < 5; i++)
 	{
-		getline(saveData, carName, ',');
-		getline(saveData, record, ',');
+		getline(saveData, carIndex, ',');
 		getline(saveData, timeTaken, ',');
-		getline(saveData, index, '\n');
-		leaderboard->setVersus(carName, record, stoi(timeTaken), stoi(index));
+		getline(saveData, temp);
+		leaderboard->setVersus(stoi(carIndex), stoi(timeTaken), i);
 	}
 	
 	for (int i = 0; i < 5; i++)
 	{
-		getline(saveData, carName, ',');
-		getline(saveData, record, ',');
+		getline(saveData, carIndex, ',');
 		getline(saveData, timeTaken, ',');
-		getline(saveData, index, '\n');
-		leaderboard->setTime(carName, record, stoi(timeTaken), stoi(index));
+		leaderboard->setTime(stoi(carIndex), stoi(timeTaken), i);
 	}
 }
 
-void Saving::saveShopData(Shop* shop)
+void Saving::saveData(Shop* shop, Leaderboard* leaderboard)
 {
 	fstream saveData;
 	saveData.open("Save/Save.txt", fstream::in | fstream::out | fstream::trunc);
@@ -179,6 +105,14 @@ void Saving::saveShopData(Shop* shop)
 			break;
 		}
 		saveData << shop->isOwned(i) << colour << '\n';
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		saveData << leaderboard->getVersus(i) << ',' << '\n';
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		saveData << leaderboard->getTime(i) << ',' << '\n';
 	}
 	saveData.close();
 }

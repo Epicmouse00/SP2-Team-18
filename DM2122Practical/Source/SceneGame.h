@@ -252,6 +252,8 @@ private:
 	void		RenderAIMissile();
 	void		RenderHitMarker();
 
+	void		SaveData();
+
 	unsigned	m_vertexArrayID;
 	Mesh*		meshList[NUM_GEOMETRY];
 
@@ -293,7 +295,6 @@ private:
 	Currency	gameBalance;
 	timer2		timer;
 	Menu		menu;
-	Saving		gameSave(Shop*, Leaderboard*);
 
 	Status playerStatus;
 	Status aiStatus;
