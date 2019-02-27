@@ -213,7 +213,6 @@ private:
 	void		UpdateDelayTime(double dt);
 	void		UpdateSong();
 	void		UpdateCam(double dt);
-	void		UpdateAppPolygon();
 	void		UpdateTrackTexture();
 	void		UpdateCar(double dt);
 	void		UpdateCarTexture();

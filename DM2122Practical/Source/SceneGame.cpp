@@ -53,16 +53,11 @@ void SceneGame::Init()
 	InitProjection();
 }
 
-//static float ROT_LIMIT = 45.0f;
-//static float SCALE_LIMIT = 5.0f;
-//static const float LSPEED = 30.0f;
-
 //////////////////// Update function ////////////////////
 
 void SceneGame::Update(double dt)
 {
 	UpdateDelayTime(dt);
-	UpdateAppPolygon();
 	UpdateCar(dt);
 	UpdateCursor();
 	UpdateLight();
@@ -97,8 +92,6 @@ void SceneGame::Render()
 	//RenderMesh(meshList[GEO_AXES], false);
 
 	////////// RENDER GAME MODELS HERE ////////// [Hint: Arrangement of these are very important]
-
-	// Menu backdrop
 
 	// Track
 	RenderTrack();
@@ -144,7 +137,7 @@ void SceneGame::Render()
 void SceneGame::Exit()
 {
 	//Clean up
-
+	gameSave.saveData(&gameShop, &leaderboard);
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		if (meshList[i] != NULL)
@@ -158,7 +151,6 @@ void SceneGame::Exit()
 
 bool SceneGame::getExit()
 {
-	gameSave.saveData(&gameShop, &leaderboard);
 	return b_exit;
 }
 
@@ -335,8 +327,6 @@ void SceneGame::InitMeshes()
 	// Wheel
 	meshList[GEO_WHEEL] = MeshBuilder::GenerateOBJ("Wheel", "OBJ//wheel.obj");
 	meshList[GEO_WHEEL]->textureID = LoadTGA("image//wheel_grey.tga");
-
-	// Coins
 
 	// Power-Ups
 	meshList[GEO_SPEED] = MeshBuilder::GenerateOBJ("Speed Power-Up", "OBJ//speed.obj");
@@ -562,7 +552,6 @@ void SceneGame::UpdateCam(double dt)
 
 				if (Player.getForward() >= 41000.f / 3 && menu.getGameMode() == MODE_VS)
 					camera.setPosition(Vector3(0.f, 50.f, 250.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
-					//camera.setPosition(Vector3(0.f, 50.f, -50.f + 3.f * Opponent.getForward()), Vector3((camAgile * 3.f) * (float)Opponent.getMovement(), (camAgile * 3.f) * (float)Opponent.getJump(), 120.f + 3.f * Opponent.getForward()), Vector3(0.f, 1.f, 0.f));
 				else
 					camera.setPosition(Vector3(0.f, 50.f - camShake, -50.f + 3.f * Player.getForward()), Vector3((camAgile * 3.f) * (float)Player.getMovement(), (camAgile * 3.f) * (float)Player.getJump(), 120.f + 3.f * Player.getForward()), Vector3(0.f, 1.f, 0.f));
 			}
@@ -573,26 +562,6 @@ void SceneGame::UpdateCam(double dt)
 		}
 	}
 	camera.Update(dt);
-}
-
-void SceneGame::UpdateAppPolygon()
-{
-	if (Application::IsKeyPressed('1'))
-	{
-		glEnable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('2'))
-	{
-		glDisable(GL_CULL_FACE);
-	}
-	if (Application::IsKeyPressed('3'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	if (Application::IsKeyPressed('4'))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
 }
 
 void SceneGame::UpdateTrackTexture()
@@ -655,7 +624,6 @@ void SceneGame::UpdateCarTexture()
 	default:
 		meshList[GEO_PLAYER]->textureID = LoadTGA("image//car_white.tga");
 		break;
-
 	}
 }
 
@@ -823,7 +791,7 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(500.f);
 		break;
 	}
-	Opponent.setMaxSpeed(Player.getMaxSpeed() + 10.f);
+	Opponent.setMaxSpeed(Player.getMaxSpeed());
 	Opponent.setAcceleration(30.f);
 }
 
@@ -1124,7 +1092,6 @@ void SceneGame::UpdateWinLose()
 				{
 					leaderboard.addNewScore(Player.getTexture(), timer.getScoreMiliseconds(), false);
 				}
-				gameSave.saveData(&gameShop, &leaderboard);
 				if (menu.getGameMode() == MODE_VS)
 				{
 					if (win)

@@ -2,14 +2,8 @@
 
 Saving::Saving(Shop* shop, Leaderboard* leaderboard)
 {
-	//open savedata and set values from .txt
-	fstream saveData("Save/Save.txt");
-
-	if (saveData.is_open())
-	{
-		loadShopData(shop);
-		loadLeaderboardData(leaderboard);
-	}
+	loadShopData(shop);
+	loadLeaderboardData(leaderboard);
 }
 
 Saving::~Saving()
