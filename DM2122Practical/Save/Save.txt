@@ -2,7 +2,7 @@
 0>Equipped
 1>Grey
 0>Cyan
-1>Orange
+0>Orange
 0>Red
 0>Monster
 4,1500,
