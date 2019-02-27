@@ -1,121 +1,88 @@
 #include "Saving.h"
 
-Saving::Saving()
+Saving::Saving(Shop* shop, Leaderboard* leaderboard)
 {
-	//open savedata and set balance from .txt
-	std::fstream saveData("Save/Save.txt");
+	//open savedata and set values from .txt
+	fstream saveData("Save/Save.txt");
 
 	if (saveData.is_open())
 	{
-		std::string line;
-		getline(saveData, line, '>');
-		balance = stoi(line);
-		getline(saveData, line);
-		getline(saveData, line, '>');
-		equip = stoi(line);
-		getline(saveData, line);
-		for (int i = 0; i < 5; ++i)
-		{
-			getline(saveData, line, '>');
-			if (line == "1")
-				car[i] = true;
-			else
-				car[i] = false;
-			getline(saveData, line);
-		}
-		for (int i = 0; i < 5; ++i)
-		{
-			getline(saveData, line);
-			nameLeaderboard[i] = stoi(line); // Car
-			getline(saveData, line);
-			timeLeaderboard[i] = (float)stoi(line); // Time
-		}
-		saveData.close();
+		loadShopData(shop);
+		loadLeaderboardData(leaderboard);
 	}
 }
 
 Saving::~Saving()
 {
+
 }
 
-int Saving::getNameLeaderboard(int index)
+void Saving::loadShopData(Shop* shop)
 {
-	return nameLeaderboard[index];
-}
+	//open savedata and set values from .txt
+	fstream saveData("Save/Save.txt");
 
-float Saving::getTimeLeaderboard(int index)
-{
-	return timeLeaderboard[index];
-}
+	string balance;
+	string equip;
+	string temp;
 
-void Saving::setNameLeaderboard(int index, int car)
-{
-	nameLeaderboard[index] = car;
-}
+	getline(saveData, balance, '>');
+	getline(saveData, temp);
 
-void Saving::setTimeLeaderboard(int index, float time)
-{
-	timeLeaderboard[index] = time;
-}
+	getline(saveData, equip, '>');
+	getline(saveData, temp);
 
-bool Saving::getCar(int carIndex) const
-{
-	return car[carIndex];
-}
+	shop->loadNumberData(stoi(equip), stoi(balance));
 
-void Saving::setBalance(int amount)
-{
-	balance = amount;
-}
-
-int Saving::getBalance() const
-{
-	return balance;
-}
-
-int Saving::getEquip() const
-{
-	return equip;
-}
-
-void Saving::setEquip(int equip)
-{
-	this->equip = equip;
-}
-
-void Saving::setColour(int carIndex)
-{
-	car[carIndex] = true;
-}
-
-Highscore Saving::getHighscore(int index)
-{
-	Highscore temp;
-	temp.setCar(nameLeaderboard[index]);
-	temp.setTimeTaken(timeLeaderboard[index]);
-	return temp;
-}
-
-void Saving::setHighscore(Highscore highscore, int index)
-{
-	nameLeaderboard[index] = highscore.getCar();
-	timeLeaderboard[index] = highscore.getTimeTaken();
-}
-
-void Saving::save()
-{
-	std::fstream saveData;
-	int cars[5];
 	for (int i = 0; i < 5; ++i)
 	{
-		if (car[i] == true)
-			cars[i] = 1;
+		getline(saveData, temp, '>');
+		if (temp == "1")
+		{
+			shop->loadCarData(true, i);
+		}
 		else
-			cars[i] = 0;
+		{
+			shop->loadCarData(false, i);
+		}
+		getline(saveData, temp);
 	}
-	saveData.open("Save/Save.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-	saveData << balance << ">Money" << '\n';
-	saveData << equip << ">Equipped" << '\n';
+	saveData.close();
+}
+
+void Saving::loadLeaderboardData(Leaderboard* leaderboard)
+{
+	fstream saveData("Save/Save.txt");
+	string temp;
+	string carIndex;
+	string timeTaken;
+	for (int i = 0; i < 7; i++)
+	{
+		getline(saveData, temp);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		getline(saveData, carIndex, ',');
+		getline(saveData, timeTaken, ',');
+		getline(saveData, temp);
+		leaderboard->setVersus(stoi(carIndex), stoi(timeTaken), i);
+	}
+	
+	for (int i = 0; i < 5; i++)
+	{
+		getline(saveData, carIndex, ',');
+		getline(saveData, timeTaken, ',');
+		leaderboard->setTime(stoi(carIndex), stoi(timeTaken), i);
+	}
+}
+
+void Saving::saveData(Shop* shop, Leaderboard* leaderboard)
+{
+	fstream saveData;
+	saveData.open("Save/Save.txt", fstream::in | fstream::out | fstream::trunc);
+	saveData << shop->getBalance() << ">Money" << '\n';
+	saveData << shop->getEquip() << ">Equipped" << '\n';
 	for (int i = 0; i < 5; ++i)
 	{
 		std::string colour = ">";
@@ -137,11 +104,15 @@ void Saving::save()
 			colour += "Monster";
 			break;
 		}
-		saveData << cars[i] << colour << '\n';
+		saveData << shop->isOwned(i) << colour << '\n';
 	}
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 5; i++)
 	{
-		saveData << nameLeaderboard[i] << '\n' << timeLeaderboard[i] << '\n';
+		saveData << leaderboard->getVersus(i) << ',' << '\n';
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		saveData << leaderboard->getTime(i) << ',' << '\n';
 	}
 	saveData.close();
 }

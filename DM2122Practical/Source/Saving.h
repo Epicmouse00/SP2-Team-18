@@ -1,32 +1,19 @@
-#pragma once
-#include <string>
+#ifndef SAVING_H
+#define SAVING_H
+#include <iostream>
 #include <fstream>
+#include <string>
+#include "Shop.h"
 #include "Leaderboard.h"
-#include "Highscore.h"
+using namespace std;
 
 class Saving
 {
-private:
-	int		balance;
-	int		equip;
-	bool	car[5];
-	int		nameLeaderboard[5];
-	float	timeLeaderboard[5];
 public:
-			Saving();
+			Saving(Shop* shop, Leaderboard* leaderboard);
 			~Saving();
-	bool	getCar(int carIndex) const;
-	int		getBalance() const;
-
-	int			getNameLeaderboard(int index);
-	float		getTimeLeaderboard(int index);
-	void		setNameLeaderboard(int index, int car);
-	void		setTimeLeaderboard(int index, float time);
-	void		setBalance(int amount);
-	int			getEquip() const;
-	void		setEquip(int equip);
-	void		setColour(int carIndex);
-	Highscore	getHighscore(int index);
-	void		setHighscore(Highscore highscore, int index);
-	void		save();
+	void	loadShopData(Shop* shop);
+	void	loadLeaderboardData(Leaderboard* leaderboard);
+	void	saveData(Shop* shop, Leaderboard* leaderboard);
 };
+#endif
