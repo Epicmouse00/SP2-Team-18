@@ -818,7 +818,7 @@ void SceneGame::UpdateCarStats()
 		Player.setAcceleration(500.f);
 		break;
 	}
-	Opponent.setMaxSpeed(Player.getMaxSpeed() + 10.f);
+	Opponent.setMaxSpeed(Player.getMaxSpeed() - 10.f);
 	Opponent.setAcceleration(30.f);
 }
 

@@ -6,7 +6,6 @@ class Highscore
 private:
 	int car;
 	float timeTaken;
-	std::string time;
 public:
 	Highscore();
 	~Highscore();
